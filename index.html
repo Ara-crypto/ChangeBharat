@@ -19,6 +19,159 @@
             color: #ffffff;
             line-height: 1.4;
             padding-bottom: 70px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Splash Screen Overlay - Beautiful tap to start */
+        .splash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, #000000, #0A0A0A);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .splash-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            text-align: center;
+            padding: 20px;
+            max-width: 400px;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 30px;
+            overflow: hidden;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 20px 40px rgba(255, 107, 43, 0.3);
+            border: 3px solid #FF6B2B;
+            animation: pulse 2s infinite;
+        }
+
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 20px 40px rgba(255, 107, 43, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 30px 60px rgba(255, 107, 43, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 20px 40px rgba(255, 107, 43, 0.3); }
+        }
+
+        .splash-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .splash-message {
+            color: #A0A0A0;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .tap-button {
+            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            color: #000000;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 107, 43, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .tap-button:hover {
+            transform: scale(1.05);
+        }
+
+        .tap-button i {
+            font-size: 1.4rem;
+        }
+
+        /* YouTube Player Container - hidden by default */
+        .youtube-player-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #000;
+            display: none;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .youtube-player-container.active {
+            display: block;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-player {
+            position: absolute;
+            top: -40px;
+            right: 10px;
+            background: #FF6B2B;
+            color: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 1001;
+        }
+
+        .video-not-found {
+            text-align: center;
+            padding: 60px 20px;
+            color: #FF6B2B;
+        }
+
+        .video-not-found i {
+            font-size: 4rem;
+            margin-bottom: 20px;
         }
 
         /* Premium Header */
@@ -40,15 +193,15 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
         }
 
-        /* Logo container - no zoom, just clean display */
         .logo-crop {
             width: 48px;
             height: 48px;
             border-radius: 14px;
             overflow: hidden;
-            background: #FF6B2B; /* fallback */
+            background: #FF6B2B;
             box-shadow: 0 4px 12px rgba(255, 107, 43, 0.3);
             flex-shrink: 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -57,7 +210,7 @@
         .logo-crop img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures the image fills the square without distortion */
+            object-fit: cover;
             display: block;
         }
 
@@ -289,7 +442,7 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none; /* Allows autoplay without user click */
+            pointer-events: none;
         }
 
         /* Image placeholder */
@@ -424,11 +577,34 @@
     </style>
 </head>
 <body>
-    <!-- Header with new logo (no zoom) -->
+    <!-- Splash Screen - Tap to Start -->
+    <div class="splash-overlay" id="splashOverlay">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+            </div>
+            <h1 class="splash-title">Goa Social</h1>
+            <p class="splash-message">Tap anywhere to begin your Goa experience</p>
+            <button class="tap-button" id="startButton">
+                <i class="fas fa-hand-pointer"></i>
+                Tap to Start
+            </button>
+        </div>
+    </div>
+
+    <!-- YouTube Player Container (for shared videos) -->
+    <div class="youtube-player-container" id="youtubePlayerContainer">
+        <div class="player-wrapper">
+            <button class="close-player" id="closePlayerBtn">&times;</button>
+            <iframe id="youtubePlayer" allow="autoplay; fullscreen"></iframe>
+        </div>
+    </div>
+
+    <!-- Header -->
     <header class="app-header">
-        <div class="logo-container">
+        <div class="logo-container" id="logoContainer">
             <div class="logo-crop">
-                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social" onerror="this.style.display='none'; this.parentElement.innerHTML='🏝️';">
+                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
             <span class="logo-text">Goa Social</span>
         </div>
@@ -540,43 +716,110 @@
             }
         ];
 
+        // DOM Elements
         const feedContainer = document.getElementById('feedContainer');
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
+        const splashOverlay = document.getElementById('splashOverlay');
+        const startButton = document.getElementById('startButton');
+        const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        const closePlayerBtn = document.getElementById('closePlayerBtn');
+        
+        // App state
+        let userInteracted = false;
+        let videoPlayerManager = null;
 
-        // Video player manager for autoplay
-        class VideoPlayerManager {
-            constructor() {
-                this.observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const iframe = entry.target.querySelector('iframe');
-                        if (!iframe) return;
+        // Initialize app after user interaction
+        function startApp() {
+            if (userInteracted) return;
+            userInteracted = true;
+            
+            // Hide splash screen
+            splashOverlay.classList.add('hidden');
+            
+            // Initialize video player manager
+            class VideoPlayerManager {
+                constructor() {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const iframe = entry.target.querySelector('iframe');
+                            if (!iframe) return;
 
-                        if (entry.isIntersecting) {
-                            // Play video when visible
-                            iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            
-                            // Unmute after first play
-                            if (iframe.src.includes('mute=1')) {
-                                setTimeout(() => {
-                                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                                }, 100);
+                            if (entry.isIntersecting) {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                if (iframe.src.includes('mute=1')) {
+                                    setTimeout(() => {
+                                        iframe.src = iframe.src.replace('mute=1', 'mute=0');
+                                    }, 100);
+                                }
+                            } else {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                             }
-                        } else {
-                            // Pause when not visible
-                            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                        }
-                    });
-                }, { threshold: 0.6 });
+                        });
+                    }, { threshold: 0.6 });
+                }
+
+                observe(element) {
+                    this.observer.observe(element);
+                }
             }
 
-            observe(element) {
-                this.observer.observe(element);
+            videoPlayerManager = new VideoPlayerManager();
+            
+            // Load feed and setup videos
+            loadFeed();
+            
+            // Setup all iframes for autoplay
+            setupAllIframes();
+        }
+
+        // Setup all iframes for autoplay
+        function setupAllIframes() {
+            document.querySelectorAll('.video-container').forEach(container => {
+                if (videoPlayerManager) {
+                    videoPlayerManager.observe(container);
+                }
+            });
+        }
+
+        // YouTube Player Functions
+        function loadVideoFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            
+            if (videoId) {
+                // Show player
+                youtubePlayerContainer.classList.add('active');
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
             }
         }
 
-        const playerManager = new VideoPlayerManager();
+        // Close player
+        closePlayerBtn.addEventListener('click', () => {
+            youtubePlayerContainer.classList.remove('active');
+            youtubePlayer.src = '';
+        });
 
+        // Check URL on load
+        loadVideoFromUrl();
+
+        // Splash screen start handlers
+        function handleUserInteraction(e) {
+            startApp();
+        }
+
+        splashOverlay.addEventListener('click', handleUserInteraction);
+        startButton.addEventListener('click', handleUserInteraction);
+
+        // Also allow starting by tapping logo in header
+        document.getElementById('logoContainer').addEventListener('click', () => {
+            if (!userInteracted) {
+                startApp();
+            }
+        });
+
+        // Format time ago
         function timeAgo(dateString) {
             const now = new Date();
             const published = new Date(dateString);
@@ -588,6 +831,7 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
+        // Fetch videos for a channel
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -616,6 +860,7 @@
             }
         }
 
+        // Create a feed card based on type
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
@@ -650,10 +895,10 @@
                     </div>
                 `;
                 
-                // Observe for autoplay
+                // Observe for autoplay if app has started
                 const videoContainer = card.querySelector('.video-container');
-                if (videoContainer) {
-                    playerManager.observe(videoContainer);
+                if (videoContainer && videoPlayerManager) {
+                    videoPlayerManager.observe(videoContainer);
                 }
                 
             } else if (item.type === 'post') {
@@ -703,6 +948,7 @@
             return card;
         }
 
+        // Load live stories
         function loadLiveStories() {
             const lives = [
                 { name: 'Goa News Live', icon: '📺' },
@@ -727,6 +973,7 @@
             });
         }
 
+        // Load and mix the feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
@@ -765,27 +1012,22 @@
             }, 500);
         }
 
+        // Load live stories immediately (they don't need user interaction)
         loadLiveStories();
-        loadFeed();
 
-        // Handle browser autoplay policies - one global user interaction unlocks all
-        document.addEventListener('touchstart', function unlockAudio() {
-            document.querySelectorAll('iframe').forEach(iframe => {
-                if (iframe.src.includes('mute=1')) {
-                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                }
-            });
-            document.removeEventListener('touchstart', unlockAudio);
-        }, { once: true });
-        
-        document.addEventListener('click', function unlockAudio() {
-            document.querySelectorAll('iframe').forEach(iframe => {
-                if (iframe.src.includes('mute=1')) {
-                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                }
-            });
-            document.removeEventListener('click', unlockAudio);
-        }, { once: true });
+        // Handle popstate for back/forward navigation
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            
+            if (videoId) {
+                youtubePlayerContainer.classList.add('active');
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            } else {
+                youtubePlayerContainer.classList.remove('active');
+                youtubePlayer.src = '';
+            }
+        });
     </script>
 </body>
 </html>
