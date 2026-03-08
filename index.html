@@ -16,6 +16,12 @@ font-family:Arial;
 padding:20px;
 }
 
+.channel{
+margin-top:40px;
+font-size:20px;
+color:#ff7b42;
+}
+
 .card{
 background:#111;
 border-radius:10px;
@@ -26,12 +32,6 @@ overflow:hidden;
 img{
 width:100%;
 display:block;
-}
-
-.channel{
-margin-top:40px;
-font-size:20px;
-color:#ff7b42;
 }
 
 </style>
@@ -47,50 +47,45 @@ color:#ff7b42;
 
 const API_KEY = "AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4"
 
+/* CHANNEL NAMES */
 const channels = [
 
-{
-name:"RDX Goa",
-id:"UCmZFYpP2pF1rPqY9w2LrX0A"
-},
-
-{
-name:"Alert Goans",
-id:"UCnqJ7QJQ6pF6F3s7zC4n0uA"
-},
-
-{
-name:"In Goa News",
-id:"UCq8qCk5S2X1d4o6d9qQ8X9Q"
-},
-
-{
-name:"Goa365 TV",
-id:"UC4Vv6Nq0eQF8i3v5s9c0n1A"
-},
-
-{
-name:"Dainik Gomantak TV",
-id:"UCZk7V2p9t0b0f4l6x8o9n5A"
-}
+"rdxgoa",
+"alertgoans",
+"ingoanews",
+"goa365tv",
+"dainikgomantaktv"
 
 ]
 
-async function loadVideos(){
+async function loadFeed(){
 
 let container = document.getElementById("feed")
 
-for(let channel of channels){
+for(let name of channels){
 
-container.innerHTML += `<div class="channel">${channel.name}</div>`
+/* STEP 1: FIND CHANNEL ID */
 
-let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel.id}&maxResults=4&order=date&type=video&key=${API_KEY}`
+let searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${name}&type=channel&maxResults=1&key=${API_KEY}`
 
-let res = await fetch(url)
-
+let res = await fetch(searchUrl)
 let data = await res.json()
 
-data.items.forEach(video=>{
+if(!data.items.length) continue
+
+let channelId = data.items[0].id.channelId
+let channelTitle = data.items[0].snippet.title
+
+container.innerHTML += `<div class="channel">${channelTitle}</div>`
+
+/* STEP 2: GET LATEST VIDEOS */
+
+let videoUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=4&order=date&type=video&key=${API_KEY}`
+
+let res2 = await fetch(videoUrl)
+let data2 = await res2.json()
+
+data2.items.forEach(video=>{
 
 let id = video.id.videoId
 let thumb = video.snippet.thumbnails.high.url
@@ -134,7 +129,7 @@ allowfullscreen>
 
 }
 
-loadVideos()
+loadFeed()
 
 </script>
 
