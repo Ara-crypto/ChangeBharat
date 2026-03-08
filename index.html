@@ -4,8 +4,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Goa Shorts</title>
-
 <style>
 
 body{
@@ -14,6 +12,7 @@ background:black;
 overflow-y:scroll;
 scroll-snap-type:y mandatory;
 height:100vh;
+font-family:Arial;
 }
 
 .video{
@@ -34,13 +33,13 @@ top:0;
 left:0;
 right:0;
 bottom:0;
-background:black;
-color:white;
 display:flex;
 justify-content:center;
 align-items:center;
+background:black;
+color:white;
 font-size:22px;
-z-index:1000;
+z-index:999;
 }
 
 </style>
@@ -49,23 +48,21 @@ z-index:1000;
 
 <body>
 
-<div class="tap" id="tap">Tap to start</div>
+<div class="tap" id="tap">Tap once to enable sound</div>
 
 <div id="feed"></div>
 
 <script>
 
-const videos=[
-
+let videos=[
 "z_8Gzjx3s_Q",
 "ScMzIvxBSi4",
 "aqz-KE-bpKQ",
 "dQw4w9WgXcQ",
-"3fumBcKC6RE"
-
+"3fumBcKC6RE",
+"e-ORhEE9VVg",
+"2Vv-BfVoq4g"
 ]
-
-let sound=false
 
 let feed=document.getElementById("feed")
 
@@ -76,8 +73,7 @@ feed.innerHTML+=`
 <div class="video">
 
 <iframe
-id="v${i}"
-src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1"
+src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${id}"
 allow="autoplay">
 </iframe>
 
@@ -87,18 +83,15 @@ allow="autoplay">
 
 })
 
+let sound=false
+
 document.getElementById("tap").onclick=function(){
 
 sound=true
-
 this.style.display="none"
 
-videos.forEach((v,i)=>{
-
-let frame=document.getElementById("v"+i)
-
+document.querySelectorAll("iframe").forEach(frame=>{
 frame.src=frame.src.replace("mute=1","mute=0")
-
 })
 
 }
