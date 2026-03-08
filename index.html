@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Goa Shorts Feed</title>
+<title>Goa Shorts</title>
 
 <style>
 
@@ -14,24 +14,12 @@ background:black;
 overflow-y:scroll;
 scroll-snap-type:y mandatory;
 height:100vh;
-font-family:Arial;
-}
-
-.feed{
-height:100vh;
-overflow-y:scroll;
-scroll-snap-type:y mandatory;
 }
 
 .video{
-
 height:100vh;
 scroll-snap-align:start;
 position:relative;
-display:flex;
-justify-content:center;
-align-items:center;
-
 }
 
 iframe{
@@ -40,87 +28,56 @@ height:100%;
 border:none;
 }
 
-.title{
-position:absolute;
-bottom:20px;
-left:15px;
-color:white;
-background:rgba(0,0,0,0.5);
-padding:6px 10px;
-border-radius:6px;
-}
-
 .tap{
 position:fixed;
 top:0;
 left:0;
 right:0;
 bottom:0;
+background:black;
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-color:white;
 font-size:22px;
-background:rgba(0,0,0,0.8);
 z-index:1000;
 }
 
 </style>
 
 </head>
+
 <body>
 
-<div class="tap" id="tap">Tap once to start</div>
+<div class="tap" id="tap">Tap to start</div>
 
-<div class="feed" id="feed"></div>
+<div id="feed"></div>
 
 <script>
 
-const API_KEY="AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4"
+const videos=[
 
-const channels=[
-"UCJb1MeQClvGeSMeBSVLKnDQ"
+"z_8Gzjx3s_Q",
+"ScMzIvxBSi4",
+"aqz-KE-bpKQ",
+"dQw4w9WgXcQ",
+"3fumBcKC6RE"
+
 ]
 
-let videos=[]
-let loaded=0
-let soundEnabled=false
-
-async function loadVideos(){
-
-for(let channel of channels){
-
-let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel}&maxResults=10&order=date&type=video&key=${API_KEY}`
-
-let res=await fetch(url)
-let data=await res.json()
-
-data.items.forEach(v=>{
-videos.push(v.id.videoId)
-})
-
-}
-
-renderVideos()
-
-}
-
-function renderVideos(){
+let sound=false
 
 let feed=document.getElementById("feed")
 
-for(let i=loaded;i<loaded+5;i++){
-
-if(!videos[i]) break
-
-let id=videos[i]
+videos.forEach((id,i)=>{
 
 feed.innerHTML+=`
 
 <div class="video">
 
 <iframe
-src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${id}"
+id="v${i}"
+src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1"
 allow="autoplay">
 </iframe>
 
@@ -128,33 +85,37 @@ allow="autoplay">
 
 `
 
+})
+
+document.getElementById("tap").onclick=function(){
+
+sound=true
+
+this.style.display="none"
+
+videos.forEach((v,i)=>{
+
+let frame=document.getElementById("v"+i)
+
+frame.src=frame.src.replace("mute=1","mute=0")
+
+})
+
 }
-
-loaded+=5
-
-observeVideos()
-
-}
-
-function observeVideos(){
-
-let frames=document.querySelectorAll("iframe")
 
 let observer=new IntersectionObserver(entries=>{
 
 entries.forEach(entry=>{
 
-let frame=entry.target
+let frame=entry.target.querySelector("iframe")
 
 if(entry.isIntersecting){
 
-if(soundEnabled){
-frame.src=frame.src.replace("mute=1","mute=0")
-}
+frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*')
 
 }else{
 
-frame.src=frame.src.replace("autoplay=1","autoplay=0")
+frame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*')
 
 }
 
@@ -162,35 +123,7 @@ frame.src=frame.src.replace("autoplay=1","autoplay=0")
 
 },{threshold:0.6})
 
-frames.forEach(f=>observer.observe(f))
-
-}
-
-document.getElementById("tap").onclick=function(){
-
-soundEnabled=true
-
-document.getElementById("tap").style.display="none"
-
-let frames=document.querySelectorAll("iframe")
-
-frames.forEach(f=>{
-f.src=f.src.replace("mute=1","mute=0")
-})
-
-}
-
-window.addEventListener("scroll",function(){
-
-if(window.innerHeight+window.scrollY>=document.body.offsetHeight-200){
-
-renderVideos()
-
-}
-
-})
-
-loadVideos()
+document.querySelectorAll(".video").forEach(v=>observer.observe(v))
 
 </script>
 
