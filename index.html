@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Goa Social Video Feed</title>
+<title>Goa Social Feed</title>
 
 <style>
 
 body{
 margin:0;
-background:#000;
-font-family:Arial;
+background:black;
 overflow-y:scroll;
 scroll-snap-type:y mandatory;
 height:100vh;
+font-family:Arial;
 }
 
 .feed{
@@ -24,18 +24,10 @@ overflow-y:scroll;
 scroll-snap-type:y mandatory;
 }
 
-.video-card{
-
+.video{
 height:100vh;
 scroll-snap-align:start;
 position:relative;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-background:#000;
-
 }
 
 iframe{
@@ -44,17 +36,16 @@ height:100%;
 border:none;
 }
 
-.title{
-
+.sound{
 position:absolute;
 bottom:20px;
-left:15px;
-color:white;
-font-size:16px;
+right:20px;
 background:rgba(0,0,0,0.5);
-padding:6px 10px;
-border-radius:5px;
-
+color:white;
+padding:10px;
+border-radius:50%;
+font-size:20px;
+cursor:pointer;
 }
 
 </style>
@@ -68,25 +59,20 @@ border-radius:5px;
 
 const API_KEY="AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4"
 
-/* CHANNEL IDs */
-
 const channels=[
-
-"UCJb1MeQClvGeSMeBSVLKnDQ",  // Prudent Media Goa
-"UC4pFJfN4m7c4kZkz6o5L2qQ",  // Goa365
-"UCxLJj3bY8Q1pXg8s2T5Y4Dw"   // RDX Goa
-
+"UCJb1MeQClvGeSMeBSVLKnDQ"
 ]
+
+let videos=[]
+let players=[]
 
 async function loadVideos(){
 
 let feed=document.getElementById("feed")
 
-let videos=[]
-
 for(let channel of channels){
 
-let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel}&maxResults=5&order=date&type=video&key=${API_KEY}`
+let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel}&maxResults=6&order=date&type=video&key=${API_KEY}`
 
 let res=await fetch(url)
 
@@ -94,36 +80,24 @@ let data=await res.json()
 
 data.items.forEach(v=>{
 
-videos.push({
-
-id:v.id.videoId,
-title:v.snippet.title
-
-})
+videos.push(v.id.videoId)
 
 })
 
 }
 
-/* sort newest first */
-
-videos.sort((a,b)=>0.5-Math.random())
-
-videos.forEach(video=>{
+videos.forEach(id=>{
 
 feed.innerHTML+=`
 
-<div class="video-card">
+<div class="video">
 
 <iframe
-
-src="https://www.youtube.com/embed/${video.id}?autoplay=1&mute=0&controls=0&loop=1&playlist=${video.id}"
-
+src="https://www.youtube.com/embed/${id}?enablejsapi=1&mute=1&autoplay=1&controls=0&loop=1&playlist=${id}"
 allow="autoplay"
-
 ></iframe>
 
-<div class="title">${video.title}</div>
+<div class="sound" onclick="toggleSound(this)">🔊</div>
 
 </div>
 
@@ -131,27 +105,35 @@ allow="autoplay"
 
 })
 
-observeVideos()
+observe()
 
 }
 
-function observeVideos(){
+function toggleSound(btn){
 
-let videos=document.querySelectorAll("iframe")
+let iframe=btn.parentElement.querySelector("iframe")
+
+iframe.src=iframe.src.replace("mute=1","mute=0")
+
+}
+
+function observe(){
+
+let frames=document.querySelectorAll("iframe")
 
 let observer=new IntersectionObserver(entries=>{
 
 entries.forEach(entry=>{
 
-let iframe=entry.target
+let frame=entry.target
 
 if(entry.isIntersecting){
 
-iframe.src=iframe.src.replace("autoplay=0","autoplay=1")
+frame.src=frame.src.replace("autoplay=0","autoplay=1")
 
 }else{
 
-iframe.src=iframe.src.replace("autoplay=1","autoplay=0")
+frame.src=frame.src.replace("autoplay=1","autoplay=0")
 
 }
 
@@ -159,7 +141,7 @@ iframe.src=iframe.src.replace("autoplay=1","autoplay=0")
 
 },{threshold:0.6})
 
-videos.forEach(v=>observer.observe(v))
+frames.forEach(f=>observer.observe(f))
 
 }
 
