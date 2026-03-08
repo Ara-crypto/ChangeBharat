@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Goa Social · Mixed Feed</title>
+    <title>Goa Social · Home</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -18,32 +18,92 @@
             background-color: #000000;
             color: #ffffff;
             line-height: 1.4;
-            padding-bottom: 70px; /* space for bottom nav */
+            padding-bottom: 70px;
         }
 
-        /* Stories / Live row - horizontal scroll */
+        /* Premium Header - refined */
+        .app-header {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2A2A2A;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-crop {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #FF6B2B;
+            box-shadow: 0 4px 12px rgba(255, 107, 43, 0.3);
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-crop img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            display: block;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            color: #A0A0A0;
+        }
+
+        .header-actions i {
+            font-size: 1.3rem;
+        }
+
+        /* Stories Section */
         .stories-section {
-            padding: 12px 16px;
-            border-bottom: 1px solid #222;
+            padding: 16px 16px 12px 16px;
+            border-bottom: 1px solid #2A2A2A;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .section-header h3 {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #fff;
+            color: #FFFFFF;
         }
 
         .section-header a {
-            color: #ff8c42;
+            color: #FF6B2B;
             font-size: 0.9rem;
             text-decoration: none;
+            font-weight: 500;
         }
 
         .stories-scroll {
@@ -60,19 +120,19 @@
         }
 
         .story-item {
-            min-width: 100px;
+            min-width: 90px;
             text-align: center;
         }
 
         .story-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%; /* Changed from 24px to 50% for circular avatars */
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1A1A1A;
             position: relative;
             overflow: hidden;
-            margin-bottom: 8px;
-            border: 2px solid #ff8c42;
+            margin: 0 auto 8px auto;
+            border: 2px solid #FF6B2B;
         }
 
         .story-avatar.live::after {
@@ -80,23 +140,28 @@
             position: absolute;
             bottom: 4px;
             right: 4px;
-            background: #ff0000;
+            background: #FF0000;
             color: white;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             padding: 2px 6px;
-            border-radius: 12px;
-            font-weight: bold;
+            border-radius: 20px;
+            font-weight: 600;
         }
 
-        .story-avatar img {
+        .story-avatar-inner {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: #222;
+            color: #FF6B2B;
         }
 
         .story-label {
-            font-size: 0.8rem;
-            color: #ccc;
+            font-size: 0.75rem;
+            color: #A0A0A0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -105,12 +170,12 @@
         /* Category chips */
         .categories-section {
             padding: 12px 16px;
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid #2A2A2A;
         }
 
         .chips-scroll {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             overflow-x: auto;
             scrollbar-width: none;
         }
@@ -120,18 +185,19 @@
         }
 
         .chip {
-            background: #222;
-            color: #fff;
-            padding: 8px 20px;
+            background: #1A1A1A;
+            color: #FFFFFF;
+            padding: 8px 18px;
             border-radius: 40px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             white-space: nowrap;
-            border: 1px solid #333;
+            border: 1px solid #2A2A2A;
+            font-weight: 500;
         }
 
         .chip.active {
-            background: #ff8c42;
-            color: #000;
+            background: #FF6B2B;
+            color: #000000;
             font-weight: 600;
             border: none;
         }
@@ -140,17 +206,17 @@
         .feed-container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 0 0 20px 0;
+            padding: 16px 0 20px 0;
         }
 
         /* Feed cards */
         .feed-card {
-            background: #111;
+            background: #121212;
             border-radius: 24px;
-            margin: 16px 16px 20px 16px;
+            margin: 0 16px 20px 16px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
-            border: 1px solid #222;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            border: 1px solid #2A2A2A;
         }
 
         /* Card header */
@@ -164,13 +230,14 @@
         .channel-icon {
             width: 44px;
             height: 44px;
-            border-radius: 16px;
-            background: linear-gradient(145deg, #2b2b2b, #1a1a1a);
+            border-radius: 14px;
+            background: #1A1A1A;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: #ff8c42;
+            color: #FF6B2B;
+            border: 1px solid #2A2A2A;
         }
 
         .channel-info {
@@ -180,17 +247,17 @@
         .channel-name {
             font-weight: 600;
             font-size: 1rem;
-            color: #fff;
+            color: #FFFFFF;
         }
 
         .post-time {
             font-size: 0.7rem;
-            color: #888;
+            color: #A0A0A0;
             margin-top: 2px;
         }
 
         .card-header i {
-            color: #888;
+            color: #A0A0A0;
             font-size: 1.2rem;
         }
 
@@ -199,22 +266,22 @@
             padding: 0 16px 12px 16px;
             font-size: 1.1rem;
             font-weight: 600;
-            color: #fff;
+            color: #FFFFFF;
         }
 
         .card-description {
             padding: 0 16px 16px 16px;
-            color: #bbb;
+            color: #CCCCCC;
             font-size: 0.9rem;
             line-height: 1.5;
         }
 
-        /* Video container - shorts style */
+        /* Video container */
         .video-container {
             position: relative;
             width: 100%;
             background: #000;
-            aspect-ratio: 9/16; /* Shorts format */
+            aspect-ratio: 9/16;
             max-height: 500px;
         }
 
@@ -222,64 +289,86 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none; /* Allow autoplay without clicks */
+            pointer-events: none;
         }
 
-        /* Image placeholder for news/events */
+        /* Image placeholder */
         .image-placeholder {
             width: 100%;
             height: 200px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            background: #1A1A1A;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ff8c42;
+            color: #FF6B2B;
             font-size: 3rem;
+            border-top: 1px solid #2A2A2A;
+            border-bottom: 1px solid #2A2A2A;
         }
 
-        /* Card footer (likes/comments) */
+        /* Card footer */
         .card-footer {
             padding: 16px;
             display: flex;
             gap: 24px;
-            border-top: 1px solid #222;
-            margin-top: 8px;
+            border-top: 1px solid #2A2A2A;
         }
 
         .footer-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #888;
+            color: #A0A0A0;
             font-size: 0.9rem;
         }
 
-        .footer-item i {
-            font-size: 1.1rem;
-        }
-
-        .footer-item i.fa-heart { color: #ff5e3a; }
-        .footer-item i.fa-comment { color: #4facfe; }
+        .footer-item i.fa-heart { color: #FF6B2B; }
+        .footer-item i.fa-comment { color: #3B82F6; }
 
         /* Event card specific */
         .event-details {
             padding: 0 16px 16px 16px;
             display: flex;
             gap: 20px;
-            color: #ff8c42;
+            color: #FF6B2B;
             font-size: 0.9rem;
         }
 
         .event-details span i {
             margin-right: 6px;
-            color: #888;
+            color: #A0A0A0;
+        }
+
+        /* Video overlay */
+        .video-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 16px 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+            color: white;
+        }
+
+        .video-title-small {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #FFFFFF;
+        }
+
+        .video-meta {
+            font-size: 0.7rem;
+            color: #A0A0A0;
+            display: flex;
+            gap: 12px;
         }
 
         /* Loading indicator */
         .loading-indicator {
             text-align: center;
-            padding: 20px;
-            color: #ff8c42;
+            padding: 30px;
+            color: #FF6B2B;
         }
 
         .loading-indicator i {
@@ -289,15 +378,15 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Bottom navigation (matching your design) */
+        /* Bottom navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 15, 15, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(18px);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid #2A2A2A;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -309,13 +398,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #7a7a7a;
+            color: #A0A0A0;
             font-size: 0.7rem;
             padding: 4px 12px;
             border-radius: 30px;
             background: transparent;
             border: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .nav-item i {
@@ -324,36 +414,29 @@
         }
 
         .nav-item.active {
-            color: #ff8c42;
-            background: rgba(255, 123, 66, 0.08);
+            color: #FF6B2B;
         }
 
-        /* video info overlay */
-        .video-info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 30px 16px 16px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: white;
-        }
-
-        .video-title-small {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .video-meta {
-            font-size: 0.7rem;
-            color: #ccc;
-            display: flex;
-            gap: 12px;
+        .nav-item.active i {
+            text-shadow: 0 0 10px rgba(255, 107, 43, 0.3);
         }
     </style>
 </head>
 <body>
+    <!-- Premium Header with Logo -->
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-crop">
+                <img src="https://i.imgur.com/0F0GDA2.jpeg" alt="Goa Social" onerror="this.style.display='none'; this.parentElement.innerHTML='🎯';">
+            </div>
+            <span class="logo-text">Goa Social</span>
+        </div>
+        <div class="header-actions">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-bell"></i>
+        </div>
+    </header>
+
     <!-- Stories / Live Section -->
     <div class="stories-section">
         <div class="section-header">
@@ -361,7 +444,7 @@
             <a href="#">View all <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i></a>
         </div>
         <div class="stories-scroll" id="liveStories">
-            <!-- Will be populated by JS -->
+            <!-- Populated by JS -->
         </div>
     </div>
 
@@ -415,7 +498,6 @@
         // Configuration
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
-        // Mix of content types for the feed
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
             { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },
@@ -423,7 +505,6 @@
             { name: 'VoxLily', id: 'UCvoxlilyE8Zexample', icon: '🎵' }
         ];
 
-        // Sample community posts (mix)
         const communityPosts = [
             {
                 type: 'post',
@@ -462,31 +543,22 @@
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
 
-        // Video player manager for autoplay
+        // Video player manager
         class VideoPlayerManager {
             constructor() {
-                this.observers = new Map();
-                this.setupIntersectionObserver();
-            }
-
-            setupIntersectionObserver() {
                 this.observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         const iframe = entry.target.querySelector('iframe');
                         if (!iframe) return;
 
                         if (entry.isIntersecting) {
-                            // Play video
                             iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            
-                            // Unmute after first interaction (if not already)
                             if (iframe.src.includes('mute=1')) {
                                 setTimeout(() => {
                                     iframe.src = iframe.src.replace('mute=1', 'mute=0');
                                 }, 500);
                             }
                         } else {
-                            // Pause video
                             iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                         }
                     });
@@ -496,15 +568,10 @@
             observe(element) {
                 this.observer.observe(element);
             }
-
-            unobserve(element) {
-                this.observer.unobserve(element);
-            }
         }
 
         const playerManager = new VideoPlayerManager();
 
-        // Format time ago
         function timeAgo(dateString) {
             const now = new Date();
             const published = new Date(dateString);
@@ -516,10 +583,8 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
         async function fetchChannelVideos(channel) {
             try {
-                // First get uploads playlist
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
                 const channelData = await channelRes.json();
@@ -528,7 +593,6 @@
                 
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
                 
-                // Get videos from playlist
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=4&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
@@ -547,13 +611,11 @@
             }
         }
 
-        // Create a feed card based on type
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // Video card (shorts style)
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -583,7 +645,6 @@
                     </div>
                 `;
             } else if (item.type === 'post') {
-                // Community post
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '👤'}</div>
@@ -595,7 +656,7 @@
                     </div>
                     <div class="card-title">${item.title}</div>
                     <div class="card-description">${item.content}</div>
-                    ${item.image ? '<div class="image-placeholder"><i class="fas fa-mountain-sun"></i></div>' : ''}
+                    ${item.image ? '<div class="image-placeholder"><i class="fas fa-umbrella-beach"></i></div>' : ''}
                     <div class="card-footer">
                         <span class="footer-item"><i class="fas fa-heart"></i> ${item.likes}</span>
                         <span class="footer-item"><i class="fas fa-comment"></i> ${item.comments}</span>
@@ -603,7 +664,6 @@
                     </div>
                 `;
             } else if (item.type === 'event') {
-                // Event card
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon"><i class="fas fa-calendar-alt"></i></div>
@@ -628,7 +688,6 @@
                 `;
             }
 
-            // Observe video containers for autoplay
             const videoContainer = card.querySelector('.video-container');
             if (videoContainer) {
                 playerManager.observe(videoContainer);
@@ -637,13 +696,12 @@
             return card;
         }
 
-        // Load live stories
         function loadLiveStories() {
             const lives = [
-                { name: 'Goa News Live', label: 'LIVE', icon: '📺' },
-                { name: 'Beach Party', label: 'LIVE', icon: '🎵' },
-                { name: 'Mass at Church', label: 'LIVE', icon: '⛪' },
-                { name: 'Market Vibes', label: 'LIVE', icon: '🛍️' }
+                { name: 'Goa News Live', icon: '📺' },
+                { name: 'Beach Party', icon: '🎵' },
+                { name: 'Mass at Church', icon: '⛪' },
+                { name: 'Market Vibes', icon: '🛍️' }
             ];
             
             liveStories.innerHTML = '';
@@ -652,7 +710,7 @@
                 story.className = 'story-item';
                 story.innerHTML = `
                     <div class="story-avatar live">
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2rem;">
+                        <div class="story-avatar-inner">
                             ${live.icon}
                         </div>
                     </div>
@@ -662,36 +720,29 @@
             });
         }
 
-        // Load and mix the feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            // Fetch all channel videos
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
             const allVideos = videoResults.flat();
 
-            // Mix content: interleave videos with community posts
             const mixedFeed = [];
             let videoIndex = 0;
             let postIndex = 0;
 
-            // Create a varied mix
             for (let i = 0; i < 20; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
-                    // Add community post
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
                     postIndex = (postIndex + 1) % communityPosts.length;
                 } else if (videoIndex < allVideos.length) {
-                    // Add video
                     mixedFeed.push(allVideos[videoIndex]);
                     videoIndex++;
                 }
             }
 
-            // Clear and render
             feedContainer.innerHTML = '';
             
             mixedFeed.forEach(item => {
@@ -702,11 +753,9 @@
             loadingEl.style.display = 'none';
         }
 
-        // Initialize
         loadLiveStories();
         loadFeed();
 
-        // Handle touch to unmute
         document.addEventListener('touchstart', () => {
             document.querySelectorAll('iframe').forEach(iframe => {
                 if (iframe.src.includes('mute=1')) {
