@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Goa Social · Mixed Feed</title>
+    <title>Goa Social · Tropical Feed</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -15,44 +15,176 @@
         }
 
         body {
-            background-color: #000000;
+            background: linear-gradient(145deg, #0a4d4a, #1b6b5e);
             color: #ffffff;
             line-height: 1.4;
-            padding-bottom: 70px; /* space for bottom nav */
+            padding-bottom: 70px;
+            min-height: 100vh;
         }
 
-        /* Stories / Live row - horizontal scroll */
+        /* Premium Header with new logo */
+        .app-header {
+            background: rgba(10, 77, 74, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 40, 30, 0.4);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(145deg, #0a5c54, #138a7a);
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 10px 0 #06423a, 0 15px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .palm-tree {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: rotate(-5deg);
+        }
+
+        .palm-trunk {
+            width: 6px;
+            height: 16px;
+            background: #8b5a2b;
+            border-radius: 3px;
+            position: relative;
+            top: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .palm-leaves {
+            position: relative;
+            width: 24px;
+            height: 16px;
+        }
+
+        .palm-leaves::before,
+        .palm-leaves::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #2e8b57;
+            border-radius: 70% 30% 60% 40% / 50% 40% 60% 50%;
+            transform: rotate(-30deg);
+        }
+
+        .palm-leaves::before {
+            top: -8px;
+            left: -4px;
+            transform: rotate(-45deg);
+        }
+
+        .palm-leaves::after {
+            top: -8px;
+            right: -4px;
+            transform: rotate(15deg);
+            background: #3cb371;
+        }
+
+        .sun {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #ffd700;
+            border-radius: 50%;
+            top: 8px;
+            right: 6px;
+            opacity: 0.9;
+            box-shadow: 0 0 15px #ffb347;
+        }
+
+        .wave-circle {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border: 3px solid #40e0d0;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+            opacity: 0.5;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(15deg);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffd700, #40e0d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 18px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .header-actions i {
+            font-size: 1.3rem;
+        }
+
+        /* Stories Section - circular avatars */
         .stories-section {
-            padding: 12px 16px;
-            border-bottom: 1px solid #222;
+            padding: 16px 16px 12px 16px;
+            background: rgba(10, 65, 60, 0.5);
+            backdrop-filter: blur(4px);
+            margin: 8px 0;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            padding: 0 4px;
         }
 
         .section-header h3 {
             font-size: 1.1rem;
             font-weight: 600;
             color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .section-header a {
-            color: #ff8c42;
+            color: #ffd700;
             font-size: 0.9rem;
             text-decoration: none;
         }
 
         .stories-scroll {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             overflow-x: auto;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 4px;
+            padding: 4px 4px 8px 4px;
         }
 
         .stories-scroll::-webkit-scrollbar {
@@ -60,35 +192,53 @@
         }
 
         .story-item {
-            min-width: 100px;
+            min-width: 80px;
             text-align: center;
         }
 
         .story-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 24px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            position: relative;
-            overflow: hidden;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffd700, #40e0d0);
+            padding: 3px;
             margin-bottom: 8px;
-            border: 2px solid #ff8c42;
+            box-shadow: 0 8px 0 #0a4d4a, 0 12px 20px rgba(0,0,0,0.3);
+        }
+
+        .story-avatar.live {
+            background: linear-gradient(145deg, #ff4444, #ff8888);
         }
 
         .story-avatar.live::after {
             content: 'LIVE';
             position: absolute;
-            bottom: 4px;
-            right: 4px;
+            bottom: -2px;
+            right: 20px;
             background: #ff0000;
             color: white;
             font-size: 0.6rem;
-            padding: 2px 6px;
-            border-radius: 12px;
+            padding: 2px 8px;
+            border-radius: 20px;
             font-weight: bold;
+            border: 2px solid #fff;
         }
 
-        .story-avatar img {
+        .story-avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #0a5c54;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ffd700;
+            border: 2px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+        }
+
+        .story-avatar-inner img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -96,16 +246,16 @@
 
         .story-label {
             font-size: 0.8rem;
-            color: #ccc;
+            color: #fff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Category chips */
+        /* Categories chips */
         .categories-section {
-            padding: 12px 16px;
-            border-bottom: 1px solid #222;
+            padding: 8px 16px 16px 16px;
         }
 
         .chips-scroll {
@@ -120,37 +270,40 @@
         }
 
         .chip {
-            background: #222;
+            background: rgba(10, 77, 74, 0.8);
+            backdrop-filter: blur(4px);
             color: #fff;
             padding: 8px 20px;
             border-radius: 40px;
             font-size: 0.9rem;
             white-space: nowrap;
-            border: 1px solid #333;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .chip.active {
-            background: #ff8c42;
-            color: #000;
+            background: linear-gradient(145deg, #ffd700, #40e0d0);
+            color: #06423a;
             font-weight: 600;
             border: none;
         }
 
-        /* Feed container */
+        /* Feed Container */
         .feed-container {
             max-width: 600px;
             margin: 0 auto;
             padding: 0 0 20px 0;
         }
 
-        /* Feed cards */
+        /* Feed Cards - updated with teal/dark navy */
         .feed-card {
-            background: #111;
-            border-radius: 24px;
+            background: rgba(8, 55, 52, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
             margin: 16px 16px 20px 16px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
-            border: 1px solid #222;
+            box-shadow: 0 15px 25px -8px rgba(0, 40, 35, 0.8), 0 0 0 1px rgba(255, 215, 0, 0.1) inset;
+            border: 1px solid rgba(64, 224, 208, 0.2);
         }
 
         /* Card header */
@@ -165,12 +318,13 @@
             width: 44px;
             height: 44px;
             border-radius: 16px;
-            background: linear-gradient(145deg, #2b2b2b, #1a1a1a);
+            background: linear-gradient(145deg, #0a5c54, #138a7a);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: #ff8c42;
+            color: #ffd700;
+            box-shadow: 0 6px 0 #06423a;
         }
 
         .channel-info {
@@ -185,12 +339,12 @@
 
         .post-time {
             font-size: 0.7rem;
-            color: #888;
+            color: rgba(255, 255, 255, 0.6);
             margin-top: 2px;
         }
 
         .card-header i {
-            color: #888;
+            color: rgba(255, 215, 0, 0.6);
             font-size: 1.2rem;
         }
 
@@ -200,21 +354,22 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .card-description {
             padding: 0 16px 16px 16px;
-            color: #bbb;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.9rem;
             line-height: 1.5;
         }
 
-        /* Video container - shorts style */
+        /* Video container */
         .video-container {
             position: relative;
             width: 100%;
-            background: #000;
-            aspect-ratio: 9/16; /* Shorts format */
+            background: #0a4d4a;
+            aspect-ratio: 9/16;
             max-height: 500px;
         }
 
@@ -222,27 +377,29 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none; /* Allow autoplay without clicks */
+            pointer-events: none;
         }
 
-        /* Image placeholder for news/events */
+        /* Image placeholder */
         .image-placeholder {
             width: 100%;
             height: 200px;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            background: linear-gradient(145deg, #0a5c54, #1b6b5e);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ff8c42;
+            color: #ffd700;
             font-size: 3rem;
+            border-top: 1px solid rgba(255,215,0,0.2);
+            border-bottom: 1px solid rgba(255,215,0,0.2);
         }
 
-        /* Card footer (likes/comments) */
+        /* Card footer */
         .card-footer {
             padding: 16px;
             display: flex;
             gap: 24px;
-            border-top: 1px solid #222;
+            border-top: 1px solid rgba(255, 215, 0, 0.15);
             margin-top: 8px;
         }
 
@@ -250,36 +407,57 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #888;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
         }
 
-        .footer-item i {
-            font-size: 1.1rem;
-        }
+        .footer-item i.fa-heart { color: #ff6b6b; }
+        .footer-item i.fa-comment { color: #40e0d0; }
 
-        .footer-item i.fa-heart { color: #ff5e3a; }
-        .footer-item i.fa-comment { color: #4facfe; }
-
-        /* Event card specific */
+        /* Event details */
         .event-details {
             padding: 0 16px 16px 16px;
             display: flex;
             gap: 20px;
-            color: #ff8c42;
+            color: #ffd700;
             font-size: 0.9rem;
         }
 
         .event-details span i {
             margin-right: 6px;
-            color: #888;
+            color: #40e0d0;
+        }
+
+        /* Video overlay */
+        .video-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 16px 16px;
+            background: linear-gradient(to top, rgba(8, 55, 52, 0.95), transparent);
+            color: white;
+        }
+
+        .video-title-small {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #ffd700;
+        }
+
+        .video-meta {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            gap: 12px;
         }
 
         /* Loading indicator */
         .loading-indicator {
             text-align: center;
-            padding: 20px;
-            color: #ff8c42;
+            padding: 30px;
+            color: #ffd700;
         }
 
         .loading-indicator i {
@@ -289,27 +467,28 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Bottom navigation (matching your design) */
+        /* Bottom navigation - updated colors */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 15, 15, 0.95);
+            background: rgba(8, 55, 52, 0.95);
             backdrop-filter: blur(18px);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
             display: flex;
             justify-content: space-around;
             align-items: center;
             padding: 8px 10px 12px 10px;
             z-index: 1000;
+            box-shadow: 0 -8px 20px rgba(0, 40, 35, 0.5);
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #7a7a7a;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.7rem;
             padding: 4px 12px;
             border-radius: 30px;
@@ -324,37 +503,37 @@
         }
 
         .nav-item.active {
-            color: #ff8c42;
-            background: rgba(255, 123, 66, 0.08);
+            color: #ffd700;
+            background: rgba(64, 224, 208, 0.15);
         }
 
-        /* video info overlay */
-        .video-info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 30px 16px 16px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: white;
-        }
-
-        .video-title-small {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .video-meta {
-            font-size: 0.7rem;
-            color: #ccc;
-            display: flex;
-            gap: 12px;
+        /* Small adjustments */
+        .fa-ellipsis-h {
+            color: #ffd700 !important;
         }
     </style>
 </head>
 <body>
-    <!-- Stories / Live Section -->
+    <!-- Updated Header with new logo -->
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <div class="palm-tree">
+                    <div class="palm-leaves"></div>
+                    <div class="palm-trunk"></div>
+                </div>
+                <div class="sun"></div>
+                <div class="wave-circle"></div>
+            </div>
+            <span class="logo-text">Goa Social</span>
+        </div>
+        <div class="header-actions">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-bell"></i>
+        </div>
+    </header>
+
+    <!-- Stories Section - now circular -->
     <div class="stories-section">
         <div class="section-header">
             <h3>LIVE NOW</h3>
@@ -415,7 +594,6 @@
         // Configuration
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
-        // Mix of content types for the feed
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
             { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },
@@ -423,7 +601,7 @@
             { name: 'VoxLily', id: 'UCvoxlilyE8Zexample', icon: '🎵' }
         ];
 
-        // Sample community posts (mix)
+        // Community posts
         const communityPosts = [
             {
                 type: 'post',
@@ -462,31 +640,22 @@
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
 
-        // Video player manager for autoplay
+        // Video player manager
         class VideoPlayerManager {
             constructor() {
-                this.observers = new Map();
-                this.setupIntersectionObserver();
-            }
-
-            setupIntersectionObserver() {
                 this.observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         const iframe = entry.target.querySelector('iframe');
                         if (!iframe) return;
 
                         if (entry.isIntersecting) {
-                            // Play video
                             iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            
-                            // Unmute after first interaction (if not already)
                             if (iframe.src.includes('mute=1')) {
                                 setTimeout(() => {
                                     iframe.src = iframe.src.replace('mute=1', 'mute=0');
                                 }, 500);
                             }
                         } else {
-                            // Pause video
                             iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                         }
                     });
@@ -496,15 +665,10 @@
             observe(element) {
                 this.observer.observe(element);
             }
-
-            unobserve(element) {
-                this.observer.unobserve(element);
-            }
         }
 
         const playerManager = new VideoPlayerManager();
 
-        // Format time ago
         function timeAgo(dateString) {
             const now = new Date();
             const published = new Date(dateString);
@@ -516,10 +680,9 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
+        // Fetch videos
         async function fetchChannelVideos(channel) {
             try {
-                // First get uploads playlist
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
                 const channelData = await channelRes.json();
@@ -528,7 +691,6 @@
                 
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
                 
-                // Get videos from playlist
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=4&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
@@ -547,13 +709,12 @@
             }
         }
 
-        // Create a feed card based on type
+        // Create feed card
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // Video card (shorts style)
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -583,7 +744,6 @@
                     </div>
                 `;
             } else if (item.type === 'post') {
-                // Community post
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '👤'}</div>
@@ -595,7 +755,7 @@
                     </div>
                     <div class="card-title">${item.title}</div>
                     <div class="card-description">${item.content}</div>
-                    ${item.image ? '<div class="image-placeholder"><i class="fas fa-mountain-sun"></i></div>' : ''}
+                    ${item.image ? '<div class="image-placeholder"><i class="fas fa-umbrella-beach"></i></div>' : ''}
                     <div class="card-footer">
                         <span class="footer-item"><i class="fas fa-heart"></i> ${item.likes}</span>
                         <span class="footer-item"><i class="fas fa-comment"></i> ${item.comments}</span>
@@ -603,7 +763,6 @@
                     </div>
                 `;
             } else if (item.type === 'event') {
-                // Event card
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon"><i class="fas fa-calendar-alt"></i></div>
@@ -628,7 +787,6 @@
                 `;
             }
 
-            // Observe video containers for autoplay
             const videoContainer = card.querySelector('.video-container');
             if (videoContainer) {
                 playerManager.observe(videoContainer);
@@ -637,13 +795,13 @@
             return card;
         }
 
-        // Load live stories
+        // Load live stories - now circular
         function loadLiveStories() {
             const lives = [
-                { name: 'Goa News Live', label: 'LIVE', icon: '📺' },
-                { name: 'Beach Party', label: 'LIVE', icon: '🎵' },
-                { name: 'Mass at Church', label: 'LIVE', icon: '⛪' },
-                { name: 'Market Vibes', label: 'LIVE', icon: '🛍️' }
+                { name: 'Goa News Live', icon: '📺' },
+                { name: 'Beach Party', icon: '🎵' },
+                { name: 'Mass at Church', icon: '⛪' },
+                { name: 'Market Vibes', icon: '🛍️' }
             ];
             
             liveStories.innerHTML = '';
@@ -652,7 +810,7 @@
                 story.className = 'story-item';
                 story.innerHTML = `
                     <div class="story-avatar live">
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2rem;">
+                        <div class="story-avatar-inner">
                             ${live.icon}
                         </div>
                     </div>
@@ -662,36 +820,30 @@
             });
         }
 
-        // Load and mix the feed
+        // Load feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            // Fetch all channel videos
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
             const allVideos = videoResults.flat();
 
-            // Mix content: interleave videos with community posts
             const mixedFeed = [];
             let videoIndex = 0;
             let postIndex = 0;
 
-            // Create a varied mix
             for (let i = 0; i < 20; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
-                    // Add community post
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
                     postIndex = (postIndex + 1) % communityPosts.length;
                 } else if (videoIndex < allVideos.length) {
-                    // Add video
                     mixedFeed.push(allVideos[videoIndex]);
                     videoIndex++;
                 }
             }
 
-            // Clear and render
             feedContainer.innerHTML = '';
             
             mixedFeed.forEach(item => {
