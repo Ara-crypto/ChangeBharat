@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-
 <title>Goa Social · Tropical Feed</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -19,24 +17,24 @@ font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,s
 }
 
 body{
-background:#000;
-color:#fff;
+background-color:#000000;
+color:#ffffff;
 line-height:1.4;
 padding-bottom:70px;
 min-height:100vh;
 }
 
-/* HEADER */
-
 .app-header{
 background:rgba(0,0,0,0.85);
 backdrop-filter:blur(12px);
+-webkit-backdrop-filter:blur(12px);
 padding:12px 18px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-border-bottom:1px solid rgba(0,255,200,0.25);
-box-shadow:0 8px 20px rgba(0,255,200,0.15);
+
+border-bottom:1px solid rgba(0,255,213,0.3);
+box-shadow:0 8px 20px rgba(0,255,213,0.15);
 }
 
 .logo-container{
@@ -51,21 +49,20 @@ height:52px;
 border-radius:16px;
 overflow:hidden;
 
-background:linear-gradient(135deg,#00ffd5,#3eff8f);
+background:linear-gradient(145deg,#00FFD5,#3EFF8F);
 
-box-shadow:0 10px 0 #008f7a,0 15px 25px rgba(0,255,200,0.35);
+box-shadow:0 10px 0 #007f6b,0 15px 25px rgba(0,255,213,0.3);
 
 flex-shrink:0;
-
-border:1px solid rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
 }
 
 .logo-crop img{
 width:100%;
 height:100%;
 object-fit:cover;
-object-position:center;
-transform:scale(1.3);
+object-position:50% 52%;
+transform:scale(1.8);
 display:block;
 }
 
@@ -74,16 +71,17 @@ font-size:1.8rem;
 font-weight:700;
 letter-spacing:-0.5px;
 
-background:linear-gradient(135deg,#00ffd5,#3eff8f);
-
+background:linear-gradient(135deg,#00FFD5,#3EFF8F);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
+
+text-shadow:0 2px 4px rgba(0,255,213,0.2);
 }
 
 .header-actions{
 display:flex;
 gap:18px;
-color:#00ffd5;
+color:rgba(0,255,213,0.8);
 }
 
 .header-actions i{
@@ -95,6 +93,7 @@ font-size:1.3rem;
 .stories-section{
 padding:16px 16px 12px 16px;
 background:rgba(20,20,20,0.8);
+backdrop-filter:blur(4px);
 margin:8px 0;
 }
 
@@ -103,14 +102,17 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 margin-bottom:16px;
+padding:0 4px;
 }
 
 .section-header h3{
 font-size:1.1rem;
+font-weight:600;
+color:#fff;
 }
 
 .section-header a{
-color:#00ffd5;
+color:#00FFD5;
 font-size:0.9rem;
 text-decoration:none;
 }
@@ -120,6 +122,8 @@ display:flex;
 gap:20px;
 overflow-x:auto;
 scrollbar-width:none;
+-webkit-overflow-scrolling:touch;
+padding:4px 4px 8px 4px;
 }
 
 .stories-scroll::-webkit-scrollbar{
@@ -135,12 +139,10 @@ text-align:center;
 width:80px;
 height:80px;
 border-radius:50%;
-
-background:linear-gradient(135deg,#00ffd5,#3eff8f);
-
+background:linear-gradient(145deg,#00FFD5,#3EFF8F);
 padding:3px;
 margin-bottom:8px;
-box-shadow:0 8px 0 #008f7a,0 12px 20px rgba(0,255,200,0.35);
+box-shadow:0 8px 0 #007f6b,0 12px 20px rgba(0,255,213,0.3);
 }
 
 .story-avatar-inner{
@@ -152,12 +154,17 @@ display:flex;
 align-items:center;
 justify-content:center;
 font-size:2rem;
-color:#00ffd5;
+color:#00FFD5;
+border:2px solid rgba(0,255,213,0.3);
+overflow:hidden;
 }
 
 .story-label{
 font-size:0.8rem;
 color:#ccc;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 
 /* CATEGORY CHIPS */
@@ -170,6 +177,11 @@ padding:8px 16px 16px 16px;
 display:flex;
 gap:12px;
 overflow-x:auto;
+scrollbar-width:none;
+}
+
+.chips-scroll::-webkit-scrollbar{
+display:none;
 }
 
 .chip{
@@ -178,11 +190,13 @@ color:#fff;
 padding:8px 20px;
 border-radius:40px;
 font-size:0.9rem;
-border:1px solid rgba(0,255,200,0.25);
+white-space:nowrap;
+
+border:1px solid rgba(0,255,213,0.3);
 }
 
 .chip.active{
-background:linear-gradient(135deg,#00ffd5,#3eff8f);
+background:linear-gradient(145deg,#00FFD5,#3EFF8F);
 color:#000;
 font-weight:600;
 border:none;
@@ -193,19 +207,19 @@ border:none;
 .feed-container{
 max-width:600px;
 margin:0 auto;
+padding:0 0 20px 0;
 }
 
 .feed-card{
-background:#111;
+background:#111111;
 border-radius:28px;
-margin:16px;
+margin:16px 16px 20px 16px;
 overflow:hidden;
 
-box-shadow:
-0 15px 25px -8px rgba(0,0,0,0.8),
-0 0 0 1px rgba(0,255,200,0.18) inset;
+box-shadow:0 15px 25px -8px rgba(0,0,0,0.8),
+0 0 0 1px rgba(0,255,213,0.2) inset;
 
-border:1px solid rgba(0,255,200,0.1);
+border:1px solid rgba(0,255,213,0.1);
 }
 
 .card-header{
@@ -219,12 +233,13 @@ gap:12px;
 width:44px;
 height:44px;
 border-radius:16px;
-background:linear-gradient(145deg,#222,#1a1a1a);
+background:linear-gradient(145deg,#222222,#1a1a1a);
 display:flex;
 align-items:center;
 justify-content:center;
 font-size:1.2rem;
-color:#00ffd5;
+color:#00FFD5;
+box-shadow:0 6px 0 #0a0a0a;
 }
 
 .channel-info{
@@ -234,6 +249,7 @@ flex:1;
 .channel-name{
 font-weight:600;
 font-size:1rem;
+color:#fff;
 }
 
 .post-time{
@@ -242,23 +258,12 @@ color:#888;
 margin-top:2px;
 }
 
-.card-title{
-padding:0 16px 12px 16px;
-font-size:1.1rem;
-font-weight:600;
-}
-
-.card-description{
-padding:0 16px 16px 16px;
-color:#bbb;
-font-size:0.9rem;
-line-height:1.5;
-}
+/* VIDEO */
 
 .video-container{
 position:relative;
 width:100%;
-background:#000;
+background:#0a0a0a;
 aspect-ratio:9/16;
 max-height:500px;
 }
@@ -268,44 +273,6 @@ width:100%;
 height:100%;
 border:none;
 pointer-events:none;
-}
-
-.image-placeholder{
-width:100%;
-height:200px;
-background:linear-gradient(145deg,#222,#1a1a1a);
-display:flex;
-align-items:center;
-justify-content:center;
-color:#00ffd5;
-font-size:3rem;
-}
-
-.card-footer{
-padding:16px;
-display:flex;
-gap:24px;
-border-top:1px solid rgba(0,255,200,0.2);
-margin-top:8px;
-}
-
-.footer-item{
-display:flex;
-align-items:center;
-gap:6px;
-color:#888;
-font-size:0.9rem;
-}
-
-.footer-item i.fa-heart{color:#ff6b6b;}
-.footer-item i.fa-comment{color:#00ffd5;}
-
-.event-details{
-padding:0 16px 16px 16px;
-display:flex;
-gap:20px;
-color:#00ffd5;
-font-size:0.9rem;
 }
 
 /* BOTTOM NAV */
@@ -319,7 +286,7 @@ right:0;
 background:rgba(0,0,0,0.95);
 backdrop-filter:blur(18px);
 
-border-top:1px solid rgba(0,255,200,0.2);
+border-top:1px solid rgba(0,255,213,0.2);
 
 display:flex;
 justify-content:space-around;
@@ -329,7 +296,7 @@ padding:8px 10px 12px 10px;
 
 z-index:1000;
 
-box-shadow:0 -8px 20px rgba(0,255,200,0.1);
+box-shadow:0 -8px 20px rgba(0,255,213,0.1);
 }
 
 .nav-item{
@@ -351,8 +318,8 @@ margin-bottom:2px;
 }
 
 .nav-item.active{
-color:#00ffd5;
-background:rgba(0,255,200,0.12);
+color:#00FFD5;
+background:rgba(0,255,213,0.1);
 }
 
 </style>
