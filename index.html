@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Goa Social · Home</title>
+    <title>Goa Social · Premium Feed</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -15,7 +15,7 @@
         }
 
         body {
-            background-color: #000000;
+            background-color: #0a0a0a;
             color: #ffffff;
             line-height: 1.4;
             padding-bottom: 70px;
@@ -67,8 +67,8 @@
             height: 140px;
             border-radius: 35px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(255, 107, 43, 0.5);
-            border: 4px solid #FF6B2B;
+            box-shadow: 0 0 30px #ff8c42, 0 20px 40px rgba(255, 107, 43, 0.5);
+            border: 4px solid #ff8c42;
         }
 
         .splash-logo img {
@@ -163,7 +163,7 @@
             100% { opacity: 0; }
         }
 
-        /* Stage 3: Tap to Enter (appears after blast) */
+        /* Stage 3: Tap to Enter */
         .stage3 {
             opacity: 0;
             animation: fadeInTap 0.5s forwards 3s;
@@ -186,7 +186,8 @@
             border-radius: 20px;
             overflow: hidden;
             margin: 0 auto 20px;
-            border: 2px solid #FF6B2B;
+            border: 2px solid #ff8c42;
+            box-shadow: 0 0 20px #ff8c42;
         }
 
         .tap-content .mini-logo img {
@@ -197,23 +198,25 @@
 
         .tap-content h2 {
             font-size: 2rem;
-            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            background: linear-gradient(135deg, #ff8c42, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,140,66,0.5);
         }
 
         .tap-hint {
             margin-top: 30px;
-            color: #FF6B2B;
+            color: #ff8c42;
             font-size: 1.3rem;
             animation: pulse 1.5s infinite;
             cursor: pointer;
+            text-shadow: 0 0 8px #ff8c42;
         }
 
         @keyframes pulse {
             0% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
+            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 20px #ff8c42; }
             100% { opacity: 0.6; transform: scale(1); }
         }
 
@@ -252,7 +255,7 @@
             position: absolute;
             top: -40px;
             right: 10px;
-            background: #FF6B2B;
+            background: #ff8c42;
             color: #000;
             border: none;
             width: 40px;
@@ -265,6 +268,7 @@
             justify-content: center;
             font-weight: bold;
             z-index: 1001;
+            box-shadow: 0 0 15px #ff8c42;
         }
 
         /* ===== HEADER ===== */
@@ -276,7 +280,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #2A2A2A;
+            border-bottom: 1px solid #ff8c4233;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -294,8 +298,8 @@
             height: 48px;
             border-radius: 14px;
             overflow: hidden;
-            background: #FF6B2B;
-            box-shadow: 0 4px 12px rgba(255, 107, 43, 0.3);
+            background: #ff8c42;
+            box-shadow: 0 0 15px #ff8c42, 0 4px 12px rgba(255, 107, 43, 0.3);
             flex-shrink: 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -311,25 +315,27 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            background: linear-gradient(135deg, #ff8c42, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 8px #ff8c42;
         }
 
         .header-actions {
             display: flex;
             gap: 20px;
-            color: #A0A0A0;
+            color: #ff8c42;
         }
 
         .header-actions i {
             font-size: 1.3rem;
+            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         /* ===== STORIES ===== */
         .stories-section {
             padding: 16px 16px 12px 16px;
-            border-bottom: 1px solid #2A2A2A;
+            border-bottom: 1px solid #ff8c4233;
         }
 
         .section-header {
@@ -343,13 +349,15 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: #FFFFFF;
+            text-shadow: 0 0 5px #ff8c42;
         }
 
         .section-header a {
-            color: #FF6B2B;
+            color: #ff8c42;
             font-size: 0.9rem;
             text-decoration: none;
             font-weight: 500;
+            text-shadow: 0 0 5px #ff8c42;
         }
 
         .stories-scroll {
@@ -378,7 +386,8 @@
             position: relative;
             overflow: hidden;
             margin: 0 auto 8px auto;
-            border: 2px solid #FF6B2B;
+            border: 2px solid #ff8c42;
+            box-shadow: 0 0 15px #ff8c42;
         }
 
         .story-avatar.live::after {
@@ -386,12 +395,13 @@
             position: absolute;
             bottom: 4px;
             right: 4px;
-            background: #FF0000;
+            background: #ff0000;
             color: white;
             font-size: 0.55rem;
             padding: 2px 6px;
             border-radius: 20px;
             font-weight: 600;
+            box-shadow: 0 0 8px #ff0000;
         }
 
         .story-avatar-inner {
@@ -402,21 +412,22 @@
             justify-content: center;
             font-size: 2rem;
             background: #222;
-            color: #FF6B2B;
+            color: #ff8c42;
         }
 
         .story-label {
             font-size: 0.75rem;
-            color: #A0A0A0;
+            color: #ff8c42;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 0 3px #ff8c42;
         }
 
         /* ===== CATEGORIES ===== */
         .categories-section {
             padding: 12px 16px;
-            border-bottom: 1px solid #2A2A2A;
+            border-bottom: 1px solid #ff8c4233;
         }
 
         .chips-scroll {
@@ -437,15 +448,22 @@
             border-radius: 40px;
             font-size: 0.85rem;
             white-space: nowrap;
-            border: 1px solid #2A2A2A;
+            border: 1px solid #ff8c4233;
             font-weight: 500;
+            transition: all 0.2s;
         }
 
         .chip.active {
-            background: #FF6B2B;
+            background: #ff8c42;
             color: #000000;
             font-weight: 600;
             border: none;
+            box-shadow: 0 0 15px #ff8c42;
+        }
+
+        .chip:hover {
+            border-color: #ff8c42;
+            box-shadow: 0 0 10px #ff8c42;
         }
 
         /* ===== FEED ===== */
@@ -460,9 +478,14 @@
             border-radius: 28px;
             margin: 0 16px 24px 16px;
             overflow: hidden;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.8);
-            border: 1px solid #2A2A2A;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 0 0 1px #ff8c4233;
+            border: 1px solid #ff8c4233;
             position: relative;
+            transition: box-shadow 0.3s;
+        }
+
+        .feed-card:hover {
+            box-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 0 20px #ff8c42;
         }
 
         .feed-card::before {
@@ -471,7 +494,7 @@
             inset: 0;
             border-radius: 28px;
             padding: 1px;
-            background: linear-gradient(145deg, #FF6B2B, transparent 70%);
+            background: linear-gradient(145deg, #ff8c42, transparent 70%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
@@ -486,7 +509,7 @@
             gap: 12px;
             background: rgba(0,0,0,0.3);
             backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(255,107,43,0.2);
+            border-bottom: 1px solid #ff8c4233;
         }
 
         .channel-icon {
@@ -498,8 +521,9 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: #FF6B2B;
-            border: 1px solid #2A2A2A;
+            color: #ff8c42;
+            border: 1px solid #ff8c4233;
+            box-shadow: 0 0 8px #ff8c42;
         }
 
         .channel-info {
@@ -514,13 +538,15 @@
 
         .post-time {
             font-size: 0.7rem;
-            color: #A0A0A0;
+            color: #ff8c42;
             margin-top: 2px;
+            opacity: 0.8;
         }
 
         .card-header i {
-            color: #A0A0A0;
+            color: #ff8c42;
             font-size: 1.2rem;
+            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         .card-title {
@@ -559,17 +585,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #FF6B2B;
+            color: #ff8c42;
             font-size: 3rem;
-            border-top: 1px solid #2A2A2A;
-            border-bottom: 1px solid #2A2A2A;
+            border-top: 1px solid #ff8c4233;
+            border-bottom: 1px solid #ff8c4233;
         }
 
         .card-footer {
             padding: 16px;
             display: flex;
             gap: 24px;
-            border-top: 1px solid #2A2A2A;
+            border-top: 1px solid #ff8c4233;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
         }
@@ -578,23 +604,25 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #A0A0A0;
+            color: #ff8c42;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            opacity: 0.9;
         }
 
         .footer-item:hover {
-            color: #FF6B2B;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ff8c42;
         }
 
-        .footer-item i.fa-heart { color: #FF6B2B; }
-        .footer-item i.fa-comment { color: #3B82F6; }
-        .footer-item i.fa-share { color: #FFB347; }
+        .footer-item i.fa-heart { color: #ff6b6b; text-shadow: 0 0 8px #ff6b6b; }
+        .footer-item i.fa-comment { color: #4facfe; text-shadow: 0 0 8px #4facfe; }
+        .footer-item i.fa-share { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
 
         .share-tooltip {
             position: fixed;
-            background: #FF6B2B;
+            background: #ff8c42;
             color: #000;
             padding: 8px 16px;
             border-radius: 40px;
@@ -603,6 +631,7 @@
             z-index: 10000;
             pointer-events: none;
             animation: tooltipFade 1.5s forwards;
+            box-shadow: 0 0 20px #ff8c42;
         }
 
         @keyframes tooltipFade {
@@ -616,13 +645,13 @@
             padding: 0 16px 16px 16px;
             display: flex;
             gap: 20px;
-            color: #FF6B2B;
+            color: #ff8c42;
             font-size: 0.9rem;
         }
 
         .event-details span i {
             margin-right: 6px;
-            color: #A0A0A0;
+            color: #ff8c42;
         }
 
         .video-info-overlay {
@@ -645,7 +674,7 @@
 
         .video-meta {
             font-size: 0.7rem;
-            color: #A0A0A0;
+            color: #ff8c42;
             display: flex;
             gap: 12px;
         }
@@ -653,12 +682,13 @@
         .loading-indicator {
             text-align: center;
             padding: 30px;
-            color: #FF6B2B;
+            color: #ff8c42;
         }
 
         .loading-indicator i {
             font-size: 2rem;
             animation: spin 1s linear infinite;
+            filter: drop-shadow(0 0 8px #ff8c42);
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -670,7 +700,7 @@
             right: 0;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(18px);
-            border-top: 1px solid #2A2A2A;
+            border-top: 1px solid #ff8c4233;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -682,7 +712,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #A0A0A0;
+            color: #ff8c42;
             font-size: 0.7rem;
             padding: 4px 12px;
             border-radius: 30px;
@@ -690,23 +720,46 @@
             border: none;
             cursor: pointer;
             transition: all 0.2s;
+            opacity: 0.7;
         }
 
         .nav-item i {
             font-size: 1.5rem;
             margin-bottom: 2px;
+            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         .nav-item.active {
-            color: #FF6B2B;
+            color: #ffd700;
+            opacity: 1;
+            text-shadow: 0 0 10px #ff8c42;
         }
 
         .nav-item.active i {
-            text-shadow: 0 0 10px rgba(255, 107, 43, 0.3);
+            filter: drop-shadow(0 0 10px #ff8c42);
+        }
+
+        /* Developer mode styles (hidden initially) */
+        .dev-badge {
+            position: fixed;
+            bottom: 80px;
+            right: 10px;
+            background: #ff8c42;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 0 15px #ff8c42;
         }
     </style>
 </head>
 <body>
+    <!-- Developer badge (hidden until activated) -->
+    <div class="dev-badge" id="devBadge">DEV MODE</div>
+
     <!-- SPLASH SCREEN -->
     <div class="splash-overlay" id="splashOverlay">
         <!-- Stage 1: Logo -->
@@ -733,7 +786,7 @@
                     <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
                 </div>
                 <h2>Goa Social</h2>
-                <p style="color: #ccc; margin-bottom: 30px;">Your Goan community awaits</p>
+                <p style="color: #ff8c42; margin-bottom: 30px; text-shadow: 0 0 5px #ff8c42;">Your Goan community awaits</p>
                 <div class="tap-hint" id="tapHint">
                     <i class="fas fa-hand-pointer"></i> TAP ANYWHERE TO ENTER
                 </div>
@@ -824,11 +877,15 @@
         // Configuration
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
+        // Expanded channels list for more videos
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
             { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },
             { name: 'Goa365', id: 'UC9CYT9gSNLevX5ey2_6CK0Q', icon: '📰' },
-            { name: 'VoxLily', id: 'UCvoxlilyE8Zexample', icon: '🎵' }
+            { name: 'VoxLily', id: 'UCvoxlilyE8Zexample', icon: '🎵' },
+            { name: 'InGoa News', id: 'UC3pJf8n2v8YbZ7y4q7o8S2g', icon: '📡' },
+            { name: 'Gomantak TV', id: 'UCfXhFzN9C7g0s4xkL3rT5tw', icon: '📺' },
+            { name: 'Alert Goans', id: 'UCYtM9s4m2vQy3yC8o8wJ5dw', icon: '⚠️' }
         ];
 
         const communityPosts = [
@@ -862,6 +919,26 @@
                 likes: 567,
                 comments: 89,
                 image: true
+            },
+            {
+                type: 'post',
+                author: 'Goa Beats',
+                icon: '🎧',
+                time: '1 hour ago',
+                title: 'Sunset Music Festival',
+                content: 'Live trance at Vagator tonight! 🎶✨',
+                likes: 892,
+                comments: 134,
+                image: true
+            },
+            {
+                type: 'event',
+                title: 'Flea Market Night',
+                venue: 'Arpora',
+                date: 'Every Saturday',
+                price: 'Free',
+                attendees: '5.1k interested',
+                image: true
             }
         ];
 
@@ -877,10 +954,14 @@
         const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');
         const youtubePlayer = document.getElementById('youtubePlayer');
         const closePlayerBtn = document.getElementById('closePlayerBtn');
+        const logoContainer = document.getElementById('logoContainer');
+        const devBadge = document.getElementById('devBadge');
         
         // App state
         let userInteracted = false;
         let videoPlayerManager = null;
+        let logoClickCount = 0;
+        let devModeActive = false;
 
         // Auto-progress through stages
         setTimeout(() => {
@@ -892,6 +973,24 @@
             stage2.style.display = 'none';
             stage3.style.display = 'flex';
         }, 3500); // blast lasts 1.5s, then tap screen
+
+        // Secret developer mode: tap logo 7 times
+        logoContainer.addEventListener('click', () => {
+            if (!userInteracted) return; // only count after splash is gone
+            logoClickCount++;
+            if (logoClickCount === 7 && !devModeActive) {
+                const password = prompt('Enter developer password:');
+                if (password === '2005') {
+                    devModeActive = true;
+                    devBadge.style.display = 'block';
+                    alert('Developer mode activated!');
+                    // Here you can later connect to analytics backend
+                } else {
+                    alert('Incorrect password');
+                    logoClickCount = 0; // reset counter
+                }
+            }
+        });
 
         // Initialize app after user interaction
         function startApp() {
@@ -986,13 +1085,6 @@
         splashOverlay.addEventListener('click', handleUserInteraction);
         if (tapHint) tapHint.addEventListener('click', handleUserInteraction);
 
-        // Also allow starting by tapping logo in header
-        document.getElementById('logoContainer').addEventListener('click', () => {
-            if (!userInteracted) {
-                startApp();
-            }
-        });
-
         function handleUserInteraction(e) {
             startApp();
         }
@@ -1009,7 +1101,7 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
+        // Fetch videos for a channel with error handling
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -1020,21 +1112,25 @@
                 
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
                 
-                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=4&key=${API_KEY}`;
+                // Increase maxResults to 6 per channel for more videos
+                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=6&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
                 
-                return playlistData.items.map(item => ({
-                    ...channel,
-                    type: 'video',
-                    videoId: item.snippet.resourceId.videoId,
-                    title: item.snippet.title,
-                    publishedAt: item.snippet.publishedAt,
-                    thumbnail: item.snippet.thumbnails.high?.url
-                }));
+                // Filter out items without videoId (just in case)
+                return playlistData.items
+                    .filter(item => item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId)
+                    .map(item => ({
+                        ...channel,
+                        type: 'video',
+                        videoId: item.snippet.resourceId.videoId,
+                        title: item.snippet.title,
+                        publishedAt: item.snippet.publishedAt,
+                        thumbnail: item.snippet.thumbnails.high?.url
+                    }));
             } catch (e) {
                 console.warn(`Failed for ${channel.name}`, e);
-                return [];
+                return []; // skip failed channels
             }
         }
 
@@ -1139,7 +1235,9 @@
                 { name: 'Goa News Live', icon: '📺' },
                 { name: 'Beach Party', icon: '🎵' },
                 { name: 'Mass at Church', icon: '⛪' },
-                { name: 'Market Vibes', icon: '🛍️' }
+                { name: 'Market Vibes', icon: '🛍️' },
+                { name: 'Sunset Session', icon: '🌅' },
+                { name: 'DJ Night', icon: '🎧' }
             ];
             
             liveStories.innerHTML = '';
@@ -1164,21 +1262,31 @@
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
+            // Fetch all channel videos in parallel
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
-            const allVideos = videoResults.flat();
+            // Flatten and filter out any undefined (failed) items
+            const allVideos = videoResults.flat().filter(v => v && v.videoId);
 
+            // Mix content: interleave videos with community posts
             const mixedFeed = [];
             let videoIndex = 0;
             let postIndex = 0;
 
-            for (let i = 0; i < 20; i++) {
+            // Create a longer feed (approx 30 items)
+            for (let i = 0; i < 30; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
                     postIndex = (postIndex + 1) % communityPosts.length;
                 } else if (videoIndex < allVideos.length) {
                     mixedFeed.push(allVideos[videoIndex]);
                     videoIndex++;
+                } else {
+                    // If we run out of videos, repeat community posts
+                    if (postIndex < communityPosts.length) {
+                        mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
+                        postIndex = (postIndex + 1) % communityPosts.length;
+                    }
                 }
             }
 
