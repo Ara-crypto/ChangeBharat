@@ -1,45 +1,131 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Goa Social Feed Test</title>
 
 <style>
 
 body{
 margin:0;
-background:black;
-overflow-y:scroll;
-scroll-snap-type:y mandatory;
-height:100vh;
 font-family:Arial;
+background:#f2f2f2;
 }
 
-.video{
-height:100vh;
-scroll-snap-align:start;
-position:relative;
+/* HEADER */
+
+.header{
+background:#0b5ed7;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
 }
 
-iframe{
+/* TABS */
+
+.tabs{
+display:flex;
+overflow-x:auto;
+background:white;
+border-bottom:1px solid #ddd;
+}
+
+.tabs div{
+padding:12px 16px;
+font-weight:bold;
+color:#555;
+white-space:nowrap;
+}
+
+.tabs .active{
+color:#0b5ed7;
+border-bottom:3px solid #0b5ed7;
+}
+
+/* SECTION TITLES */
+
+.section-title{
+padding:15px;
+font-weight:bold;
+font-size:18px;
+}
+
+/* LIVE SECTION */
+
+.live-row{
+display:flex;
+overflow-x:auto;
+padding-left:10px;
+}
+
+.live-card{
+min-width:150px;
+margin-right:10px;
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+
+.live-card img{
 width:100%;
-height:100%;
+height:90px;
+object-fit:cover;
+}
+
+.live-card p{
+padding:8px;
+font-size:13px;
+margin:0;
+}
+
+/* VIDEO CARD */
+
+.video-card{
+background:white;
+margin:10px;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+
+.video-card iframe{
+width:100%;
+height:300px;
 border:none;
 }
 
-.tap{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
+.video-info{
+padding:10px;
+font-weight:bold;
+font-size:14px;
+}
+
+/* NEWS CARD */
+
+.news-card{
 display:flex;
-justify-content:center;
-align-items:center;
-background:black;
-color:white;
-font-size:22px;
-z-index:999;
+background:white;
+margin:10px;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 6px rgba(0,0,0,0.15);
+}
+
+.news-card img{
+width:100px;
+height:80px;
+object-fit:cover;
+}
+
+.news-text{
+padding:10px;
+font-size:14px;
 }
 
 </style>
@@ -48,67 +134,103 @@ z-index:999;
 
 <body>
 
-<div class="tap" id="tap">Tap once to enable sound</div>
+<div class="header">Goa Social</div>
 
-<div id="feed"></div>
+<div class="tabs">
+<div class="active">ALL</div>
+<div>Trending</div>
+<div>Local</div>
+<div>Live</div>
+<div>News</div>
+<div>Videos</div>
+</div>
 
-<script>
+<!-- LIVE SECTION -->
 
-let videos=[
-"z_8Gzjx3s_Q",
-"ScMzIvxBSi4",
-"aqz-KE-bpKQ",
-"dQw4w9WgXcQ",
-"3fumBcKC6RE",
-"e-ORhEE9VVg",
-"2Vv-BfVoq4g"
-]
+<div class="section-title">LIVE NOW</div>
 
-let feed=document.getElementById("feed")
+<div class="live-row">
 
-videos.forEach((id,i)=>{
+<div class="live-card">
+<img src="https://images.unsplash.com/photo-1603565816030-6b389eeb23cb">
+<p>Live Mass</p>
+</div>
 
-feed.innerHTML+=`
+<div class="live-card">
+<img src="https://images.unsplash.com/photo-1495020689067-958852a7765e">
+<p>Goa News Live</p>
+</div>
 
-<div class="video">
-
-<iframe
-src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${id}"
-allow="autoplay">
-</iframe>
+<div class="live-card">
+<img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e">
+<p>Beach Party Live</p>
+</div>
 
 </div>
 
-`
+<!-- VIDEO -->
 
-})
+<div class="section-title">VIDEOS</div>
 
-let sound=false
+<div class="video-card">
+<iframe
+src="https://www.youtube.com/embed/z_8Gzjx3s_Q?enablejsapi=1&autoplay=1&mute=0&controls=1&playsinline=1"
+allow="autoplay">
+</iframe>
+<div class="video-info">Goa Travel Highlights</div>
+</div>
 
-document.getElementById("tap").onclick=function(){
+<div class="video-card">
+<iframe
+src="https://www.youtube.com/embed/ScMzIvxBSi4?enablejsapi=1&autoplay=1&mute=0&controls=1&playsinline=1"
+allow="autoplay">
+</iframe>
+<div class="video-info">Baga Beach Drone View</div>
+</div>
 
-sound=true
-this.style.display="none"
+<!-- NEWS -->
 
-document.querySelectorAll("iframe").forEach(frame=>{
-frame.src=frame.src.replace("mute=1","mute=0")
-})
+<div class="section-title">GOA NEWS</div>
 
-}
+<div class="news-card">
+<img src="https://images.unsplash.com/photo-1581090700227-4c4c9b87b2b5">
+<div class="news-text">
+Monsoon arrival expected next week
+</div>
+</div>
 
-let observer=new IntersectionObserver(entries=>{
+<div class="news-card">
+<img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836">
+<div class="news-text">
+New food festival announced in Panjim
+</div>
+</div>
 
-entries.forEach(entry=>{
+<script>
 
-let frame=entry.target.querySelector("iframe")
+/* AUTOPLAY ENGINE */
+
+let observer = new IntersectionObserver(entries => {
+
+entries.forEach(entry => {
+
+let frame = entry.target.querySelector("iframe")
+
+if(!frame) return
 
 if(entry.isIntersecting){
 
-frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*')
+frame.contentWindow.postMessage(
+'{"event":"command","func":"playVideo","args":""}',
+'*'
+)
 
 }else{
 
-frame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*')
+frame.contentWindow.postMessage(
+'{"event":"command","func":"pauseVideo","args":""}',
+'*'
+)
 
 }
 
@@ -116,7 +238,7 @@ frame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":"
 
 },{threshold:0.6})
 
-document.querySelectorAll(".video").forEach(v=>observer.observe(v))
+document.querySelectorAll(".video-card").forEach(v=>observer.observe(v))
 
 </script>
 
