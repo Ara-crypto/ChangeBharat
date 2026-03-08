@@ -57,7 +57,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.1);
+            transform: scale(1.45); /* 35% more zoom (1.1 + 35% = 1.45) */
             display: block;
         }
 
@@ -276,20 +276,61 @@
             line-height: 1.5;
         }
 
-        /* Video container */
+        /* Video container - requires tap to play */
         .video-container {
             position: relative;
             width: 100%;
             background: #000;
             aspect-ratio: 9/16;
             max-height: 500px;
+            cursor: pointer;
         }
 
         .video-container iframe {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none; /* Blocks autoplay, requires tap */
+        }
+
+        /* Video play overlay - shows play icon when video not started */
+        .video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
             pointer-events: none;
+        }
+
+        .video-container:not(.playing) .video-play-overlay {
+            opacity: 1;
+        }
+
+        .video-play-overlay i {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: rgba(255, 107, 43, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Video playing state */
+        .video-container.playing .video-play-overlay {
+            display: none;
         }
 
         /* Image placeholder */
@@ -339,7 +380,7 @@
             color: #A0A0A0;
         }
 
-        /* Video overlay */
+        /* Video overlay (title overlay) */
         .video-info-overlay {
             position: absolute;
             bottom: 0;
@@ -348,6 +389,7 @@
             padding: 30px 16px 16px;
             background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
             color: white;
+            pointer-events: none;
         }
 
         .video-title-small {
@@ -423,7 +465,7 @@
     </style>
 </head>
 <body>
-    <!-- Premium Header with Logo -->
+    <!-- Premium Header with Logo - 35% extra zoom -->
     <header class="app-header">
         <div class="logo-container">
             <div class="logo-crop">
@@ -543,30 +585,46 @@
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
 
-        // Video player manager
+        // Video player manager for tap-to-play
         class VideoPlayerManager {
             constructor() {
-                this.observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const iframe = entry.target.querySelector('iframe');
-                        if (!iframe) return;
-
-                        if (entry.isIntersecting) {
-                            iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            if (iframe.src.includes('mute=1')) {
-                                setTimeout(() => {
-                                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                                }, 500);
-                            }
-                        } else {
-                            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                        }
-                    });
-                }, { threshold: 0.6 });
+                this.activeVideos = new Map();
             }
 
-            observe(element) {
-                this.observer.observe(element);
+            setupVideoContainer(container, videoId) {
+                container.dataset.videoId = videoId;
+                
+                // Add click handler for tap-to-play
+                container.addEventListener('click', () => {
+                    this.playVideo(container, videoId);
+                });
+            }
+
+            playVideo(container, videoId) {
+                // If already playing, do nothing
+                if (container.classList.contains('playing')) return;
+
+                const iframe = container.querySelector('iframe');
+                if (!iframe) return;
+
+                // Reload iframe with autoplay=1
+                const newSrc = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=0&controls=0&playsinline=1&loop=1&playlist=${videoId}`;
+                iframe.src = newSrc;
+                
+                // Mark as playing
+                container.classList.add('playing');
+                
+                // Store in active videos map
+                this.activeVideos.set(container, videoId);
+            }
+
+            pauseVideo(container) {
+                if (!container.classList.contains('playing')) return;
+                
+                const iframe = container.querySelector('iframe');
+                if (iframe) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
             }
         }
 
@@ -628,8 +686,11 @@
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
                             src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
-                            allow="autoplay; fullscreen">
+                            allow="fullscreen">
                         </iframe>
+                        <div class="video-play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
                         <div class="video-info-overlay">
                             <div class="video-title-small">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</div>
                             <div class="video-meta">
@@ -644,6 +705,13 @@
                         <span class="footer-item"><i class="fas fa-share"></i> Share</span>
                     </div>
                 `;
+                
+                // Setup tap-to-play
+                const videoContainer = card.querySelector('.video-container');
+                if (videoContainer) {
+                    playerManager.setupVideoContainer(videoContainer, item.videoId);
+                }
+                
             } else if (item.type === 'post') {
                 card.innerHTML = `
                     <div class="card-header">
@@ -686,11 +754,6 @@
                         <span class="footer-item"><i class="fas fa-tag"></i> ${item.price}</span>
                     </div>
                 `;
-            }
-
-            const videoContainer = card.querySelector('.video-container');
-            if (videoContainer) {
-                playerManager.observe(videoContainer);
             }
 
             return card;
@@ -755,14 +818,6 @@
 
         loadLiveStories();
         loadFeed();
-
-        document.addEventListener('touchstart', () => {
-            document.querySelectorAll('iframe').forEach(iframe => {
-                if (iframe.src.includes('mute=1')) {
-                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                }
-            });
-        }, { once: true });
     </script>
 </body>
 </html>
