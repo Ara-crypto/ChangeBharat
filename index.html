@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Goa Social · Premium Feed</title>
+    <title>Goa Social · Fresh Feed</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -15,12 +15,47 @@
         }
 
         body {
-            background-color: #0a0a0a;
-            color: #ffffff;
+            background: linear-gradient(145deg, #f0f2f5, #e4e6eb);
+            color: #1c1e21;
             line-height: 1.4;
             padding-bottom: 70px;
             min-height: 100vh;
             position: relative;
+        }
+
+        /* Subtle coconut tree decorations */
+        .coconut-left {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            font-size: 4rem;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+            z-index: 0;
+            pointer-events: none;
+            animation: swayLeft 6s ease-in-out infinite;
+        }
+
+        .coconut-right {
+            position: fixed;
+            bottom: 80px;
+            right: 10px;
+            font-size: 4rem;
+            opacity: 0.15;
+            transform: rotate(10deg) scaleX(-1);
+            z-index: 0;
+            pointer-events: none;
+            animation: swayRight 6s ease-in-out infinite;
+        }
+
+        @keyframes swayLeft {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(-5deg); }
+        }
+
+        @keyframes swayRight {
+            0%, 100% { transform: rotate(10deg) scaleX(-1); }
+            50% { transform: rotate(5deg) scaleX(-1); }
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -30,7 +65,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: #000;
+            background: linear-gradient(145deg, #1877f2, #0a5cff);
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -43,23 +78,16 @@
             pointer-events: none;
         }
 
-        .splash-stage {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .splash-content {
+            text-align: center;
+            animation: burstAndFade 2s forwards;
         }
 
-        /* Stage 1: Logo */
-        .stage1 {
-            animation: logoZoom 2s forwards;
-        }
-
-        @keyframes logoZoom {
-            0% { opacity: 1; transform: scale(1); }
-            70% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0; transform: scale(2); }
+        @keyframes burstAndFade {
+            0% { transform: scale(0.5); opacity: 0; }
+            30% { transform: scale(1.2); opacity: 1; }
+            60% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
 
         .splash-logo {
@@ -67,8 +95,9 @@
             height: 140px;
             border-radius: 35px;
             overflow: hidden;
-            box-shadow: 0 0 30px #ff8c42, 0 20px 40px rgba(255, 107, 43, 0.5);
-            border: 4px solid #ff8c42;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid white;
         }
 
         .splash-logo img {
@@ -77,147 +106,74 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Realistic Blast */
-        .stage2 {
-            opacity: 0;
-            animation: blastFadeIn 0.2s forwards 1.8s, blastFlash 1s forwards 2s;
-            background: #000;
+        .splash-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        @keyframes blastFadeIn {
-            to { opacity: 1; }
-        }
-
-        .blast-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .blast-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: rgba(255, 140, 0, 0.8);
-            box-shadow: 0 0 100px #ffaa00;
-            animation: blastWave 1s ease-out forwards;
-        }
-
-        .blast-ring2 {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: rgba(255, 200, 0, 0.5);
-            filter: blur(20px);
-            animation: blastWave2 1s ease-out forwards;
-        }
-
-        .blast-ring3 {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: rgba(255, 100, 0, 0.3);
-            filter: blur(40px);
-            animation: blastWave3 1s ease-out forwards;
-        }
-
-        @keyframes blastWave {
-            0% { width: 0; height: 0; opacity: 1; }
-            100% { width: 800px; height: 800px; opacity: 0; }
-        }
-
-        @keyframes blastWave2 {
-            0% { width: 0; height: 0; opacity: 1; }
-            100% { width: 1200px; height: 1200px; opacity: 0; }
-        }
-
-        @keyframes blastWave3 {
-            0% { width: 0; height: 0; opacity: 1; }
-            100% { width: 1600px; height: 1600px; opacity: 0; }
-        }
-
-        .blast-flash {
-            position: absolute;
-            inset: 0;
-            background: white;
-            opacity: 0;
-            animation: flash 0.3s forwards 2.5s;
-        }
-
-        @keyframes flash {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Stage 3: Tap to Enter */
-        .stage3 {
-            opacity: 0;
-            animation: fadeInTap 0.5s forwards 3s;
-            background: rgba(0,0,0,0.7);
+        /* Tap prompt (appears after burst) */
+        .tap-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(5px);
         }
 
-        @keyframes fadeInTap {
-            to { opacity: 1; }
+        .tap-prompt.visible {
+            display: flex;
         }
 
         .tap-content {
             text-align: center;
-            color: white;
+            animation: gentlePulse 2s infinite;
         }
 
-        .tap-content .mini-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .tap-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
             overflow: hidden;
             margin: 0 auto 20px;
-            border: 2px solid #ff8c42;
-            box-shadow: 0 0 20px #ff8c42;
+            box-shadow: 0 10px 30px rgba(24,119,242,0.3);
+            border: 3px solid #1877f2;
         }
 
-        .tap-content .mini-logo img {
+        .tap-logo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .tap-content h2 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #ff8c42, #ffd700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .tap-message {
+            font-size: 1.5rem;
+            color: #1877f2;
             margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255,140,66,0.5);
+            font-weight: 600;
         }
 
         .tap-hint {
-            margin-top: 30px;
-            color: #ff8c42;
-            font-size: 1.3rem;
-            animation: pulse 1.5s infinite;
-            cursor: pointer;
-            text-shadow: 0 0 8px #ff8c42;
+            color: #65676b;
+            font-size: 1.1rem;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 20px #ff8c42; }
-            100% { opacity: 0.6; transform: scale(1); }
+        .tap-hint i {
+            color: #1877f2;
+            margin-right: 8px;
         }
 
         /* ===== YOUTUBE PLAYER ===== */
@@ -227,10 +183,10 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: #000;
+            background: white;
             display: none;
             padding: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .youtube-player-container.active {
@@ -255,8 +211,8 @@
             position: absolute;
             top: -40px;
             right: 10px;
-            background: #ff8c42;
-            color: #000;
+            background: #1877f2;
+            color: white;
             border: none;
             width: 40px;
             height: 40px;
@@ -268,22 +224,22 @@
             justify-content: center;
             font-weight: bold;
             z-index: 1001;
-            box-shadow: 0 0 15px #ff8c42;
         }
 
         /* ===== HEADER ===== */
         .app-header {
-            background: rgba(0, 0, 0, 0.9);
+            background: white;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             padding: 12px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #ff8c4233;
+            border-bottom: 1px solid #e4e6eb;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .logo-container {
@@ -298,10 +254,9 @@
             height: 48px;
             border-radius: 14px;
             overflow: hidden;
-            background: #ff8c42;
-            box-shadow: 0 0 15px #ff8c42, 0 4px 12px rgba(255, 107, 43, 0.3);
+            background: #1877f2;
             flex-shrink: 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #e4e6eb;
         }
 
         .logo-crop img {
@@ -315,27 +270,24 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ff8c42, #ffd700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 8px #ff8c42;
+            color: #1877f2;
         }
 
         .header-actions {
             display: flex;
             gap: 20px;
-            color: #ff8c42;
+            color: #65676b;
         }
 
         .header-actions i {
             font-size: 1.3rem;
-            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         /* ===== STORIES ===== */
         .stories-section {
             padding: 16px 16px 12px 16px;
-            border-bottom: 1px solid #ff8c4233;
+            background: white;
+            margin: 8px 0;
         }
 
         .section-header {
@@ -348,16 +300,14 @@
         .section-header h3 {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #FFFFFF;
-            text-shadow: 0 0 5px #ff8c42;
+            color: #1c1e21;
         }
 
         .section-header a {
-            color: #ff8c42;
+            color: #1877f2;
             font-size: 0.9rem;
             text-decoration: none;
             font-weight: 500;
-            text-shadow: 0 0 5px #ff8c42;
         }
 
         .stories-scroll {
@@ -382,12 +332,11 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: #1A1A1A;
+            background: linear-gradient(145deg, #e4e6eb, #d8dade);
             position: relative;
             overflow: hidden;
             margin: 0 auto 8px auto;
-            border: 2px solid #ff8c42;
-            box-shadow: 0 0 15px #ff8c42;
+            border: 3px solid #1877f2;
         }
 
         .story-avatar.live::after {
@@ -401,7 +350,6 @@
             padding: 2px 6px;
             border-radius: 20px;
             font-weight: 600;
-            box-shadow: 0 0 8px #ff0000;
         }
 
         .story-avatar-inner {
@@ -411,23 +359,23 @@
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            background: #222;
-            color: #ff8c42;
+            background: white;
+            color: #1877f2;
         }
 
         .story-label {
             font-size: 0.75rem;
-            color: #ff8c42;
+            color: #65676b;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            text-shadow: 0 0 3px #ff8c42;
         }
 
         /* ===== CATEGORIES ===== */
         .categories-section {
             padding: 12px 16px;
-            border-bottom: 1px solid #ff8c4233;
+            background: white;
+            margin: 8px 0;
         }
 
         .chips-scroll {
@@ -442,88 +390,57 @@
         }
 
         .chip {
-            background: #1A1A1A;
-            color: #FFFFFF;
+            background: #f0f2f5;
+            color: #1c1e21;
             padding: 8px 18px;
             border-radius: 40px;
             font-size: 0.85rem;
             white-space: nowrap;
-            border: 1px solid #ff8c4233;
+            border: 1px solid #e4e6eb;
             font-weight: 500;
-            transition: all 0.2s;
         }
 
         .chip.active {
-            background: #ff8c42;
-            color: #000000;
+            background: #1877f2;
+            color: white;
             font-weight: 600;
             border: none;
-            box-shadow: 0 0 15px #ff8c42;
-        }
-
-        .chip:hover {
-            border-color: #ff8c42;
-            box-shadow: 0 0 10px #ff8c42;
         }
 
         /* ===== FEED ===== */
         .feed-container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 16px 0 20px 0;
+            padding: 8px 0 20px 0;
         }
 
         .feed-card {
-            background: #121212;
-            border-radius: 28px;
-            margin: 0 16px 24px 16px;
+            background: white;
+            border-radius: 16px;
+            margin: 0 12px 16px 12px;
             overflow: hidden;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 0 0 1px #ff8c4233;
-            border: 1px solid #ff8c4233;
-            position: relative;
-            transition: box-shadow 0.3s;
-        }
-
-        .feed-card:hover {
-            box-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 0 20px #ff8c42;
-        }
-
-        .feed-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 28px;
-            padding: 1px;
-            background: linear-gradient(145deg, #ff8c42, transparent 70%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e4e6eb;
         }
 
         .card-header {
             display: flex;
             align-items: center;
-            padding: 16px;
+            padding: 14px;
             gap: 12px;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            border-bottom: 1px solid #ff8c4233;
         }
 
         .channel-icon {
             width: 44px;
             height: 44px;
-            border-radius: 14px;
-            background: #1A1A1A;
+            border-radius: 12px;
+            background: #f0f2f5;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: #ff8c42;
-            border: 1px solid #ff8c4233;
-            box-shadow: 0 0 8px #ff8c42;
+            color: #1877f2;
+            border: 1px solid #e4e6eb;
         }
 
         .channel-info {
@@ -533,36 +450,35 @@
         .channel-name {
             font-weight: 600;
             font-size: 1rem;
-            color: #FFFFFF;
+            color: #1c1e21;
         }
 
         .post-time {
             font-size: 0.7rem;
-            color: #ff8c42;
+            color: #65676b;
             margin-top: 2px;
-            opacity: 0.8;
         }
 
         .card-header i {
-            color: #ff8c42;
+            color: #65676b;
             font-size: 1.2rem;
-            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         .card-title {
-            padding: 0 16px 12px 16px;
+            padding: 0 14px 10px 14px;
             font-size: 1.1rem;
             font-weight: 600;
-            color: #FFFFFF;
+            color: #1c1e21;
         }
 
         .card-description {
-            padding: 0 16px 16px 16px;
-            color: #CCCCCC;
+            padding: 0 14px 14px 14px;
+            color: #65676b;
             font-size: 0.9rem;
             line-height: 1.5;
         }
 
+        /* Video container */
         .video-container {
             position: relative;
             width: 100%;
@@ -575,83 +491,140 @@
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none;
         }
 
+        /* Image placeholder */
         .image-placeholder {
             width: 100%;
             height: 200px;
-            background: linear-gradient(145deg, #1A1A1A, #0A0A0A);
+            background: linear-gradient(145deg, #f0f2f5, #e4e6eb);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ff8c42;
+            color: #1877f2;
             font-size: 3rem;
-            border-top: 1px solid #ff8c4233;
-            border-bottom: 1px solid #ff8c4233;
+            border-top: 1px solid #e4e6eb;
+            border-bottom: 1px solid #e4e6eb;
         }
 
+        /* Card footer */
         .card-footer {
-            padding: 16px;
+            padding: 14px;
             display: flex;
             gap: 24px;
-            border-top: 1px solid #ff8c4233;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            border-top: 1px solid #e4e6eb;
         }
 
         .footer-item {
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #ff8c42;
+            color: #65676b;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.2s;
-            opacity: 0.9;
         }
 
-        .footer-item:hover {
-            color: #ffd700;
-            text-shadow: 0 0 10px #ff8c42;
-        }
+        .footer-item i.fa-heart { color: #f23b5c; }
+        .footer-item i.fa-comment { color: #1877f2; }
+        .footer-item i.fa-share { color: #42b72a; }
 
-        .footer-item i.fa-heart { color: #ff6b6b; text-shadow: 0 0 8px #ff6b6b; }
-        .footer-item i.fa-comment { color: #4facfe; text-shadow: 0 0 8px #4facfe; }
-        .footer-item i.fa-share { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
-
-        .share-tooltip {
+        /* Share popup */
+        .share-popup {
             position: fixed;
-            background: #ff8c42;
-            color: #000;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 10000;
-            pointer-events: none;
-            animation: tooltipFade 1.5s forwards;
-            box-shadow: 0 0 20px #ff8c42;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            z-index: 10001;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
         }
 
-        @keyframes tooltipFade {
-            0% { opacity: 0; transform: translateY(10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
+        .share-popup.visible {
+            transform: translateY(0);
+        }
+
+        .share-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .share-popup-header h3 {
+            font-size: 1.2rem;
+            color: #1c1e21;
+        }
+
+        .close-share {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #65676b;
+            cursor: pointer;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .share-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .share-icon.whatsapp { background: #25D366; color: white; }
+        .share-icon.instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); color: white; }
+        .share-icon.facebook { background: #1877f2; color: white; }
+        .share-icon.copy { background: #f0f2f5; color: #1c1e21; }
+
+        .share-option span {
+            font-size: 0.8rem;
+            color: #65676b;
+        }
+
+        .share-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: none;
+        }
+
+        .share-overlay.visible {
+            display: block;
         }
 
         .event-details {
-            padding: 0 16px 16px 16px;
+            padding: 0 14px 14px 14px;
             display: flex;
             gap: 20px;
-            color: #ff8c42;
+            color: #1877f2;
             font-size: 0.9rem;
         }
 
         .event-details span i {
             margin-right: 6px;
-            color: #ff8c42;
+            color: #65676b;
         }
 
         .video-info-overlay {
@@ -659,8 +632,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 30px 16px 16px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+            padding: 30px 14px 14px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             color: white;
             pointer-events: none;
         }
@@ -669,12 +642,12 @@
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 4px;
-            color: #FFFFFF;
+            color: white;
         }
 
         .video-meta {
             font-size: 0.7rem;
-            color: #ff8c42;
+            color: #ccc;
             display: flex;
             gap: 12px;
         }
@@ -682,13 +655,12 @@
         .loading-indicator {
             text-align: center;
             padding: 30px;
-            color: #ff8c42;
+            color: #1877f2;
         }
 
         .loading-indicator i {
             font-size: 2rem;
             animation: spin 1s linear infinite;
-            filter: drop-shadow(0 0 8px #ff8c42);
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -698,9 +670,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(18px);
-            border-top: 1px solid #ff8c4233;
+            background: white;
+            border-top: 1px solid #e4e6eb;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -712,84 +683,76 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #ff8c42;
+            color: #65676b;
             font-size: 0.7rem;
             padding: 4px 12px;
             border-radius: 30px;
             background: transparent;
             border: none;
             cursor: pointer;
-            transition: all 0.2s;
-            opacity: 0.7;
         }
 
         .nav-item i {
             font-size: 1.5rem;
             margin-bottom: 2px;
-            filter: drop-shadow(0 0 5px #ff8c42);
         }
 
         .nav-item.active {
-            color: #ffd700;
-            opacity: 1;
-            text-shadow: 0 0 10px #ff8c42;
-        }
-
-        .nav-item.active i {
-            filter: drop-shadow(0 0 10px #ff8c42);
-        }
-
-        /* Developer mode styles (hidden initially) */
-        .dev-badge {
-            position: fixed;
-            bottom: 80px;
-            right: 10px;
-            background: #ff8c42;
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 1001;
-            display: none;
-            box-shadow: 0 0 15px #ff8c42;
+            color: #1877f2;
         }
     </style>
 </head>
 <body>
-    <!-- Developer badge (hidden until activated) -->
-    <div class="dev-badge" id="devBadge">DEV MODE</div>
+    <!-- Coconut tree decorations -->
+    <div class="coconut-left">🌴</div>
+    <div class="coconut-right">🌴</div>
 
-    <!-- SPLASH SCREEN -->
+    <!-- Splash Screen (burst animation) -->
     <div class="splash-overlay" id="splashOverlay">
-        <!-- Stage 1: Logo -->
-        <div class="splash-stage stage1" id="stage1">
+        <div class="splash-content">
             <div class="splash-logo">
                 <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
+            <div class="splash-title">Goa Social</div>
         </div>
+    </div>
 
-        <!-- Stage 2: Realistic Blast -->
-        <div class="splash-stage stage2" id="stage2">
-            <div class="blast-container">
-                <div class="blast-ring"></div>
-                <div class="blast-ring2"></div>
-                <div class="blast-ring3"></div>
-                <div class="blast-flash"></div>
+    <!-- Tap Prompt (appears after burst) -->
+    <div class="tap-prompt" id="tapPrompt">
+        <div class="tap-content">
+            <div class="tap-logo">
+                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+            </div>
+            <div class="tap-message">Welcome to Goa Social</div>
+            <div class="tap-hint">
+                <i class="fas fa-hand-pointer"></i> Tap anywhere to begin
             </div>
         </div>
+    </div>
 
-        <!-- Stage 3: Tap to Enter -->
-        <div class="splash-stage stage3" id="stage3">
-            <div class="tap-content">
-                <div class="mini-logo">
-                    <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
-                </div>
-                <h2>Goa Social</h2>
-                <p style="color: #ff8c42; margin-bottom: 30px; text-shadow: 0 0 5px #ff8c42;">Your Goan community awaits</p>
-                <div class="tap-hint" id="tapHint">
-                    <i class="fas fa-hand-pointer"></i> TAP ANYWHERE TO ENTER
-                </div>
+    <!-- Share Popup -->
+    <div class="share-overlay" id="shareOverlay"></div>
+    <div class="share-popup" id="sharePopup">
+        <div class="share-popup-header">
+            <h3>Share to</h3>
+            <button class="close-share" id="closeShare">&times;</button>
+        </div>
+        <div class="share-options">
+            <div class="share-option" data-share="whatsapp">
+                <div class="share-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
+                <span>WhatsApp</span>
+            </div>
+            <div class="share-option" data-share="instagram">
+                <div class="share-icon instagram"><i class="fab fa-instagram"></i></div>
+                <span>Instagram</span>
+            </div>
+            <div class="share-option" data-share="facebook">
+                <div class="share-icon facebook"><i class="fab fa-facebook-f"></i></div>
+                <span>Facebook</span>
+            </div>
+            <div class="share-option" data-share="copy">
+                <div class="share-icon copy"><i class="fas fa-link"></i></div>
+                <span>Copy Link</span>
             </div>
         </div>
     </div>
@@ -877,7 +840,7 @@
         // Configuration
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
-        // Expanded channels list for more videos
+        // Expanded channels list
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
             { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },
@@ -947,76 +910,172 @@
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
         const splashOverlay = document.getElementById('splashOverlay');
-        const stage1 = document.getElementById('stage1');
-        const stage2 = document.getElementById('stage2');
-        const stage3 = document.getElementById('stage3');
-        const tapHint = document.getElementById('tapHint');
+        const tapPrompt = document.getElementById('tapPrompt');
         const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');
         const youtubePlayer = document.getElementById('youtubePlayer');
         const closePlayerBtn = document.getElementById('closePlayerBtn');
         const logoContainer = document.getElementById('logoContainer');
-        const devBadge = document.getElementById('devBadge');
+        const sharePopup = document.getElementById('sharePopup');
+        const shareOverlay = document.getElementById('shareOverlay');
+        const closeShare = document.getElementById('closeShare');
         
         // App state
         let userInteracted = false;
         let videoPlayerManager = null;
         let logoClickCount = 0;
-        let devModeActive = false;
+        let currentShareVideoId = null;
 
-        // Auto-progress through stages
+        // Auto-progress splash: burst animation then show tap prompt
         setTimeout(() => {
-            stage1.style.display = 'none';
-            stage2.style.display = 'flex';
-        }, 2000); // logo visible for 2s
+            splashOverlay.classList.add('hidden');
+            setTimeout(() => {
+                tapPrompt.classList.add('visible');
+            }, 500);
+        }, 2000);
 
-        setTimeout(() => {
-            stage2.style.display = 'none';
-            stage3.style.display = 'flex';
-        }, 3500); // blast lasts 1.5s, then tap screen
+        // Share popup functions
+        function showSharePopup(videoId) {
+            currentShareVideoId = videoId;
+            shareOverlay.classList.add('visible');
+            sharePopup.classList.add('visible');
+        }
+
+        function hideSharePopup() {
+            shareOverlay.classList.remove('visible');
+            sharePopup.classList.remove('visible');
+            currentShareVideoId = null;
+        }
+
+        // Handle share option clicks
+        document.querySelectorAll('.share-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const shareType = option.dataset.share;
+                if (!currentShareVideoId) return;
+
+                const shareUrl = `${window.location.origin}${window.location.pathname}?v=${currentShareVideoId}`;
+                
+                switch(shareType) {
+                    case 'whatsapp':
+                        window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
+                        break;
+                    case 'instagram':
+                        // Instagram doesn't have direct share URL, so copy to clipboard
+                        navigator.clipboard.writeText(shareUrl);
+                        alert('Link copied! Open Instagram and paste it.');
+                        break;
+                    case 'facebook':
+                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                        break;
+                    case 'copy':
+                        navigator.clipboard.writeText(shareUrl);
+                        alert('Link copied to clipboard!');
+                        break;
+                }
+                hideSharePopup();
+            });
+        });
+
+        closeShare.addEventListener('click', hideSharePopup);
+        shareOverlay.addEventListener('click', hideSharePopup);
 
         // Secret developer mode: tap logo 7 times
         logoContainer.addEventListener('click', () => {
-            if (!userInteracted) return; // only count after splash is gone
+            if (!userInteracted) return;
             logoClickCount++;
-            if (logoClickCount === 7 && !devModeActive) {
-                const password = prompt('Enter developer password:');
-                if (password === '2005') {
-                    devModeActive = true;
-                    devBadge.style.display = 'block';
-                    alert('Developer mode activated!');
-                    // Here you can later connect to analytics backend
-                } else {
-                    alert('Incorrect password');
-                    logoClickCount = 0; // reset counter
+            if (logoClickCount === 7) {
+                // Open developer page in new tab
+                const devWindow = window.open('about:blank', '_blank');
+                if (devWindow) {
+                    devWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Goa Social · Developer Mode</title>
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            <style>
+                                body {
+                                    background: linear-gradient(145deg, #1877f2, #0a5cff);
+                                    color: white;
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    min-height: 100vh;
+                                    margin: 0;
+                                    padding: 20px;
+                                    text-align: center;
+                                }
+                                .container {
+                                    max-width: 600px;
+                                }
+                                h1 {
+                                    font-size: 2.5rem;
+                                    margin-bottom: 20px;
+                                }
+                                p {
+                                    font-size: 1.2rem;
+                                    opacity: 0.9;
+                                    line-height: 1.6;
+                                }
+                                .badge {
+                                    background: white;
+                                    color: #1877f2;
+                                    padding: 8px 20px;
+                                    border-radius: 40px;
+                                    display: inline-block;
+                                    margin-top: 30px;
+                                    font-weight: bold;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <h1>🔧 Developer Console</h1>
+                                <p>Goa Social Analytics Dashboard</p>
+                                <p style="font-size: 1rem; margin-top: 40px;">This page will be connected to your analytics backend.</p>
+                                <div class="badge">DEV MODE ACTIVE</div>
+                            </div>
+                        </body>
+                        </html>
+                    `);
                 }
+                logoClickCount = 0;
             }
         });
 
-        // Initialize app after user interaction
+        // Initialize app after user interaction (tap anywhere on tap prompt)
         function startApp() {
             if (userInteracted) return;
             userInteracted = true;
             
-            // Hide splash screen
-            splashOverlay.classList.add('hidden');
+            // Hide tap prompt
+            tapPrompt.classList.remove('visible');
             
-            // Initialize video player manager
+            // Initialize video player manager with optimized loading
             class VideoPlayerManager {
                 constructor() {
+                    this.observers = new Map();
+                    this.setupIntersectionObserver();
+                }
+
+                setupIntersectionObserver() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
                             const iframe = entry.target.querySelector('iframe');
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
+                                // Play current video with audio
                                 iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                                 if (iframe.src.includes('mute=1')) {
-                                    setTimeout(() => {
-                                        iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                                    }, 100);
+                                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
                                 }
                             } else {
+                                // Pause and mute background videos
                                 iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                                if (!iframe.src.includes('mute=1')) {
+                                    iframe.src = iframe.src.replace('mute=0', 'mute=1');
+                                }
                             }
                         });
                     }, { threshold: 0.6 });
@@ -1025,41 +1084,19 @@
                 observe(element) {
                     this.observer.observe(element);
                 }
+
+                unobserve(element) {
+                    this.observer.unobserve(element);
+                }
             }
 
             videoPlayerManager = new VideoPlayerManager();
             
             // Load feed and setup videos
             loadFeed();
-            
-            // Setup all iframes for autoplay
-            setupAllIframes();
         }
 
-        // Setup all iframes for autoplay
-        function setupAllIframes() {
-            document.querySelectorAll('.video-container').forEach(container => {
-                if (videoPlayerManager) {
-                    videoPlayerManager.observe(container);
-                }
-            });
-        }
-
-        // Share function
-        function shareVideo(videoId) {
-            const shareUrl = `${window.location.origin}${window.location.pathname}?v=${videoId}`;
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                // Show tooltip
-                const tooltip = document.createElement('div');
-                tooltip.className = 'share-tooltip';
-                tooltip.textContent = 'Link copied!';
-                document.body.appendChild(tooltip);
-                tooltip.style.left = '50%';
-                tooltip.style.top = '50%';
-                tooltip.style.transform = 'translate(-50%, -50%)';
-                setTimeout(() => tooltip.remove(), 1500);
-            });
-        }
+        tapPrompt.addEventListener('click', startApp);
 
         // YouTube Player Functions
         function loadVideoFromUrl() {
@@ -1081,14 +1118,6 @@
         // Check URL on load
         loadVideoFromUrl();
 
-        // Tap anywhere on splash to start
-        splashOverlay.addEventListener('click', handleUserInteraction);
-        if (tapHint) tapHint.addEventListener('click', handleUserInteraction);
-
-        function handleUserInteraction(e) {
-            startApp();
-        }
-
         // Format time ago
         function timeAgo(dateString) {
             const now = new Date();
@@ -1101,7 +1130,7 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel with error handling
+        // Fetch videos for a channel with error handling and preloading
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -1112,12 +1141,11 @@
                 
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
                 
-                // Increase maxResults to 6 per channel for more videos
-                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=6&key=${API_KEY}`;
+                // Get 8 videos per channel for more content
+                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=8&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
                 
-                // Filter out items without videoId (just in case)
                 return playlistData.items
                     .filter(item => item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId)
                     .map(item => ({
@@ -1130,8 +1158,17 @@
                     }));
             } catch (e) {
                 console.warn(`Failed for ${channel.name}`, e);
-                return []; // skip failed channels
+                return [];
             }
+        }
+
+        // Preload video iframe (creates hidden iframe to warm up connection)
+        function preloadVideo(videoId) {
+            const preloadDiv = document.createElement('div');
+            preloadDiv.style.display = 'none';
+            preloadDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1" allow="autoplay"></iframe>`;
+            document.body.appendChild(preloadDiv);
+            setTimeout(() => preloadDiv.remove(), 5000);
         }
 
         // Create a feed card based on type
@@ -1140,6 +1177,9 @@
             card.className = 'feed-card';
 
             if (item.type === 'video') {
+                // Preload the next few videos
+                preloadVideo(item.videoId);
+                
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1151,7 +1191,7 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
+                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
@@ -1173,7 +1213,7 @@
                 const shareBtn = card.querySelector('.share-btn');
                 shareBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    shareVideo(item.videoId);
+                    showSharePopup(item.videoId);
                 });
                 
                 // Observe for autoplay if app has started
@@ -1265,7 +1305,6 @@
             // Fetch all channel videos in parallel
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
-            // Flatten and filter out any undefined (failed) items
             const allVideos = videoResults.flat().filter(v => v && v.videoId);
 
             // Mix content: interleave videos with community posts
@@ -1273,8 +1312,8 @@
             let videoIndex = 0;
             let postIndex = 0;
 
-            // Create a longer feed (approx 30 items)
-            for (let i = 0; i < 30; i++) {
+            // Create a longer feed (40 items)
+            for (let i = 0; i < 40; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
                     postIndex = (postIndex + 1) % communityPosts.length;
