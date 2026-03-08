@@ -1,246 +1,186 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Goa Social Feed Test</title>
-
+<title>Goa Shorts Feed</title>
 <style>
-
 body{
 margin:0;
+background:black;
 font-family:Arial;
-background:#f2f2f2;
+overflow-y:scroll;
+scroll-snap-type:y mandatory;
 }
-
-/* HEADER */
-
-.header{
-background:#0b5ed7;
-color:white;
-padding:15px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
+.video{
+height:100vh;
+scroll-snap-align:start;
+position:relative;
 }
-
-/* TABS */
-
-.tabs{
-display:flex;
-overflow-x:auto;
-background:white;
-border-bottom:1px solid #ddd;
-}
-
-.tabs div{
-padding:12px 16px;
-font-weight:bold;
-color:#555;
-white-space:nowrap;
-}
-
-.tabs .active{
-color:#0b5ed7;
-border-bottom:3px solid #0b5ed7;
-}
-
-/* SECTION TITLES */
-
-.section-title{
-padding:15px;
-font-weight:bold;
-font-size:18px;
-}
-
-/* LIVE SECTION */
-
-.live-row{
-display:flex;
-overflow-x:auto;
-padding-left:10px;
-}
-
-.live-card{
-min-width:150px;
-margin-right:10px;
-background:white;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 2px 6px rgba(0,0,0,0.15);
-}
-
-.live-card img{
+iframe{
 width:100%;
-height:90px;
-object-fit:cover;
-}
-
-.live-card p{
-padding:8px;
-font-size:13px;
-margin:0;
-}
-
-/* VIDEO CARD */
-
-.video-card{
-background:white;
-margin:10px;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 2px 6px rgba(0,0,0,0.15);
-}
-
-.video-card iframe{
-width:100%;
-height:420px;
+height:100%;
 border:none;
 }
-
-.video-info{
-padding:10px;
-font-weight:bold;
-font-size:14px;
+.loading{
+color:white;
+text-align:center;
+padding:30px;
+font-size:18px;
 }
-
-/* NEWS CARD */
-
-.news-card{
-display:flex;
-background:white;
-margin:10px;
-border-radius:10px;
-overflow:hidden;
-box-shadow:0 2px 6px rgba(0,0,0,0.15);
-}
-
-.news-card img{
-width:100px;
-height:80px;
-object-fit:cover;
-}
-
-.news-text{
-padding:10px;
-font-size:14px;
-}
-
 </style>
-
 </head>
-
 <body>
-
-<div class="header">Goa Social</div>
-
-<div class="tabs">
-<div class="active">ALL</div>
-<div>Trending</div>
-<div>Local</div>
-<div>Live</div>
-<div>News</div>
-<div>Videos</div>
-</div>
-
-<!-- LIVE SECTION -->
-
-<div class="section-title">LIVE NOW</div>
-
-<div class="live-row">
-
-<div class="live-card">
-<img src="https://images.unsplash.com/photo-1603565816030-6b389eeb23cb">
-<p>Live Mass</p>
-</div>
-
-<div class="live-card">
-<img src="https://images.unsplash.com/photo-1495020689067-958852a7765e">
-<p>Goa News Live</p>
-</div>
-
-<div class="live-card">
-<img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e">
-<p>Beach Party Live</p>
-</div>
-
-</div>
-
-<!-- VIDEO -->
-
-<div class="section-title">VIDEOS</div>
-
-<div class="video-card">
-<iframe
-src="https://www.youtube.com/embed/z_8Gzjx3s_Q?enablejsapi=1&autoplay=1&mute=0&controls=0&playsinline=1&rel=0&modestbranding=1"
-allow="autoplay">
-</iframe>
-<div class="video-info">Goa Travel Highlights</div>
-</div>
-
-<div class="video-card">
-<iframe
-src="https://www.youtube.com/embed/ScMzIvxBSi4?enablejsapi=1&autoplay=1&mute=0&controls=0&playsinline=1&rel=0&modestbranding=1"
-allow="autoplay">
-</iframe>
-<div class="video-info">Baga Beach Drone View</div>
-</div>
-
-<!-- NEWS -->
-
-<div class="section-title">GOA NEWS</div>
-
-<div class="news-card">
-<img src="https://images.unsplash.com/photo-1581090700227-4c4c9b87b2b5">
-<div class="news-text">
-Monsoon arrival expected next week
-</div>
-</div>
-
-<div class="news-card">
-<img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836">
-<div class="news-text">
-New food festival announced in Panjim
-</div>
-</div>
+<div id="feed"></div>
+<div class="loading" id="loading">Loading more videos...</div>
 
 <script>
+/* ====== CONFIG ====== */
+// Your provided API key
+const API_KEY = "AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4";
 
-/* AUTOPLAY ENGINE */
+const channels = [
+"UCJb1MeQClvGeSMeBSVLKnDQ", // Prudent Media Goa
+"UC9CYT9gSNLevX5ey2_6CK0Q", // Goa365
+"UCAX1AR_JYH8T6uFJ-D44PlA", // RDX Goa
+"UCYtM9s4m2vQy3yC8o8wJ5dw", // Alert Goans
+"UC3pJf8n2v8YbZ7y4q7o8S2g", // InGoa News
+"UCfXhFzN9C7g0s4xkL3rT5tw"  // Gomantak TV
+];
 
-let observer = new IntersectionObserver(entries => {
+/* ====== VARIABLES ====== */
+let feed = document.getElementById("feed");
+let videoPool = [];
+let loading = false;
+let pageToken = '';        // for pagination if needed later
+let loadedCount = 0;       // track how many videos we've rendered
 
-entries.forEach(entry => {
+/* ====== UNLOCK SOUND ON TOUCH ====== */
+document.addEventListener("touchstart", unlockSound, {once: true});
+document.addEventListener("click", unlockSound, {once: true});
 
-let frame = entry.target.querySelector("iframe")
-
-if(!frame) return
-
-if(entry.isIntersecting){
-
-frame.contentWindow.postMessage(
-'{"event":"command","func":"playVideo","args":""}',
-'*'
-)
-
-}else{
-
-frame.contentWindow.postMessage(
-'{"event":"command","func":"pauseVideo","args":""}',
-'*'
-)
-
+function unlockSound(){
+document.querySelectorAll("iframe").forEach(frame => {
+// remove mute param and ensure autoplay
+let src = frame.src;
+if (src.includes("mute=1")) {
+frame.src = src.replace("mute=1", "mute=0");
+}
+});
 }
 
-})
+/* ====== FETCH VIDEOS FROM YOUTUBE ====== */
+async function fetchVideos(){
+// show loading text
+document.getElementById("loading").innerText = "Fetching latest videos...";
 
-},{threshold:0.6})
+for(let channel of channels){
+let url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${channel}&part=snippet,id&order=date&maxResults=6&type=video`;
 
-document.querySelectorAll(".video-card").forEach(v=>observer.observe(v))
+try {
+let res = await fetch(url);
+let data = await res.json();
 
+if (data.error) {
+console.warn(`Channel ${channel} error:`, data.error.message);
+continue; // skip if quota or invalid channel
+}
+
+if (data.items && data.items.length > 0) {
+data.items.forEach(v => {
+if(v.id && v.id.videoId){
+videoPool.push(v.id.videoId);
+}
+});
+}
+} catch (e) {
+console.warn("fetch error for channel", channel, e);
+}
+}
+
+document.getElementById("loading").innerText = "Loading more videos...";
+createInitialVideos();
+}
+
+/* ====== CREATE VIDEO CARD ====== */
+function createVideo(id){
+let div = document.createElement("div");
+div.className = "video";
+
+// Use embed with JS API enabled, autoplay=1, mute=1 initially (will unmute on first touch)
+div.innerHTML = `
+<iframe
+src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${id}"
+allow="autoplay; fullscreen">
+</iframe>
+`;
+
+feed.appendChild(div);
+observer.observe(div);
+loadedCount++;
+}
+
+/* ====== INITIAL VIDEOS ====== */
+function createInitialVideos(){
+// load first 6 from pool (or less if pool smaller)
+let initialCount = Math.min(6, videoPool.length);
+for(let i = 0; i < initialCount; i++){
+createVideo(videoPool[i]);
+}
+// if pool smaller than 6, we might want to trigger more loading, but for now it's fine
+}
+
+/* ====== LOAD MORE VIDEOS ====== */
+function loadMore(){
+if(loading) return;
+if (loadedCount >= videoPool.length) {
+// optionally fetch more from channels? but we already pre-filled 6 per channel (36 videos)
+// could implement pagination later, but for now just show "end"
+document.getElementById("loading").innerText = "No more videos";
+return;
+}
+
+loading = true;
+document.getElementById("loading").innerText = "Loading more...";
+
+// load next batch (e.g., next 3 videos)
+let nextBatch = Math.min(loadedCount + 3, videoPool.length);
+for (let i = loadedCount; i < nextBatch; i++) {
+createVideo(videoPool[i]);
+}
+
+loading = false;
+if (loadedCount >= videoPool.length) {
+document.getElementById("loading").innerText = "End of feed";
+} else {
+document.getElementById("loading").innerText = "Scroll for more";
+}
+}
+
+/* ====== AUTOPLAY ENGINE ====== */
+let observer = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+let frame = entry.target.querySelector("iframe");
+if(!frame) return;
+
+if(entry.isIntersecting){
+// play video when visible
+frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+} else {
+// pause when not visible
+frame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+}
+});
+}, {threshold: 0.7});
+
+/* ====== INFINITE SCROLL ====== */
+window.addEventListener("scroll", () => {
+if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 600){
+loadMore();
+}
+});
+
+/* ====== START ====== */
+fetchVideos();
 </script>
-
 </body>
 </html>
