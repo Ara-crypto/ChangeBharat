@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* ===== SPLASH SCREEN WITH COOL ANIMATION ===== */
+        /* ===== SPLASH SCREEN ===== */
         .splash-overlay {
             position: fixed;
             top: 0;
@@ -35,7 +35,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 1s ease;
+            transition: opacity 0.8s ease;
         }
 
         .splash-overlay.hidden {
@@ -51,105 +51,24 @@
             justify-content: center;
         }
 
-        .splash-stage.stage1 {
-            animation: stage1Fade 2s forwards;
+        /* Stage 1: Logo */
+        .stage1 {
+            animation: logoZoom 2s forwards;
         }
 
-        .splash-stage.stage2 {
-            opacity: 0;
-            animation: stage2Zoom 3s forwards;
-        }
-
-        .splash-stage.stage3 {
-            opacity: 0;
-            animation: stage3Reveal 2s forwards 5s;
-        }
-
-        @keyframes stage1Fade {
+        @keyframes logoZoom {
             0% { opacity: 1; transform: scale(1); }
             70% { opacity: 1; transform: scale(1.2); }
             100% { opacity: 0; transform: scale(2); }
         }
 
-        @keyframes stage2Zoom {
-            0% { opacity: 0; transform: scale(0.5); }
-            20% { opacity: 1; transform: scale(1); }
-            80% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0; transform: scale(1.5); }
-        }
-
-        @keyframes stage3Reveal {
-            0% { opacity: 0; transform: translateY(50px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .space-bg {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, #0a0a2a 0%, #000 100%);
-            overflow: hidden;
-        }
-
-        .stars {
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
-                              radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-                              radial-gradient(2px 2px at 80px 120px, #fff, rgba(0,0,0,0));
-            background-size: 200px 200px;
-            animation: starsMove 10s linear infinite;
-        }
-
-        @keyframes starsMove {
-            from { transform: translateY(0); }
-            to { transform: translateY(-200px); }
-        }
-
-        .coconut-tree {
-            position: relative;
-            width: 100px;
-            height: 150px;
-            margin: 0 auto;
-        }
-
-        .tree-trunk {
-            width: 20px;
-            height: 100px;
-            background: #8B5A2B;
-            margin: 0 auto;
-            border-radius: 10px;
-        }
-
-        .tree-leaves {
-            position: relative;
-            top: -30px;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            background: #2E8B57;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            transform: rotate(10deg);
-        }
-
-        .tree-leaves::before {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: #3CB371;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            transform: rotate(-20deg);
-            left: 10px;
-            top: 10px;
-        }
-
         .splash-logo {
-            width: 120px;
-            height: 120px;
-            border-radius: 30px;
+            width: 140px;
+            height: 140px;
+            border-radius: 35px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(255, 107, 43, 0.3);
-            border: 3px solid #FF6B2B;
+            box-shadow: 0 20px 40px rgba(255, 107, 43, 0.5);
+            border: 4px solid #FF6B2B;
         }
 
         .splash-logo img {
@@ -158,14 +77,138 @@
             object-fit: cover;
         }
 
-        .tap-hint {
+        /* Stage 2: Realistic Blast */
+        .stage2 {
+            opacity: 0;
+            animation: blastFadeIn 0.2s forwards 1.8s, blastFlash 1s forwards 2s;
+            background: #000;
+        }
+
+        @keyframes blastFadeIn {
+            to { opacity: 1; }
+        }
+
+        .blast-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .blast-ring {
             position: absolute;
-            bottom: 50px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 140, 0, 0.8);
+            box-shadow: 0 0 100px #ffaa00;
+            animation: blastWave 1s ease-out forwards;
+        }
+
+        .blast-ring2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 200, 0, 0.5);
+            filter: blur(20px);
+            animation: blastWave2 1s ease-out forwards;
+        }
+
+        .blast-ring3 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 100, 0, 0.3);
+            filter: blur(40px);
+            animation: blastWave3 1s ease-out forwards;
+        }
+
+        @keyframes blastWave {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 800px; height: 800px; opacity: 0; }
+        }
+
+        @keyframes blastWave2 {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 1200px; height: 1200px; opacity: 0; }
+        }
+
+        @keyframes blastWave3 {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 1600px; height: 1600px; opacity: 0; }
+        }
+
+        .blast-flash {
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            animation: flash 0.3s forwards 2.5s;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Stage 3: Tap to Enter (appears after blast) */
+        .stage3 {
+            opacity: 0;
+            animation: fadeInTap 0.5s forwards 3s;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes fadeInTap {
+            to { opacity: 1; }
+        }
+
+        .tap-content {
+            text-align: center;
+            color: white;
+        }
+
+        .tap-content .mini-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            border: 2px solid #FF6B2B;
+        }
+
+        .tap-content .mini-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tap-content h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #FF6B2B, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tap-hint {
+            margin-top: 30px;
             color: #FF6B2B;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             animation: pulse 1.5s infinite;
             cursor: pointer;
-            z-index: 10001;
         }
 
         @keyframes pulse {
@@ -412,7 +455,6 @@
             padding: 16px 0 20px 0;
         }
 
-        /* Video cards - enhanced Shorts style */
         .feed-card {
             background: #121212;
             border-radius: 28px;
@@ -423,7 +465,6 @@
             position: relative;
         }
 
-        /* Glow effect for video cards */
         .feed-card::before {
             content: '';
             position: absolute;
@@ -496,7 +537,6 @@
             line-height: 1.5;
         }
 
-        /* Video container */
         .video-container {
             position: relative;
             width: 100%;
@@ -512,7 +552,6 @@
             pointer-events: none;
         }
 
-        /* Image placeholder */
         .image-placeholder {
             width: 100%;
             height: 200px;
@@ -526,7 +565,6 @@
             border-bottom: 1px solid #2A2A2A;
         }
 
-        /* Card footer - now with share button */
         .card-footer {
             padding: 16px;
             display: flex;
@@ -554,7 +592,6 @@
         .footer-item i.fa-comment { color: #3B82F6; }
         .footer-item i.fa-share { color: #FFB347; }
 
-        /* Share tooltip */
         .share-tooltip {
             position: fixed;
             background: #FF6B2B;
@@ -670,37 +707,35 @@
     </style>
 </head>
 <body>
-    <!-- SPLASH SCREEN WITH COOL ANIMATION -->
+    <!-- SPLASH SCREEN -->
     <div class="splash-overlay" id="splashOverlay">
+        <!-- Stage 1: Logo -->
         <div class="splash-stage stage1" id="stage1">
             <div class="splash-logo">
                 <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
         </div>
+
+        <!-- Stage 2: Realistic Blast -->
         <div class="splash-stage stage2" id="stage2">
-            <div class="space-bg">
-                <div class="stars"></div>
-            </div>
-            <div style="position: relative; z-index: 2; text-align: center; color: #FFB347;">
-                <i class="fas fa-rocket" style="font-size: 4rem; margin-bottom: 20px;"></i>
-                <h2 style="font-size: 2rem;">Journey to Goa...</h2>
+            <div class="blast-container">
+                <div class="blast-ring"></div>
+                <div class="blast-ring2"></div>
+                <div class="blast-ring3"></div>
+                <div class="blast-flash"></div>
             </div>
         </div>
+
+        <!-- Stage 3: Tap to Enter -->
         <div class="splash-stage stage3" id="stage3">
-            <div style="background: linear-gradient(145deg, #0a4d4a, #1b6b5e); position: absolute; inset: 0;"></div>
-            <div style="position: relative; z-index: 2; text-align: center;">
-                <div class="coconut-tree">
-                    <div class="tree-leaves"></div>
-                    <div class="tree-trunk"></div>
+            <div class="tap-content">
+                <div class="mini-logo">
+                    <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
                 </div>
-                <div class="coconut-tree" style="margin-top: -50px; margin-left: 80px;">
-                    <div class="tree-leaves" style="background: #3CB371;"></div>
-                    <div class="tree-trunk"></div>
-                </div>
-                <h2 style="color: #FFD700; margin-top: 50px; font-size: 2.5rem;">Welcome to Goa</h2>
-                <p style="color: #40E0D0; font-size: 1.2rem;">Tap to begin your adventure</p>
+                <h2>Goa Social</h2>
+                <p style="color: #ccc; margin-bottom: 30px;">Your Goan community awaits</p>
                 <div class="tap-hint" id="tapHint">
-                    <i class="fas fa-hand-pointer"></i> TAP ANYWHERE
+                    <i class="fas fa-hand-pointer"></i> TAP ANYWHERE TO ENTER
                 </div>
             </div>
         </div>
@@ -847,16 +882,16 @@
         let userInteracted = false;
         let videoPlayerManager = null;
 
-        // Animation sequence
+        // Auto-progress through stages
         setTimeout(() => {
             stage1.style.display = 'none';
             stage2.style.display = 'flex';
-        }, 2000);
+        }, 2000); // logo visible for 2s
 
         setTimeout(() => {
             stage2.style.display = 'none';
             stage3.style.display = 'flex';
-        }, 5000);
+        }, 3500); // blast lasts 1.5s, then tap screen
 
         // Initialize app after user interaction
         function startApp() {
@@ -947,11 +982,7 @@
         // Check URL on load
         loadVideoFromUrl();
 
-        // Splash screen start handlers
-        function handleUserInteraction(e) {
-            startApp();
-        }
-
+        // Tap anywhere on splash to start
         splashOverlay.addEventListener('click', handleUserInteraction);
         if (tapHint) tapHint.addEventListener('click', handleUserInteraction);
 
@@ -961,6 +992,10 @@
                 startApp();
             }
         });
+
+        function handleUserInteraction(e) {
+            startApp();
+        }
 
         // Format time ago
         function timeAgo(dateString) {
