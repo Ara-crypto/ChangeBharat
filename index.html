@@ -2,10 +2,9 @@
 <html>
 <head>
 
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Goa Social Feed</title>
+<title>Goa Shorts Feed</title>
 
 <style>
 
@@ -25,9 +24,14 @@ scroll-snap-type:y mandatory;
 }
 
 .video{
+
 height:100vh;
 scroll-snap-align:start;
 position:relative;
+display:flex;
+justify-content:center;
+align-items:center;
+
 }
 
 iframe{
@@ -36,22 +40,37 @@ height:100%;
 border:none;
 }
 
-.sound{
+.title{
 position:absolute;
 bottom:20px;
-right:20px;
-background:rgba(0,0,0,0.5);
+left:15px;
 color:white;
-padding:10px;
-border-radius:50%;
-font-size:20px;
-cursor:pointer;
+background:rgba(0,0,0,0.5);
+padding:6px 10px;
+border-radius:6px;
+}
+
+.tap{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+font-size:22px;
+background:rgba(0,0,0,0.8);
+z-index:1000;
 }
 
 </style>
 
 </head>
 <body>
+
+<div class="tap" id="tap">Tap once to start</div>
 
 <div class="feed" id="feed"></div>
 
@@ -64,60 +83,60 @@ const channels=[
 ]
 
 let videos=[]
-let players=[]
+let loaded=0
+let soundEnabled=false
 
 async function loadVideos(){
 
-let feed=document.getElementById("feed")
-
 for(let channel of channels){
 
-let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel}&maxResults=6&order=date&type=video&key=${API_KEY}`
+let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel}&maxResults=10&order=date&type=video&key=${API_KEY}`
 
 let res=await fetch(url)
-
 let data=await res.json()
 
 data.items.forEach(v=>{
-
 videos.push(v.id.videoId)
-
 })
 
 }
 
-videos.forEach(id=>{
+renderVideos()
+
+}
+
+function renderVideos(){
+
+let feed=document.getElementById("feed")
+
+for(let i=loaded;i<loaded+5;i++){
+
+if(!videos[i]) break
+
+let id=videos[i]
 
 feed.innerHTML+=`
 
 <div class="video">
 
 <iframe
-src="https://www.youtube.com/embed/${id}?enablejsapi=1&mute=1&autoplay=1&controls=0&loop=1&playlist=${id}"
-allow="autoplay"
-></iframe>
-
-<div class="sound" onclick="toggleSound(this)">🔊</div>
+src="https://www.youtube.com/embed/${id}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${id}"
+allow="autoplay">
+</iframe>
 
 </div>
 
 `
 
-})
+}
 
-observe()
+loaded+=5
+
+observeVideos()
 
 }
 
-function toggleSound(btn){
-
-let iframe=btn.parentElement.querySelector("iframe")
-
-iframe.src=iframe.src.replace("mute=1","mute=0")
-
-}
-
-function observe(){
+function observeVideos(){
 
 let frames=document.querySelectorAll("iframe")
 
@@ -129,7 +148,9 @@ let frame=entry.target
 
 if(entry.isIntersecting){
 
-frame.src=frame.src.replace("autoplay=0","autoplay=1")
+if(soundEnabled){
+frame.src=frame.src.replace("mute=1","mute=0")
+}
 
 }else{
 
@@ -144,6 +165,30 @@ frame.src=frame.src.replace("autoplay=1","autoplay=0")
 frames.forEach(f=>observer.observe(f))
 
 }
+
+document.getElementById("tap").onclick=function(){
+
+soundEnabled=true
+
+document.getElementById("tap").style.display="none"
+
+let frames=document.querySelectorAll("iframe")
+
+frames.forEach(f=>{
+f.src=f.src.replace("mute=1","mute=0")
+})
+
+}
+
+window.addEventListener("scroll",function(){
+
+if(window.innerHeight+window.scrollY>=document.body.offsetHeight-200){
+
+renderVideos()
+
+}
+
+})
 
 loadVideos()
 
