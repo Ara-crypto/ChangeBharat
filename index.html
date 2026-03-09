@@ -34,7 +34,6 @@
             z-index: 0;
             pointer-events: none;
             animation: swayLeft 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 5px rgba(24,119,242,0.3));
         }
 
         .coconut-right {
@@ -47,17 +46,16 @@
             z-index: 0;
             pointer-events: none;
             animation: swayRight 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 5px rgba(24,119,242,0.3));
         }
 
         @keyframes swayLeft {
-            0%, 100% { transform: rotate(-10deg); filter: drop-shadow(0 0 5px rgba(24,119,242,0.3)); }
-            50% { transform: rotate(-5deg); filter: drop-shadow(0 0 15px rgba(24,119,242,0.6)); }
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(-5deg); }
         }
 
         @keyframes swayRight {
-            0%, 100% { transform: rotate(10deg) scaleX(-1); filter: drop-shadow(0 0 5px rgba(24,119,242,0.3)); }
-            50% { transform: rotate(5deg) scaleX(-1); filter: drop-shadow(0 0 15px rgba(24,119,242,0.6)); }
+            0%, 100% { transform: rotate(10deg) scaleX(-1); }
+            50% { transform: rotate(5deg) scaleX(-1); }
         }
 
         /* ===== SPLASH SCREEN ===== */
@@ -73,7 +71,6 @@
             align-items: center;
             justify-content: center;
             transition: opacity 0.8s ease;
-            box-shadow: inset 0 0 50px rgba(255,255,255,0.3);
         }
 
         .splash-overlay.hidden {
@@ -87,10 +84,10 @@
         }
 
         @keyframes burstAndFade {
-            0% { transform: scale(0.5); opacity: 0; filter: drop-shadow(0 0 0px #fff); }
-            30% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 30px #fff); }
-            60% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 20px #fff); }
-            100% { transform: scale(1.5); opacity: 0; filter: drop-shadow(0 0 40px #fff); }
+            0% { transform: scale(0.5); opacity: 0; }
+            30% { transform: scale(1.2); opacity: 1; }
+            60% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
 
         .splash-logo {
@@ -99,7 +96,7 @@
             border-radius: 35px;
             overflow: hidden;
             margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 30px rgba(255,255,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border: 4px solid white;
         }
 
@@ -114,7 +111,7 @@
             font-weight: 700;
             color: white;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 0 20px rgba(255,255,255,0.5);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         /* Tap prompt (appears after burst) */
@@ -142,8 +139,8 @@
         }
 
         @keyframes gentlePulse {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(24,119,242,0.3)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(24,119,242,0.8)); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .tap-logo {
@@ -152,7 +149,7 @@
             border-radius: 25px;
             overflow: hidden;
             margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(24,119,242,0.3), 0 0 30px rgba(24,119,242,0.5);
+            box-shadow: 0 10px 30px rgba(24,119,242,0.3);
             border: 3px solid #1877f2;
         }
 
@@ -167,7 +164,6 @@
             color: #1877f2;
             margin-bottom: 10px;
             font-weight: 600;
-            text-shadow: 0 0 10px rgba(24,119,242,0.5);
         }
 
         .tap-hint {
@@ -178,7 +174,6 @@
         .tap-hint i {
             color: #1877f2;
             margin-right: 8px;
-            filter: drop-shadow(0 0 8px #1877f2);
         }
 
         /* ===== YOUTUBE PLAYER ===== */
@@ -191,7 +186,7 @@
             background: white;
             display: none;
             padding: 0;
-            box-shadow: 0 10px 30px rgba(24,119,242,0.3), 0 0 20px rgba(24,119,242,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .youtube-player-container.active {
@@ -229,7 +224,6 @@
             justify-content: center;
             font-weight: bold;
             z-index: 1001;
-            box-shadow: 0 0 15px #1877f2;
         }
 
         /* ===== HEADER ===== */
@@ -245,7 +239,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(24,119,242,0.1), 0 0 10px rgba(24,119,242,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .logo-container {
@@ -263,7 +257,6 @@
             background: #1877f2;
             flex-shrink: 0;
             border: 1px solid #e4e6eb;
-            box-shadow: 0 0 15px #1877f2;
         }
 
         .logo-crop img {
@@ -278,7 +271,6 @@
             font-weight: 700;
             letter-spacing: -0.5px;
             color: #1877f2;
-            text-shadow: 0 0 10px rgba(24,119,242,0.5);
         }
 
         .header-actions {
@@ -289,12 +281,6 @@
 
         .header-actions i {
             font-size: 1.3rem;
-            transition: all 0.3s;
-        }
-
-        .header-actions i:hover {
-            color: #1877f2;
-            filter: drop-shadow(0 0 8px #1877f2);
         }
 
         /* ===== STORIES ===== */
@@ -302,7 +288,6 @@
             padding: 16px 16px 12px 16px;
             background: white;
             margin: 8px 0;
-            box-shadow: 0 2px 8px rgba(24,119,242,0.1);
         }
 
         .section-header {
@@ -323,7 +308,6 @@
             font-size: 0.9rem;
             text-decoration: none;
             font-weight: 500;
-            text-shadow: 0 0 8px rgba(24,119,242,0.3);
         }
 
         .stories-scroll {
@@ -353,7 +337,6 @@
             overflow: hidden;
             margin: 0 auto 8px auto;
             border: 3px solid #1877f2;
-            box-shadow: 0 0 15px rgba(24,119,242,0.5);
         }
 
         .story-avatar.live::after {
@@ -367,7 +350,6 @@
             padding: 2px 6px;
             border-radius: 20px;
             font-weight: 600;
-            box-shadow: 0 0 10px #ff0000;
         }
 
         .story-avatar-inner {
@@ -394,7 +376,6 @@
             padding: 12px 16px;
             background: white;
             margin: 8px 0;
-            box-shadow: 0 2px 8px rgba(24,119,242,0.1);
         }
 
         .chips-scroll {
@@ -417,7 +398,6 @@
             white-space: nowrap;
             border: 1px solid #e4e6eb;
             font-weight: 500;
-            transition: all 0.3s;
         }
 
         .chip.active {
@@ -425,12 +405,6 @@
             color: white;
             font-weight: 600;
             border: none;
-            box-shadow: 0 0 20px #1877f2;
-        }
-
-        .chip:hover {
-            border-color: #1877f2;
-            box-shadow: 0 0 10px rgba(24,119,242,0.3);
         }
 
         /* ===== FEED ===== */
@@ -445,13 +419,8 @@
             border-radius: 16px;
             margin: 0 12px 16px 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(24,119,242,0.15), 0 0 15px rgba(24,119,242,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #e4e6eb;
-            transition: all 0.3s;
-        }
-
-        .feed-card:hover {
-            box-shadow: 0 4px 15px rgba(24,119,242,0.3), 0 0 25px rgba(24,119,242,0.2);
         }
 
         .card-header {
@@ -472,7 +441,6 @@
             font-size: 1.2rem;
             color: #1877f2;
             border: 1px solid #e4e6eb;
-            box-shadow: 0 0 8px rgba(24,119,242,0.3);
         }
 
         .channel-info {
@@ -517,7 +485,6 @@
             background: #000;
             aspect-ratio: 9/16;
             max-height: 500px;
-            box-shadow: 0 0 20px rgba(24,119,242,0.3);
         }
 
         .video-container iframe {
@@ -538,7 +505,6 @@
             font-size: 3rem;
             border-top: 1px solid #e4e6eb;
             border-bottom: 1px solid #e4e6eb;
-            text-shadow: 0 0 15px #1877f2;
         }
 
         /* Card footer */
@@ -556,16 +522,11 @@
             color: #65676b;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .footer-item:hover {
-            filter: drop-shadow(0 0 8px currentColor);
-        }
-
-        .footer-item i.fa-heart { color: #f23b5c; text-shadow: 0 0 8px #f23b5c; }
-        .footer-item i.fa-comment { color: #1877f2; text-shadow: 0 0 8px #1877f2; }
-        .footer-item i.fa-share { color: #42b72a; text-shadow: 0 0 8px #42b72a; }
+        .footer-item i.fa-heart { color: #f23b5c; }
+        .footer-item i.fa-comment { color: #1877f2; }
+        .footer-item i.fa-share { color: #42b72a; }
 
         /* Share popup */
         .share-popup {
@@ -579,7 +540,7 @@
             z-index: 10001;
             transform: translateY(100%);
             transition: transform 0.3s ease;
-            box-shadow: 0 -4px 20px rgba(24,119,242,0.3), 0 0 30px rgba(24,119,242,0.2);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
         }
 
         .share-popup.visible {
@@ -629,18 +590,12 @@
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            transition: all 0.3s;
         }
 
-        .share-icon:hover {
-            filter: drop-shadow(0 0 15px currentColor);
-            transform: scale(1.1);
-        }
-
-        .share-icon.whatsapp { background: #25D366; color: white; box-shadow: 0 0 15px #25D366; }
-        .share-icon.instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); color: white; box-shadow: 0 0 15px #d62976; }
-        .share-icon.facebook { background: #1877f2; color: white; box-shadow: 0 0 15px #1877f2; }
-        .share-icon.copy { background: #f0f2f5; color: #1c1e21; box-shadow: 0 0 15px #1877f2; }
+        .share-icon.whatsapp { background: #25D366; color: white; }
+        .share-icon.instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); color: white; }
+        .share-icon.facebook { background: #1877f2; color: white; }
+        .share-icon.copy { background: #f0f2f5; color: #1c1e21; }
 
         .share-option span {
             font-size: 0.8rem;
@@ -653,7 +608,6 @@
             background: rgba(0,0,0,0.5);
             z-index: 10000;
             display: none;
-            backdrop-filter: blur(3px);
         }
 
         .share-overlay.visible {
@@ -689,7 +643,6 @@
             font-weight: 600;
             margin-bottom: 4px;
             color: white;
-            text-shadow: 0 0 8px #1877f2;
         }
 
         .video-meta {
@@ -708,7 +661,6 @@
         .loading-indicator i {
             font-size: 2rem;
             animation: spin 1s linear infinite;
-            filter: drop-shadow(0 0 10px #1877f2);
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -725,7 +677,6 @@
             align-items: center;
             padding: 8px 10px 12px 10px;
             z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(24,119,242,0.2), 0 0 20px rgba(24,119,242,0.1);
         }
 
         .nav-item {
@@ -739,21 +690,15 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
         .nav-item i {
             font-size: 1.5rem;
             margin-bottom: 2px;
-            transition: all 0.3s;
         }
 
         .nav-item.active {
             color: #1877f2;
-        }
-
-        .nav-item.active i {
-            filter: drop-shadow(0 0 10px #1877f2);
         }
     </style>
 </head>
@@ -1062,16 +1007,10 @@
                                 }
                                 .container {
                                     max-width: 600px;
-                                    animation: glow 2s infinite;
-                                }
-                                @keyframes glow {
-                                    0%, 100% { filter: drop-shadow(0 0 20px #fff); }
-                                    50% { filter: drop-shadow(0 0 40px #fff); }
                                 }
                                 h1 {
                                     font-size: 2.5rem;
                                     margin-bottom: 20px;
-                                    text-shadow: 0 0 20px rgba(255,255,255,0.5);
                                 }
                                 p {
                                     font-size: 1.2rem;
@@ -1086,7 +1025,6 @@
                                     display: inline-block;
                                     margin-top: 30px;
                                     font-weight: bold;
-                                    box-shadow: 0 0 30px #fff;
                                 }
                             </style>
                         </head>
@@ -1116,11 +1054,6 @@
             // Initialize video player manager with optimized loading
             class VideoPlayerManager {
                 constructor() {
-                    this.observers = new Map();
-                    this.setupIntersectionObserver();
-                }
-
-                setupIntersectionObserver() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
                             const iframe = entry.target.querySelector('iframe');
@@ -1129,9 +1062,12 @@
                             if (entry.isIntersecting) {
                                 // Play current video with audio
                                 iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                                if (iframe.src.includes('mute=1')) {
-                                    iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                                }
+                                // Unmute after a short delay
+                                setTimeout(() => {
+                                    if (iframe.src.includes('mute=1')) {
+                                        iframe.src = iframe.src.replace('mute=1', 'mute=0');
+                                    }
+                                }, 200);
                             } else {
                                 // Pause and mute background videos
                                 iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
@@ -1282,6 +1218,17 @@
                 const videoContainer = card.querySelector('.video-container');
                 if (videoContainer && videoPlayerManager) {
                     videoPlayerManager.observe(videoContainer);
+                    
+                    // If the container is currently visible, trigger play immediately
+                    const rect = videoContainer.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        setTimeout(() => {
+                            const iframe = videoContainer.querySelector('iframe');
+                            if (iframe) {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                            }
+                        }, 500);
+                    }
                 }
                 
             } else if (item.type === 'post') {
