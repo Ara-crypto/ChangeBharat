@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>  <html lang="en">  
 <head>  
     <meta charset="UTF-8">  
@@ -964,24 +965,13 @@
     let feedReady = false;  
     let loadingTimerFinished = false;  
 
-    // Helper to find currently visible video container  
-    function getVisibleVideoContainer() {  
-        const containers = document.querySelectorAll('.video-container');  
-        for (let container of containers) {  
-            const rect = container.getBoundingClientRect();  
-            if (rect.top < window.innerHeight && rect.bottom > 0) {  
-                return container;  
+    // Function to unmute all iframes using YouTube API  
+    function unmuteAllVideos() {  
+        document.querySelectorAll('.video-container iframe').forEach(iframe => {  
+            if (iframe.contentWindow) {  
+                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');  
             }  
-        }  
-        return null;  
-    }  
-
-    // Function to unmute a specific video  
-    function unmuteVideo(container) {  
-        const iframe = container.querySelector('iframe');  
-        if (iframe && iframe.contentWindow) {  
-            iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');  
-        }  
+        });  
     }  
 
     // Auto-progress splash stages  
@@ -1107,10 +1097,10 @@
         // Hide splash overlay completely  
         splashOverlay.classList.add('hidden');  
           
-        // Unlock audio: unmute only the visible video  
-        const visibleContainer = getVisibleVideoContainer();  
-        if (visibleContainer) {  
-            unmuteVideo(visibleContainer);  
+        // Unlock audio  
+        if (!audioAllowed) {  
+            audioAllowed = true;  
+            unmuteAllVideos();  
         }  
           
         // Start video observer if feed is ready  
@@ -1193,7 +1183,6 @@
         card.className = 'feed-card';  
 
         if (item.type === 'video') {  
-            // Add &vq=small for faster loading (360p quality)  
             card.innerHTML = `  
                 <div class="card-header">  
                     <div class="channel-icon">${item.icon || '📺'}</div>  
@@ -1205,7 +1194,7 @@
                 </div>  
                 <div class="video-container" data-video-id="${item.videoId}">  
                     <iframe   
-                        src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}&vq=small"  
+                        src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"  
                         allow="autoplay; fullscreen">  
                     </iframe>  
                     <div class="video-info-overlay">  
@@ -1287,13 +1276,9 @@
                         if (!iframe) return;  
 
                         if (entry.isIntersecting) {  
-                            // Video becomes visible: play and unmute  
                             iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');  
-                            iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');  
                         } else {  
-                            // Video leaves view: pause and mute  
                             iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');  
-                            iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');  
                         }  
                     });  
                 }, { threshold: 0.6 });  
@@ -1427,4 +1412,4 @@
 </script>
 
 </body>  
-</html>
+    </html>
