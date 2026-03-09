@@ -78,12 +78,20 @@
             pointer-events: none;
         }
 
-        .splash-content {
-            text-align: center;
-            animation: burstAndFade 2s forwards;
+        .splash-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes burstAndFade {
+        /* Stage 1: Logo burst */
+        .stage1 {
+            animation: logoBurst 2.5s forwards;
+        }
+
+        @keyframes logoBurst {
             0% { transform: scale(0.5); opacity: 0; }
             30% { transform: scale(1.2); opacity: 1; }
             60% { transform: scale(1); opacity: 1; }
@@ -95,7 +103,6 @@
             height: 140px;
             border-radius: 35px;
             overflow: hidden;
-            margin: 0 auto 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border: 4px solid white;
         }
@@ -106,31 +113,54 @@
             object-fit: cover;
         }
 
-        .splash-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* Tap prompt (appears after burst) */
-        .tap-prompt {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.95);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
+        /* Stage 2: Loading */
+        .stage2 {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards 2.5s;
+            background: rgba(0,0,0,0.2);
             backdrop-filter: blur(5px);
         }
 
-        .tap-prompt.visible {
-            display: flex;
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .loading-sub {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Stage 3: Tap to begin */
+        .stage3 {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
         }
 
         .tap-content {
@@ -663,8 +693,6 @@
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -707,25 +735,34 @@
     <div class="coconut-left">🌴</div>
     <div class="coconut-right">🌴</div>
 
-    <!-- Splash Screen (burst animation) -->
+    <!-- Splash Screen with multiple stages -->
     <div class="splash-overlay" id="splashOverlay">
-        <div class="splash-content">
+        <!-- Stage 1: Logo burst (2.5s) -->
+        <div class="splash-stage stage1" id="stage1">
             <div class="splash-logo">
                 <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
-            <div class="splash-title">Goa Social</div>
         </div>
-    </div>
 
-    <!-- Tap Prompt (appears after burst) -->
-    <div class="tap-prompt" id="tapPrompt">
-        <div class="tap-content">
-            <div class="tap-logo">
-                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+        <!-- Stage 2: Loading (shows while videos preload) -->
+        <div class="splash-stage stage2" id="stage2">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-message">Goa Social is loading...</div>
+                <div class="loading-sub">Getting your videos ready</div>
             </div>
-            <div class="tap-message">Welcome to Goa Social</div>
-            <div class="tap-hint">
-                <i class="fas fa-hand-pointer"></i> Tap anywhere to begin
+        </div>
+
+        <!-- Stage 3: Tap to begin (shown when ready) -->
+        <div class="splash-stage stage3" id="stage3">
+            <div class="tap-content">
+                <div class="tap-logo">
+                    <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+                </div>
+                <div class="tap-message">Welcome to Goa Social</div>
+                <div class="tap-hint">
+                    <i class="fas fa-hand-pointer"></i> Tap anywhere to begin
+                </div>
             </div>
         </div>
     </div>
@@ -910,7 +947,9 @@
         const liveStories = document.getElementById('liveStories');
         const loadingEl = document.getElementById('loading');
         const splashOverlay = document.getElementById('splashOverlay');
-        const tapPrompt = document.getElementById('tapPrompt');
+        const stage1 = document.getElementById('stage1');
+        const stage2 = document.getElementById('stage2');
+        const stage3 = document.getElementById('stage3');
         const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');
         const youtubePlayer = document.getElementById('youtubePlayer');
         const closePlayerBtn = document.getElementById('closePlayerBtn');
@@ -924,7 +963,8 @@
         let videoPlayerManager = null;
         let logoClickCount = 0;
         let currentShareVideoId = null;
-        let audioAllowed = false; // New flag: true after first user tap
+        let audioAllowed = false;
+        let feedReady = false; // Will be set after videos are loaded and feed rendered
 
         // Function to unmute all iframes using YouTube API
         function unmuteAllVideos() {
@@ -935,13 +975,11 @@
             });
         }
 
-        // Auto-progress splash: burst animation then show tap prompt
+        // Auto-progress splash stages
         setTimeout(() => {
-            splashOverlay.classList.add('hidden');
-            setTimeout(() => {
-                tapPrompt.classList.add('visible');
-            }, 500);
-        }, 2000);
+            stage1.style.display = 'none';
+            stage2.style.display = 'flex';
+        }, 2500); // Logo burst ends at 2.5s
 
         // Share popup functions
         function showSharePopup(videoId) {
@@ -969,7 +1007,6 @@
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
                         break;
                     case 'instagram':
-                        // Instagram doesn't have direct share URL, so copy to clipboard
                         navigator.clipboard.writeText(shareUrl);
                         alert('Link copied! Open Instagram and paste it.');
                         break;
@@ -993,7 +1030,6 @@
             if (!userInteracted) return;
             logoClickCount++;
             if (logoClickCount === 7) {
-                // Open developer page in new tab
                 const devWindow = window.open('about:blank', '_blank');
                 if (devWindow) {
                     devWindow.document.write(`
@@ -1015,18 +1051,9 @@
                                     padding: 20px;
                                     text-align: center;
                                 }
-                                .container {
-                                    max-width: 600px;
-                                }
-                                h1 {
-                                    font-size: 2.5rem;
-                                    margin-bottom: 20px;
-                                }
-                                p {
-                                    font-size: 1.2rem;
-                                    opacity: 0.9;
-                                    line-height: 1.6;
-                                }
+                                .container { max-width: 600px; }
+                                h1 { font-size: 2.5rem; margin-bottom: 20px; }
+                                p { font-size: 1.2rem; opacity: 0.9; line-height: 1.6; }
                                 .badge {
                                     background: white;
                                     color: #1877f2;
@@ -1053,52 +1080,24 @@
             }
         });
 
-        // Initialize app after user interaction (tap anywhere on tap prompt)
+        // Initialize app after user interaction (tap anywhere on splash)
         function startApp() {
             if (userInteracted) return;
             userInteracted = true;
             
-            // Hide tap prompt
-            tapPrompt.classList.remove('visible');
+            // Hide splash overlay completely
+            splashOverlay.classList.add('hidden');
             
-            // Unlock audio: set flag and unmute all existing videos
+            // Unlock audio if not already
             if (!audioAllowed) {
                 audioAllowed = true;
                 unmuteAllVideos();
             }
             
-            // Initialize video player manager with optimized loading
-            class VideoPlayerManager {
-                constructor() {
-                    this.observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            const iframe = entry.target.querySelector('iframe');
-                            if (!iframe) return;
-
-                            if (entry.isIntersecting) {
-                                // Play current video (will be unmuted if audioAllowed)
-                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            } else {
-                                // Pause background videos
-                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                            }
-                        });
-                    }, { threshold: 0.6 });
-                }
-
-                observe(element) {
-                    this.observer.observe(element);
-                }
-
-                unobserve(element) {
-                    this.observer.unobserve(element);
-                }
+            // If feed is already ready, start observing
+            if (feedReady && videoPlayerManager) {
+                setupAllIframes();
             }
-
-            videoPlayerManager = new VideoPlayerManager();
-            
-            // Load feed and setup videos
-            loadFeed();
         }
 
         // Also handle any other tap on the document to unlock audio (just in case)
@@ -1117,8 +1116,6 @@
             }
             document.removeEventListener('touchstart', unlockOnFirstTouch);
         }, { once: true });
-
-        tapPrompt.addEventListener('click', startApp);
 
         // YouTube Player Functions
         function loadVideoFromUrl() {
@@ -1152,7 +1149,7 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel with error handling and preloading
+        // Fetch videos for a channel
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -1163,7 +1160,6 @@
                 
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
                 
-                // Get 8 videos per channel for more content
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=8&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
@@ -1238,23 +1234,6 @@
                     showSharePopup(item.videoId);
                 });
                 
-                // Observe for autoplay if app has started
-                const videoContainer = card.querySelector('.video-container');
-                if (videoContainer && videoPlayerManager) {
-                    videoPlayerManager.observe(videoContainer);
-                    
-                    // If the container is currently visible, trigger play immediately
-                    const rect = videoContainer.getBoundingClientRect();
-                    if (rect.top < window.innerHeight && rect.bottom > 0) {
-                        setTimeout(() => {
-                            const iframe = videoContainer.querySelector('iframe');
-                            if (iframe) {
-                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            }
-                        }, 500);
-                    }
-                }
-                
             } else if (item.type === 'post') {
                 card.innerHTML = `
                     <div class="card-header">
@@ -1302,7 +1281,45 @@
             return card;
         }
 
-        // Load live stories
+        // Setup Intersection Observer after feed is ready
+        function setupVideoObserver() {
+            class VideoPlayerManager {
+                constructor() {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const iframe = entry.target.querySelector('iframe');
+                            if (!iframe) return;
+
+                            if (entry.isIntersecting) {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                            } else {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                            }
+                        });
+                    }, { threshold: 0.6 });
+                }
+
+                observe(element) {
+                    this.observer.observe(element);
+                }
+            }
+
+            videoPlayerManager = new VideoPlayerManager();
+            
+            // Observe all existing video containers
+            document.querySelectorAll('.video-container').forEach(container => {
+                videoPlayerManager.observe(container);
+            });
+        }
+
+        function setupAllIframes() {
+            if (!videoPlayerManager) return;
+            document.querySelectorAll('.video-container').forEach(container => {
+                videoPlayerManager.observe(container);
+            });
+        }
+
+        // Load live stories (doesn't need to wait)
         function loadLiveStories() {
             const lives = [
                 { name: 'Goa News Live', icon: '📺' },
@@ -1329,7 +1346,7 @@
             });
         }
 
-        // Load and mix the feed
+        // Load and mix the feed (starts immediately)
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
@@ -1345,7 +1362,6 @@
             let videoIndex = 0;
             let postIndex = 0;
 
-            // Create a longer feed (40 items)
             for (let i = 0; i < 40; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
@@ -1354,7 +1370,6 @@
                     mixedFeed.push(allVideos[videoIndex]);
                     videoIndex++;
                 } else {
-                    // If we run out of videos, repeat community posts
                     if (postIndex < communityPosts.length) {
                         mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
                         postIndex = (postIndex + 1) % communityPosts.length;
@@ -1371,14 +1386,25 @@
 
             loadingEl.style.display = 'none';
             
-            // Trigger a scroll event to start playing visible videos
-            setTimeout(() => {
-                window.dispatchEvent(new Event('scroll'));
-            }, 500);
+            // Feed is now ready
+            feedReady = true;
+            
+            // Setup observer if user already interacted, otherwise it will be set on tap
+            if (userInteracted && !videoPlayerManager) {
+                setupVideoObserver();
+            }
+            
+            // Now that feed is ready, show tap prompt (stage 3) if not already shown
+            // We'll hide stage2 and show stage3
+            stage2.style.display = 'none';
+            stage3.style.display = 'flex';
         }
 
         // Load live stories immediately
         loadLiveStories();
+
+        // Start loading feed as soon as possible (right after page loads)
+        loadFeed();
 
         // Handle popstate for back/forward navigation
         window.addEventListener('popstate', () => {
@@ -1393,6 +1419,9 @@
                 youtubePlayer.src = '';
             }
         });
+
+        // When user taps on splash, start the app
+        splashOverlay.addEventListener('click', startApp);
     </script>
 </body>
 </html>
