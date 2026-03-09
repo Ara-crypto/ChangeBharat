@@ -65,7 +65,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(145deg, #1877f2, #0a5cff);
+            background: linear-gradient(145deg, #0a0a2a, #1a1a3a);
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -113,11 +113,11 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Loading screen - PAINTING WITH COCONUT TREES AND CLOUDS */
+        /* Stage 2: Loading screen - stars and clouds */
         .stage2 {
             opacity: 0;
             animation: fadeIn 0.5s forwards 2s;
-            background: linear-gradient(145deg, #87CEEB, #B0E0E6); /* Sky blue */
+            background: linear-gradient(145deg, #0a0a2a, #1a1a3a);
             position: relative;
             overflow: hidden;
         }
@@ -126,188 +126,51 @@
             to { opacity: 1; }
         }
 
-        /* Sun */
-        .sun {
+        /* Clouds at the top */
+        .clouds {
             position: absolute;
-            top: 60px;
-            right: 60px;
-            width: 100px;
-            height: 100px;
-            background: #FFD700;
-            border-radius: 50%;
-            box-shadow: 0 0 60px #FFA500;
-            animation: sunGlow 4s ease-in-out infinite;
-        }
-
-        @keyframes sunGlow {
-            0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* Clouds */
-        .cloud {
-            position: absolute;
-            background: white;
-            border-radius: 1000px;
-            opacity: 0.8;
-            animation: floatClouds linear infinite;
-        }
-
-        .cloud1 {
-            width: 180px;
-            height: 60px;
-            top: 40px;
-            left: 10%;
-            animation-duration: 30s;
-        }
-
-        .cloud2 {
-            width: 220px;
-            height: 70px;
-            top: 120px;
-            right: 5%;
-            animation-duration: 40s;
-            animation-delay: -10s;
-        }
-
-        .cloud3 {
-            width: 150px;
-            height: 50px;
-            bottom: 180px;
-            left: 20%;
-            animation-duration: 35s;
-            animation-delay: -5s;
-        }
-
-        .cloud::before, .cloud::after {
-            content: '';
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-        }
-
-        .cloud::before {
-            width: 60px;
-            height: 60px;
-            top: -30px;
-            left: 20px;
-        }
-
-        .cloud::after {
-            width: 80px;
-            height: 80px;
-            top: -40px;
-            left: 70px;
-        }
-
-        @keyframes floatClouds {
-            0% { transform: translateX(-10%); }
-            100% { transform: translateX(110%); }
-        }
-
-        /* Coconut trees */
-        .palm-tree {
-            position: absolute;
-            bottom: 0;
-            width: 80px;
-            height: 200px;
-        }
-
-        .palm-left {
-            left: 5%;
-        }
-
-        .palm-right {
-            right: 5%;
-        }
-
-        .trunk {
-            width: 20px;
-            height: 160px;
-            background: linear-gradient(90deg, #8B4513, #A0522D);
-            margin: 0 auto;
-            border-radius: 10px;
-            transform: rotate(5deg);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .palm-right .trunk {
-            transform: rotate(-5deg);
-        }
-
-        .leaves {
-            position: relative;
-            top: -30px;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-        }
-
-        .leaf {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: #228B22;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
-        }
-
-        .leaf1 {
             top: 0;
-            left: 20px;
-            transform: rotate(-30deg);
-        }
-
-        .leaf2 {
-            top: 10px;
-            right: 20px;
-            transform: rotate(30deg);
-        }
-
-        .leaf3 {
-            top: 40px;
             left: 0;
-            transform: rotate(-60deg);
-        }
-
-        .leaf4 {
-            top: 40px;
             right: 0;
-            transform: rotate(60deg);
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.3)" d="M0,192L48,197.3C96,203,192,213,288,208C384,203,480,181,576,186.7C672,192,768,224,864,234.7C960,245,1056,235,1152,208C1248,181,1344,139,1392,117.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"/></svg>') repeat-x;
+            background-size: cover;
+            animation: cloudMove 20s linear infinite;
+            opacity: 0.5;
         }
 
-        .leaf5 {
-            top: 60px;
-            left: 30px;
-            transform: rotate(0deg);
+        .clouds2 {
+            top: 20px;
+            transform: scaleX(-1);
+            animation-duration: 25s;
+            opacity: 0.3;
         }
 
-        /* Coconuts */
-        .coconut {
+        @keyframes cloudMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 1440px 0; }
+        }
+
+        /* Stars */
+        .stars {
             position: absolute;
-            width: 20px;
-            height: 24px;
-            background: #8B5A2B;
-            border-radius: 50%;
-            bottom: 40px;
-            left: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            inset: 0;
+            background: transparent;
+            overflow: hidden;
         }
 
-        .coconut::after {
-            content: '';
+        .star {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #654321;
+            background: white;
             border-radius: 50%;
-            top: 5px;
-            left: 6px;
+            box-shadow: 0 0 10px white;
+            animation: starFall linear infinite;
         }
 
-        .palm-right .coconut {
-            left: auto;
-            right: 30px;
+        @keyframes starFall {
+            0% { transform: translateY(-10px) translateX(0); opacity: 1; }
+            70% { opacity: 0.8; }
+            100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
         }
 
         /* Loading text */
@@ -316,21 +179,56 @@
             z-index: 10;
             text-align: center;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .cool-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .cool-spinner div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .cool-spinner div:nth-child(2) {
+            animation-delay: -0.4s;
+            border-top-color: rgba(255,255,255,0.7);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .cool-spinner div:nth-child(3) {
+            animation-delay: -0.8s;
+            border-top-color: rgba(255,255,255,0.4);
+            border-bottom-color: transparent;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .loading-message {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #fff, #f0f0f0);
+            background: linear-gradient(135deg, #fff, #aaccff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: textGlow 2s ease-in-out infinite;
         }
 
         .loading-sub {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
             letter-spacing: 1px;
             animation: pulseOpacity 1.5s ease-in-out infinite;
@@ -342,7 +240,7 @@
         }
 
         @keyframes pulseOpacity {
-            0%, 100% { opacity: 0.8; }
+            0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
         }
 
@@ -713,6 +611,7 @@
             width: 100%;
             height: 100%;
             border: none;
+            /* display: block; by default, no hiding */
         }
 
         /* Image placeholder */
@@ -936,39 +835,17 @@
             </div>
         </div>
 
-        <!-- Stage 2: Loading screen - Painting with coconut trees and clouds -->
+        <!-- Stage 2: Loading screen - stars and clouds -->
         <div class="splash-stage stage2" id="stage2">
-            <!-- Sun -->
-            <div class="sun"></div>
-            <!-- Clouds -->
-            <div class="cloud cloud1"></div>
-            <div class="cloud cloud2"></div>
-            <div class="cloud cloud3"></div>
-            <!-- Coconut trees -->
-            <div class="palm-tree palm-left">
-                <div class="leaves">
-                    <div class="leaf leaf1"></div>
-                    <div class="leaf leaf2"></div>
-                    <div class="leaf leaf3"></div>
-                    <div class="leaf leaf4"></div>
-                    <div class="leaf leaf5"></div>
-                </div>
-                <div class="trunk"></div>
-                <div class="coconut"></div>
-            </div>
-            <div class="palm-tree palm-right">
-                <div class="leaves">
-                    <div class="leaf leaf1"></div>
-                    <div class="leaf leaf2"></div>
-                    <div class="leaf leaf3"></div>
-                    <div class="leaf leaf4"></div>
-                    <div class="leaf leaf5"></div>
-                </div>
-                <div class="trunk"></div>
-                <div class="coconut"></div>
-            </div>
-            <!-- Loading text -->
+            <div class="clouds"></div>
+            <div class="clouds clouds2"></div>
+            <div class="stars" id="stars"></div>
             <div class="loading-content">
+                <div class="cool-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
                 <div class="loading-message">Goa Social is loading...</div>
                 <div class="loading-sub">Preparing your paradise</div>
             </div>
@@ -1272,6 +1149,24 @@
             }
         }, 10000); // 10 seconds loading
 
+        // Generate falling stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            if (!starsContainer) return;
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
         // Share popup functions
         function showSharePopup(videoId) {
             currentShareVideoId = videoId;
@@ -1462,7 +1357,7 @@
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // We set no src initially; will be loaded by buffer window
+                // Removed display:none from iframe - it's now visible
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1474,7 +1369,6 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            style="display: none;" 
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
