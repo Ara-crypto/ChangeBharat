@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* Subtle coconut tree decorations */
+        /* Subtle coconut tree decorations (background) */
         .coconut-left {
             position: fixed;
             bottom: 80px;
@@ -113,83 +113,236 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Loading screen (10 seconds) - COOLER ANIMATIONS */
+        /* Stage 2: Loading screen - PAINTING WITH COCONUT TREES AND CLOUDS */
         .stage2 {
             opacity: 0;
             animation: fadeIn 0.5s forwards 2s;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
+            background: linear-gradient(145deg, #87CEEB, #B0E0E6); /* Sky blue */
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        .loading-content {
-            text-align: center;
-            color: white;
-            position: relative;
+        /* Sun */
+        .sun {
+            position: absolute;
+            top: 60px;
+            right: 60px;
+            width: 100px;
+            height: 100px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 60px #FFA500;
+            animation: sunGlow 4s ease-in-out infinite;
         }
 
-        .cool-spinner {
+        @keyframes sunGlow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Clouds */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 1000px;
+            opacity: 0.8;
+            animation: floatClouds linear infinite;
+        }
+
+        .cloud1 {
+            width: 180px;
+            height: 60px;
+            top: 40px;
+            left: 10%;
+            animation-duration: 30s;
+        }
+
+        .cloud2 {
+            width: 220px;
+            height: 70px;
+            top: 120px;
+            right: 5%;
+            animation-duration: 40s;
+            animation-delay: -10s;
+        }
+
+        .cloud3 {
+            width: 150px;
+            height: 50px;
+            bottom: 180px;
+            left: 20%;
+            animation-duration: 35s;
+            animation-delay: -5s;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .cloud::before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 20px;
+        }
+
+        .cloud::after {
             width: 80px;
             height: 80px;
-            margin: 0 auto 30px;
-            position: relative;
+            top: -40px;
+            left: 70px;
         }
 
-        .cool-spinner div {
+        @keyframes floatClouds {
+            0% { transform: translateX(-10%); }
+            100% { transform: translateX(110%); }
+        }
+
+        /* Coconut trees */
+        .palm-tree {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            bottom: 0;
+            width: 80px;
+            height: 200px;
+        }
+
+        .palm-left {
+            left: 5%;
+        }
+
+        .palm-right {
+            right: 5%;
+        }
+
+        .trunk {
+            width: 20px;
+            height: 160px;
+            background: linear-gradient(90deg, #8B4513, #A0522D);
+            margin: 0 auto;
+            border-radius: 10px;
+            transform: rotate(5deg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .palm-right .trunk {
+            transform: rotate(-5deg);
+        }
+
+        .leaves {
+            position: relative;
+            top: -30px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #228B22;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+        }
+
+        .leaf1 {
+            top: 0;
+            left: 20px;
+            transform: rotate(-30deg);
+        }
+
+        .leaf2 {
+            top: 10px;
+            right: 20px;
+            transform: rotate(30deg);
+        }
+
+        .leaf3 {
+            top: 40px;
+            left: 0;
+            transform: rotate(-60deg);
+        }
+
+        .leaf4 {
+            top: 40px;
+            right: 0;
+            transform: rotate(60deg);
+        }
+
+        .leaf5 {
+            top: 60px;
+            left: 30px;
+            transform: rotate(0deg);
+        }
+
+        /* Coconuts */
+        .coconut {
+            position: absolute;
+            width: 20px;
+            height: 24px;
+            background: #8B5A2B;
             border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: white;
-            border-bottom-color: rgba(255,255,255,0.3);
-            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            bottom: 40px;
+            left: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        .cool-spinner div:nth-child(2) {
-            animation-delay: -0.4s;
-            border-top-color: rgba(255,255,255,0.7);
-            border-bottom-color: rgba(255,255,255,0.1);
+        .coconut::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #654321;
+            border-radius: 50%;
+            top: 5px;
+            left: 6px;
         }
 
-        .cool-spinner div:nth-child(3) {
-            animation-delay: -0.8s;
-            border-top-color: rgba(255,255,255,0.4);
-            border-bottom-color: transparent;
+        .palm-right .coconut {
+            left: auto;
+            right: 30px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Loading text */
+        .loading-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .loading-message {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #fff, #e0e0e0);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: textGlow 2s ease-in-out infinite;
         }
 
         .loading-sub {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
             letter-spacing: 1px;
             animation: pulseOpacity 1.5s ease-in-out infinite;
         }
 
         @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-            50% { text-shadow: 0 0 30px rgba(255,255,255,0.9); }
+            0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+            50% { text-shadow: 0 0 40px rgba(255,255,255,0.9); }
         }
 
         @keyframes pulseOpacity {
-            0%, 100% { opacity: 0.7; }
+            0%, 100% { opacity: 0.8; }
             50% { opacity: 1; }
         }
 
@@ -770,7 +923,7 @@
     </style>
 </head>
 <body>
-    <!-- Coconut tree decorations -->
+    <!-- Coconut tree decorations (background) -->
     <div class="coconut-left">🌴</div>
     <div class="coconut-right">🌴</div>
 
@@ -783,16 +936,41 @@
             </div>
         </div>
 
-        <!-- Stage 2: Loading screen (10s) - COOLER ANIMATIONS -->
+        <!-- Stage 2: Loading screen - Painting with coconut trees and clouds -->
         <div class="splash-stage stage2" id="stage2">
-            <div class="loading-content">
-                <div class="cool-spinner">
-                    <div></div>
-                    <div></div>
-                    <div></div>
+            <!-- Sun -->
+            <div class="sun"></div>
+            <!-- Clouds -->
+            <div class="cloud cloud1"></div>
+            <div class="cloud cloud2"></div>
+            <div class="cloud cloud3"></div>
+            <!-- Coconut trees -->
+            <div class="palm-tree palm-left">
+                <div class="leaves">
+                    <div class="leaf leaf1"></div>
+                    <div class="leaf leaf2"></div>
+                    <div class="leaf leaf3"></div>
+                    <div class="leaf leaf4"></div>
+                    <div class="leaf leaf5"></div>
                 </div>
+                <div class="trunk"></div>
+                <div class="coconut"></div>
+            </div>
+            <div class="palm-tree palm-right">
+                <div class="leaves">
+                    <div class="leaf leaf1"></div>
+                    <div class="leaf leaf2"></div>
+                    <div class="leaf leaf3"></div>
+                    <div class="leaf leaf4"></div>
+                    <div class="leaf leaf5"></div>
+                </div>
+                <div class="trunk"></div>
+                <div class="coconut"></div>
+            </div>
+            <!-- Loading text -->
+            <div class="loading-content">
                 <div class="loading-message">Goa Social is loading...</div>
-                <div class="loading-sub">Preparing your experience</div>
+                <div class="loading-sub">Preparing your paradise</div>
             </div>
         </div>
 
@@ -1009,6 +1187,9 @@
         let audioAllowed = false;
         let feedReady = false;
         let loadingTimerFinished = false;
+        let videoContainers = []; // will hold all video container elements
+        let currentVisibleIndex = -1; // index of currently visible video
+        const BUFFER_WINDOW = 2; // number of videos to buffer ahead
 
         // Function to pause all videos
         function pauseAllVideos() {
@@ -1026,6 +1207,53 @@
                     iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
                 }
             });
+        }
+
+        // Function to load a video (set iframe src) - only if not already loaded
+        function loadVideo(container, videoId) {
+            let iframe = container.querySelector('iframe');
+            if (!iframe) return;
+            // If iframe already has src, do nothing
+            if (iframe.src && iframe.src.includes('youtube.com/embed')) return;
+            // Set the src to start buffering
+            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}`;
+        }
+
+        // Function to unload a video (remove src) to stop buffering
+        function unloadVideo(container) {
+            let iframe = container.querySelector('iframe');
+            if (!iframe) return;
+            // Remove src to stop network activity
+            iframe.src = '';
+        }
+
+        // Function to update buffer window based on visible index
+        function updateBufferWindow(visibleIdx) {
+            if (!videoContainers.length) return;
+            const start = Math.max(0, visibleIdx - BUFFER_WINDOW);
+            const end = Math.min(videoContainers.length - 1, visibleIdx + BUFFER_WINDOW);
+            
+            // Load videos within window
+            for (let i = start; i <= end; i++) {
+                const container = videoContainers[i];
+                const videoId = container.dataset.videoId;
+                if (videoId) {
+                    loadVideo(container, videoId);
+                }
+            }
+            
+            // Unload videos outside window (to save bandwidth)
+            for (let i = 0; i < videoContainers.length; i++) {
+                if (i < start || i > end) {
+                    const container = videoContainers[i];
+                    // Also pause it
+                    const iframe = container.querySelector('iframe');
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    }
+                    unloadVideo(container);
+                }
+            }
         }
 
         // Auto-progress splash stages
@@ -1234,7 +1462,7 @@
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // Changed autoplay=1 to autoplay=0 so videos don't start playing until visible
+                // We set no src initially; will be loaded by buffer window
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1246,7 +1474,7 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
+                            style="display: none;" 
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
@@ -1270,6 +1498,12 @@
                     e.stopPropagation();
                     showSharePopup(item.videoId);
                 });
+                
+                // Store video container reference
+                const videoContainer = card.querySelector('.video-container');
+                if (videoContainer) {
+                    videoContainers.push(videoContainer);
+                }
                 
             } else if (item.type === 'post') {
                 card.innerHTML = `
@@ -1318,22 +1552,30 @@
             return card;
         }
 
-        // Setup Intersection Observer with single-video playback logic
+        // Setup Intersection Observer with single-video playback and buffer window
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            const iframe = entry.target.querySelector('iframe');
+                            const container = entry.target;
+                            const iframe = container.querySelector('iframe');
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
-                                // Pause all other videos first
-                                pauseAllVideos();
-                                // Then play this one
-                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                // Find index of this container
+                                const index = videoContainers.indexOf(container);
+                                if (index !== -1) {
+                                    currentVisibleIndex = index;
+                                    // Update buffer window based on visible index
+                                    updateBufferWindow(currentVisibleIndex);
+                                    
+                                    // Pause all other videos first
+                                    pauseAllVideos();
+                                    // Then play this one
+                                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                }
                             }
-                            // No else - we don't pause when leaving because pauseAllVideos already handles that when another becomes visible
                         });
                     }, { threshold: 0.6 });
                 }
@@ -1346,14 +1588,14 @@
             videoPlayerManager = new VideoPlayerManager();
             
             // Observe all existing video containers
-            document.querySelectorAll('.video-container').forEach(container => {
+            videoContainers.forEach(container => {
                 videoPlayerManager.observe(container);
             });
         }
 
         function setupAllIframes() {
             if (!videoPlayerManager) return;
-            document.querySelectorAll('.video-container').forEach(container => {
+            videoContainers.forEach(container => {
                 videoPlayerManager.observe(container);
             });
         }
