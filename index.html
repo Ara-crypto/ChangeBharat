@@ -7,6 +7,7 @@
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* === YOUR EXACT CSS - UNCHANGED === */
         * {
             margin: 0;
             padding: 0;
@@ -155,7 +156,7 @@
             opacity: 0.8;
         }
 
-        /* Stage 3: Tap to begin (shown after first video is ready) */
+        /* Stage 3: Tap to begin */
         .stage3 {
             opacity: 0;
             animation: fadeIn 0.5s forwards;
@@ -754,7 +755,7 @@
             </div>
         </div>
 
-        <!-- Stage 3: Tap to begin (shown after first video is ready) -->
+        <!-- Stage 3: Tap to begin -->
         <div class="splash-stage stage3" id="stage3">
             <div class="tap-content">
                 <div class="tap-logo">
@@ -875,10 +876,10 @@
     </nav>
 
     <script>
-        // Configuration
+        // === CONFIGURATION ===
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
-        // Expanded channels list
+        // Channels
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
             { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },
@@ -890,57 +891,11 @@
         ];
 
         const communityPosts = [
-            {
-                type: 'post',
-                author: 'Goa Foodies',
-                icon: '🍛',
-                time: '2 hours ago',
-                title: 'Best Beach Shack Food',
-                content: 'Just tried the kingfish at Britto\'s! Absolutely amazing 😋 #goafood #beachlife',
-                likes: 234,
-                comments: 45,
-                image: true
-            },
-            {
-                type: 'event',
-                title: 'Goa Carnival 2024',
-                venue: 'Panjim City Center',
-                date: 'Starting Feb 10',
-                price: 'Free Entry',
-                attendees: '2.3k interested',
-                image: true
-            },
-            {
-                type: 'post',
-                author: 'Travel Goa',
-                icon: '✈️',
-                time: '5 hours ago',
-                title: 'Hidden Waterfall Discovered',
-                content: 'Found this amazing spot near Netravali. Perfect for monsoon trek! 🏞️',
-                likes: 567,
-                comments: 89,
-                image: true
-            },
-            {
-                type: 'post',
-                author: 'Goa Beats',
-                icon: '🎧',
-                time: '1 hour ago',
-                title: 'Sunset Music Festival',
-                content: 'Live trance at Vagator tonight! 🎶✨',
-                likes: 892,
-                comments: 134,
-                image: true
-            },
-            {
-                type: 'event',
-                title: 'Flea Market Night',
-                venue: 'Arpora',
-                date: 'Every Saturday',
-                price: 'Free',
-                attendees: '5.1k interested',
-                image: true
-            }
+            { type: 'post', author: 'Goa Foodies', icon: '🍛', time: '2 hours ago', title: 'Best Beach Shack Food', content: 'Just tried the kingfish at Britto\'s! Absolutely amazing 😋 #goafood #beachlife', likes: 234, comments: 45, image: true },
+            { type: 'event', title: 'Goa Carnival 2024', venue: 'Panjim City Center', date: 'Starting Feb 10', price: 'Free Entry', attendees: '2.3k interested', image: true },
+            { type: 'post', author: 'Travel Goa', icon: '✈️', time: '5 hours ago', title: 'Hidden Waterfall Discovered', content: 'Found this amazing spot near Netravali. Perfect for monsoon trek! 🏞️', likes: 567, comments: 89, image: true },
+            { type: 'post', author: 'Goa Beats', icon: '🎧', time: '1 hour ago', title: 'Sunset Music Festival', content: 'Live trance at Vagator tonight! 🎶✨', likes: 892, comments: 134, image: true },
+            { type: 'event', title: 'Flea Market Night', venue: 'Arpora', date: 'Every Saturday', price: 'Free', attendees: '5.1k interested', image: true }
         ];
 
         // DOM Elements
@@ -964,14 +919,11 @@
         let videoPlayerManager = null;
         let logoClickCount = 0;
         let currentShareVideoId = null;
-        let audioAllowed = false;
-        let feedReady = false;
-        let loadingTimerFinished = false;
         let videoContainers = [];
         let currentVisibleIndex = -1;
-        const BUFFER_SIZE = 3;
+        const BUFFER_SIZE = 5; // Keep 5 videos loaded ahead
 
-        // Function to pause all videos
+        // === VIDEO CONTROL FUNCTIONS ===
         function pauseAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
                 if (iframe.contentWindow) {
@@ -980,7 +932,6 @@
             });
         }
 
-        // Function to mute all videos
         function muteAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
                 if (iframe.contentWindow) {
@@ -989,7 +940,6 @@
             });
         }
 
-        // Function to unmute a specific video
         function unmuteVideo(container) {
             const iframe = container.querySelector('iframe');
             if (iframe && iframe.contentWindow) {
@@ -997,17 +947,18 @@
             }
         }
 
-        // Function to load video with autoplay muted
+        // Load video with autoplay muted and low quality
         function loadVideo(container, videoId) {
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
-            // Only load if not already loaded
-            if (!iframe.src || iframe.src === '') {
-                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}`;
+            // Only set src if not already set
+            if (!iframe.src) {
+                // Add &vq=small for 360p quality (faster loading)
+                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&vq=small`;
             }
         }
 
-        // Function to unload video (remove src) - save bandwidth
+        // Unload video to save bandwidth
         function unloadVideo(container) {
             const iframe = container.querySelector('iframe');
             if (iframe && iframe.src) {
@@ -1030,7 +981,7 @@
                 }
             }
             
-            // Unload videos outside buffer window (save bandwidth)
+            // Unload videos outside buffer window
             for (let i = 0; i < videoContainers.length; i++) {
                 if (i < start || i > end) {
                     const container = videoContainers[i];
@@ -1046,13 +997,13 @@
             }
         }
 
-        // Auto-progress splash stages
+        // === SPLASH TIMING ===
         setTimeout(() => {
             stage1.style.display = 'none';
             stage2.style.display = 'flex';
         }, 2000);
 
-        // Share popup functions
+        // === SHARE POPUP ===
         function showSharePopup(videoId) {
             currentShareVideoId = videoId;
             shareOverlay.classList.add('visible');
@@ -1065,14 +1016,11 @@
             currentShareVideoId = null;
         }
 
-        // Handle share option clicks
         document.querySelectorAll('.share-option').forEach(option => {
             option.addEventListener('click', (e) => {
                 const shareType = option.dataset.share;
                 if (!currentShareVideoId) return;
-
                 const shareUrl = `${window.location.origin}${window.location.pathname}?v=${currentShareVideoId}`;
-                
                 switch(shareType) {
                     case 'whatsapp':
                         window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
@@ -1096,7 +1044,7 @@
         closeShare.addEventListener('click', hideSharePopup);
         shareOverlay.addEventListener('click', hideSharePopup);
 
-        // Secret developer mode: tap logo 7 times
+        // === SECRET DEVELOPER MODE ===
         logoContainer.addEventListener('click', () => {
             if (!userInteracted) return;
             logoClickCount++;
@@ -1108,32 +1056,11 @@
                         <html>
                         <head>
                             <title>Goa Social · Developer Mode</title>
-                            <meta name="viewport" content="width=device-width, initial-scale=1">
                             <style>
-                                body {
-                                    background: linear-gradient(145deg, #1877f2, #0a5cff);
-                                    color: white;
-                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    min-height: 100vh;
-                                    margin: 0;
-                                    padding: 20px;
-                                    text-align: center;
-                                }
+                                body { background: linear-gradient(145deg, #1877f2, #0a5cff); color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
                                 .container { max-width: 600px; }
-                                h1 { font-size: 2.5rem; margin-bottom: 20px; }
-                                p { font-size: 1.2rem; opacity: 0.9; line-height: 1.6; }
-                                .badge {
-                                    background: white;
-                                    color: #1877f2;
-                                    padding: 8px 20px;
-                                    border-radius: 40px;
-                                    display: inline-block;
-                                    margin-top: 30px;
-                                    font-weight: bold;
-                                }
+                                h1 { font-size: 2.5rem; }
+                                .badge { background: white; color: #1877f2; padding: 8px 20px; border-radius: 40px; display: inline-block; margin-top: 30px; font-weight: bold; }
                             </style>
                         </head>
                         <body>
@@ -1151,15 +1078,14 @@
             }
         });
 
-        // Start app on touchstart (unlocks audio immediately)
-        function startApp(e) {
+        // === START APP ON TAP (UNMUTE VISIBLE VIDEO) ===
+        function startApp() {
             if (userInteracted) return;
             userInteracted = true;
             
-            // Hide splash overlay completely
             splashOverlay.classList.add('hidden');
             
-            // Unmute only the currently visible video
+            // Find visible video and unmute it
             const visibleContainer = Array.from(videoContainers).find(container => {
                 const rect = container.getBoundingClientRect();
                 return rect.top < window.innerHeight && rect.bottom > 0;
@@ -1171,56 +1097,44 @@
         }
 
         splashOverlay.addEventListener('touchstart', startApp, { passive: true });
-        // Also handle click for desktop
         splashOverlay.addEventListener('click', startApp);
 
-        // YouTube Player Functions
+        // === YOUTUBE PLAYER (shared links) ===
         function loadVideoFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('v');
-            
             if (videoId) {
                 youtubePlayerContainer.classList.add('active');
                 youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
             }
         }
-
-        // Close player
         closePlayerBtn.addEventListener('click', () => {
             youtubePlayerContainer.classList.remove('active');
             youtubePlayer.src = '';
         });
-
-        // Check URL on load
         loadVideoFromUrl();
 
-        // Format time ago
+        // === TIME AGO ===
         function timeAgo(dateString) {
             const now = new Date();
             const published = new Date(dateString);
-            const diffMs = now - published;
-            const diffHr = Math.floor(diffMs / (1000 * 60 * 60));
-            
+            const diffHr = Math.floor((now - published) / (1000 * 60 * 60));
             if (diffHr < 24) return diffHr + ' hours ago';
             if (diffHr < 48) return 'yesterday';
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
+        // === FETCH VIDEOS FROM YOUTUBE ===
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
                 const channelData = await channelRes.json();
-                
                 if (!channelData.items || !channelData.items[0]) return [];
-                
                 const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
-                
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=8&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
-                
                 return playlistData.items
                     .filter(item => item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId)
                     .map(item => ({
@@ -1237,13 +1151,12 @@
             }
         }
 
-        // Create a feed card based on type
+        // === CREATE FEED CARD ===
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // No src initially - will be loaded by buffer window
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1254,9 +1167,7 @@
                         <i class="fas fa-ellipsis-h"></i>
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
-                        <iframe 
-                            allow="autoplay; fullscreen">
-                        </iframe>
+                        <iframe allow="autoplay; fullscreen"></iframe>
                         <div class="video-info-overlay">
                             <div class="video-title-small">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</div>
                             <div class="video-meta">
@@ -1272,14 +1183,12 @@
                     </div>
                 `;
                 
-                // Add share event listener
                 const shareBtn = card.querySelector('.share-btn');
                 shareBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     showSharePopup(item.videoId);
                 });
                 
-                // Store video container reference
                 const videoContainer = card.querySelector('.video-container');
                 if (videoContainer) {
                     videoContainers.push(videoContainer);
@@ -1332,7 +1241,7 @@
             return card;
         }
 
-        // Setup Intersection Observer
+        // === SETUP INTERSECTION OBSERVER ===
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
@@ -1344,7 +1253,6 @@
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
-                                // Find index of this container
                                 const index = videoContainers.indexOf(container);
                                 if (index !== -1 && index !== this.currentVisibleIndex) {
                                     this.currentVisibleIndex = index;
@@ -1353,7 +1261,7 @@
                                     // Update buffer window
                                     updateBufferWindow(index);
                                     
-                                    // Pause all videos first
+                                    // Pause all others
                                     pauseAllVideos();
                                     
                                     // Play this video
@@ -1375,18 +1283,15 @@
             }
 
             videoPlayerManager = new VideoPlayerManager();
+            videoContainers.forEach(container => videoPlayerManager.observe(container));
             
-            videoContainers.forEach(container => {
-                videoPlayerManager.observe(container);
-            });
-            
-            // Initial buffer for first video
+            // Initial buffer
             if (videoContainers.length > 0) {
                 updateBufferWindow(0);
             }
         }
 
-        // Load live stories
+        // === LOAD LIVE STORIES ===
         function loadLiveStories() {
             const lives = [
                 { name: 'Goa News Live', icon: '📺' },
@@ -1396,7 +1301,6 @@
                 { name: 'Sunset Session', icon: '🌅' },
                 { name: 'DJ Night', icon: '🎧' }
             ];
-            
             liveStories.innerHTML = '';
             lives.forEach(live => {
                 const story = document.createElement('div');
@@ -1413,22 +1317,19 @@
             });
         }
 
-        // Load and mix the feed
+        // === LOAD FEED ===
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            // Fetch all channel videos in parallel
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
             const allVideos = videoResults.flat().filter(v => v && v.videoId);
 
-            // Mix content: interleave videos with community posts
+            // Mix content
             const mixedFeed = [];
-            let videoIndex = 0;
-            let postIndex = 0;
-
+            let videoIndex = 0, postIndex = 0;
             for (let i = 0; i < 40; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
@@ -1436,15 +1337,12 @@
                 } else if (videoIndex < allVideos.length) {
                     mixedFeed.push(allVideos[videoIndex]);
                     videoIndex++;
-                } else {
-                    if (postIndex < communityPosts.length) {
-                        mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
-                        postIndex = (postIndex + 1) % communityPosts.length;
-                    }
+                } else if (postIndex < communityPosts.length) {
+                    mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
+                    postIndex = (postIndex + 1) % communityPosts.length;
                 }
             }
 
-            // Build feed
             feedContainer.innerHTML = '';
             mixedFeed.forEach(item => {
                 const card = createFeedCard(item);
@@ -1452,22 +1350,22 @@
             });
 
             loadingEl.style.display = 'none';
-            
-            // Preload first 3 videos immediately (they will autoplay muted)
+
+            // Preload first 5 videos immediately
             if (videoContainers.length > 0) {
-                for (let i = 0; i < Math.min(3, videoContainers.length); i++) {
+                for (let i = 0; i < Math.min(5, videoContainers.length); i++) {
                     const container = videoContainers[i];
                     if (container && container.dataset.videoId) {
                         loadVideo(container, container.dataset.videoId);
                     }
                 }
                 
-                // Check when first video is ready
+                // Wait for first video to be ready then show tap prompt
                 const firstContainer = videoContainers[0];
                 const checkInterval = setInterval(() => {
                     const iframe = firstContainer.querySelector('iframe');
+                    // Check if iframe has loaded (src is set and not empty)
                     if (iframe && iframe.src && iframe.src !== '') {
-                        // First video is loaded and playing muted
                         stage2.style.display = 'none';
                         stage3.style.display = 'flex';
                         clearInterval(checkInterval);
@@ -1475,23 +1373,18 @@
                 }, 100);
             }
             
-            feedReady = true;
-            
-            // Setup observer after feed is built
+            // Setup observer
             setupVideoObserver();
         }
 
-        // Load live stories immediately
+        // === INIT ===
         loadLiveStories();
-
-        // Start loading feed as soon as possible
         loadFeed();
 
-        // Handle popstate for back/forward navigation
+        // === BACK/FORWARD NAVIGATION ===
         window.addEventListener('popstate', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('v');
-            
             if (videoId) {
                 youtubePlayerContainer.classList.add('active');
                 youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
