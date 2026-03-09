@@ -1107,4 +1107,357 @@
                                 }
                                 .container { max-width: 600px; }
                                 h1 { font-size: 2.5rem; margin-bottom: 20px; }
-                                p { font-size: 1.2rem;
+                                p { font-size: 1.2rem; opacity: 0.9; line-height: 1.6; }
+                                .badge {
+                                    background: white;
+                                    color: #1877f2;
+                                    padding: 8px 20px;
+                                    border-radius: 40px;
+                                    display: inline-block;
+                                    margin-top: 30px;
+                                    font-weight: bold;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <h1>🔧 Developer Console</h1>
+                                <p>Goa Social Analytics Dashboard</p>
+                                <p style="font-size: 1rem; margin-top: 40px;">This page will be connected to your analytics backend.</p>
+                                <div class="badge">DEV MODE ACTIVE</div>
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                }
+                logoClickCount = 0;
+            }
+        });
+
+        // Initialize app after user interaction (tap anywhere on splash)
+        function startApp() {
+            if (userInteracted) return;
+            userInteracted = true;
+            
+            // Hide splash overlay completely
+            splashOverlay.classList.add('hidden');
+            
+            // Unlock audio
+            if (!audioAllowed) {
+                audioAllowed = true;
+                unmuteAllVideos();
+            }
+            
+            // Start video observer if feed is ready
+            if (feedReady && !videoPlayerManager) {
+                setupVideoObserver();
+            } else if (feedReady && videoPlayerManager) {
+                setupAllIframes();
+            }
+        }
+
+        // YouTube Player Functions
+        function loadVideoFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            
+            if (videoId) {
+                youtubePlayerContainer.classList.add('active');
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            }
+        }
+
+        // Close player
+        closePlayerBtn.addEventListener('click', () => {
+            youtubePlayerContainer.classList.remove('active');
+            youtubePlayer.src = '';
+        });
+
+        // Check URL on load
+        loadVideoFromUrl();
+
+        // Format time ago
+        function timeAgo(dateString) {
+            const now = new Date();
+            const published = new Date(dateString);
+            const diffMs = now - published;
+            const diffHr = Math.floor(diffMs / (1000 * 60 * 60));
+            
+            if (diffHr < 24) return diffHr + ' hours ago';
+            if (diffHr < 48) return 'yesterday';
+            return Math.floor(diffHr / 24) + ' days ago';
+        }
+
+        // Fetch videos for a channel
+        async function fetchChannelVideos(channel) {
+            try {
+                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
+                const channelRes = await fetch(channelUrl);
+                const channelData = await channelRes.json();
+                
+                if (!channelData.items || !channelData.items[0]) return [];
+                
+                const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+                
+                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=8&key=${API_KEY}`;
+                const playlistRes = await fetch(playlistUrl);
+                const playlistData = await playlistRes.json();
+                
+                return playlistData.items
+                    .filter(item => item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId)
+                    .map(item => ({
+                        ...channel,
+                        type: 'video',
+                        videoId: item.snippet.resourceId.videoId,
+                        title: item.snippet.title,
+                        publishedAt: item.snippet.publishedAt,
+                        thumbnail: item.snippet.thumbnails.high?.url
+                    }));
+            } catch (e) {
+                console.warn(`Failed for ${channel.name}`, e);
+                return [];
+            }
+        }
+
+        // Create a feed card based on type
+        function createFeedCard(item) {
+            const card = document.createElement('div');
+            card.className = 'feed-card';
+
+            if (item.type === 'video') {
+                // Add quality parameter to force 360p
+                const videoSrc = `https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}${QUALITY_PARAM}`;
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="channel-icon">${item.icon || '📺'}</div>
+                        <div class="channel-info">
+                            <div class="channel-name">${item.name}</div>
+                            <div class="post-time">${timeAgo(item.publishedAt)}</div>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <div class="video-container" data-video-id="${item.videoId}">
+                        <iframe 
+                            src="${videoSrc}"
+                            allow="autoplay; fullscreen">
+                        </iframe>
+                        <div class="video-info-overlay">
+                            <div class="video-title-small">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</div>
+                            <div class="video-meta">
+                                <span><i class="fas fa-eye"></i> Trending</span>
+                                <span><i class="fas fa-heart"></i> 1.2k</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="footer-item like-btn"><i class="fas fa-heart"></i> 1.2k</span>
+                        <span class="footer-item comment-btn"><i class="fas fa-comment"></i> 89</span>
+                        <span class="footer-item share-btn" data-video-id="${item.videoId}"><i class="fas fa-share"></i> Share</span>
+                    </div>
+                `;
+                
+                // Add share event listener
+                const shareBtn = card.querySelector('.share-btn');
+                shareBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showSharePopup(item.videoId);
+                });
+                
+            } else if (item.type === 'post') {
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="channel-icon">${item.icon || '👤'}</div>
+                        <div class="channel-info">
+                            <div class="channel-name">${item.author}</div>
+                            <div class="post-time">${item.time}</div>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <div class="card-title">${item.title}</div>
+                    <div class="card-description">${item.content}</div>
+                    ${item.image ? '<div class="image-placeholder"><i class="fas fa-umbrella-beach"></i></div>' : ''}
+                    <div class="card-footer">
+                        <span class="footer-item"><i class="fas fa-heart"></i> ${item.likes}</span>
+                        <span class="footer-item"><i class="fas fa-comment"></i> ${item.comments}</span>
+                        <span class="footer-item"><i class="fas fa-share"></i> Share</span>
+                    </div>
+                `;
+            } else if (item.type === 'event') {
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="channel-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="channel-info">
+                            <div class="channel-name">Goa Events</div>
+                            <div class="post-time">Featured</div>
+                        </div>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <div class="image-placeholder">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="card-title">${item.title}</div>
+                    <div class="event-details">
+                        <span><i class="fas fa-map-pin"></i> ${item.venue}</span>
+                        <span><i class="fas fa-clock"></i> ${item.date}</span>
+                    </div>
+                    <div class="card-footer">
+                        <span class="footer-item"><i class="fas fa-user-plus"></i> ${item.attendees}</span>
+                        <span class="footer-item"><i class="fas fa-tag"></i> ${item.price}</span>
+                    </div>
+                `;
+            }
+
+            return card;
+        }
+
+        // Setup Intersection Observer with 60% threshold
+        function setupVideoObserver() {
+            class VideoPlayerManager {
+                constructor() {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const iframe = entry.target.querySelector('iframe');
+                            if (!iframe) return;
+
+                            if (entry.isIntersecting) {
+                                // Play when 60% visible
+                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                            } else {
+                                // Pause when less than 60% visible
+                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                            }
+                        });
+                    }, { threshold: 0.6 }); // 60% threshold
+                }
+
+                observe(element) {
+                    this.observer.observe(element);
+                }
+            }
+
+            videoPlayerManager = new VideoPlayerManager();
+            
+            // Observe all existing video containers
+            document.querySelectorAll('.video-container').forEach(container => {
+                videoPlayerManager.observe(container);
+            });
+        }
+
+        function setupAllIframes() {
+            if (!videoPlayerManager) return;
+            document.querySelectorAll('.video-container').forEach(container => {
+                videoPlayerManager.observe(container);
+            });
+        }
+
+        // Load live stories
+        function loadLiveStories() {
+            const lives = [
+                { name: 'Goa News Live', icon: '📺' },
+                { name: 'Beach Party', icon: '🎵' },
+                { name: 'Mass at Church', icon: '⛪' },
+                { name: 'Market Vibes', icon: '🛍️' },
+                { name: 'Sunset Session', icon: '🌅' },
+                { name: 'DJ Night', icon: '🎧' }
+            ];
+            
+            liveStories.innerHTML = '';
+            lives.forEach(live => {
+                const story = document.createElement('div');
+                story.className = 'story-item';
+                story.innerHTML = `
+                    <div class="story-avatar live">
+                        <div class="story-avatar-inner">
+                            ${live.icon}
+                        </div>
+                    </div>
+                    <div class="story-label">${live.name}</div>
+                `;
+                liveStories.appendChild(story);
+            });
+        }
+
+        // Load and mix the feed
+        async function loadFeed() {
+            loadingEl.style.display = 'block';
+            feedContainer.innerHTML = '';
+            feedContainer.appendChild(loadingEl);
+
+            // Fetch all channel videos in parallel
+            const videoPromises = channels.map(fetchChannelVideos);
+            const videoResults = await Promise.all(videoPromises);
+            const allVideos = videoResults.flat().filter(v => v && v.videoId);
+
+            // Mix content: interleave videos with community posts
+            const mixedFeed = [];
+            let videoIndex = 0;
+            let postIndex = 0;
+
+            for (let i = 0; i < 40; i++) {
+                if (i % 3 === 0 && postIndex < communityPosts.length) {
+                    mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
+                    postIndex = (postIndex + 1) % communityPosts.length;
+                } else if (videoIndex < allVideos.length) {
+                    mixedFeed.push(allVideos[videoIndex]);
+                    videoIndex++;
+                } else {
+                    if (postIndex < communityPosts.length) {
+                        mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
+                        postIndex = (postIndex + 1) % communityPosts.length;
+                    }
+                }
+            }
+
+            feedContainer.innerHTML = '';
+            
+            mixedFeed.forEach(item => {
+                const card = createFeedCard(item);
+                feedContainer.appendChild(card);
+            });
+
+            loadingEl.style.display = 'none';
+            
+            // Feed is now ready
+            feedReady = true;
+            
+            // If loading timer already finished, show tap prompt now
+            if (loadingTimerFinished) {
+                stage2.style.display = 'none';
+                stage3.style.display = 'flex';
+            }
+            
+            // If user already tapped before feed ready, start observer now
+            if (userInteracted && !videoPlayerManager) {
+                setupVideoObserver();
+            }
+            
+            // Make sure all videos start muted
+            setTimeout(muteAllVideos, 1000);
+        }
+
+        // Load live stories immediately
+        loadLiveStories();
+
+        // Start loading feed as soon as possible
+        loadFeed();
+
+        // Handle popstate for back/forward navigation
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            
+            if (videoId) {
+                youtubePlayerContainer.classList.add('active');
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            } else {
+                youtubePlayerContainer.classList.remove('active');
+                youtubePlayer.src = '';
+            }
+        });
+
+        // When user taps on splash, start the app
+        splashOverlay.addEventListener('click', startApp);
+    </script>
+</body>
+</html>
