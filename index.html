@@ -86,12 +86,12 @@
             justify-content: center;
         }
 
-        /* Stage 1: Logo burst */
+        /* Stage 1: Logo zoom */
         .stage1 {
-            animation: logoBurst 2.5s forwards;
+            animation: logoZoom 2s forwards;
         }
 
-        @keyframes logoBurst {
+        @keyframes logoZoom {
             0% { transform: scale(0.5); opacity: 0; }
             30% { transform: scale(1.2); opacity: 1; }
             60% { transform: scale(1); opacity: 1; }
@@ -113,10 +113,10 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Loading */
+        /* Stage 2: Loading screen (10 seconds) */
         .stage2 {
             opacity: 0;
-            animation: fadeIn 0.5s forwards 2.5s;
+            animation: fadeIn 0.5s forwards 2s; /* appears after logo zoom ends */
             background: rgba(0,0,0,0.2);
             backdrop-filter: blur(5px);
         }
@@ -161,6 +161,7 @@
             animation: fadeIn 0.5s forwards;
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(5px);
+            display: none; /* will be shown after loading */
         }
 
         .tap-content {
@@ -735,25 +736,25 @@
     <div class="coconut-left">🌴</div>
     <div class="coconut-right">🌴</div>
 
-    <!-- Splash Screen with multiple stages -->
+    <!-- Splash Screen with three stages -->
     <div class="splash-overlay" id="splashOverlay">
-        <!-- Stage 1: Logo burst (2.5s) -->
+        <!-- Stage 1: Logo zoom (2s) -->
         <div class="splash-stage stage1" id="stage1">
             <div class="splash-logo">
                 <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
         </div>
 
-        <!-- Stage 2: Loading (shows while videos preload) -->
+        <!-- Stage 2: Loading screen (10s) -->
         <div class="splash-stage stage2" id="stage2">
             <div class="loading-content">
                 <div class="loading-spinner"></div>
                 <div class="loading-message">Goa Social is loading...</div>
-                <div class="loading-sub">Getting your videos ready</div>
+                <div class="loading-sub">Preparing your videos</div>
             </div>
         </div>
 
-        <!-- Stage 3: Tap to begin (shown when ready) -->
+        <!-- Stage 3: Tap to begin (shown after loading) -->
         <div class="splash-stage stage3" id="stage3">
             <div class="tap-content">
                 <div class="tap-logo">
@@ -964,7 +965,8 @@
         let logoClickCount = 0;
         let currentShareVideoId = null;
         let audioAllowed = false;
-        let feedReady = false; // Will be set after videos are loaded and feed rendered
+        let feedReady = false;
+        let loadingTimerFinished = false;
 
         // Function to unmute all iframes using YouTube API
         function unmuteAllVideos() {
@@ -979,7 +981,17 @@
         setTimeout(() => {
             stage1.style.display = 'none';
             stage2.style.display = 'flex';
-        }, 2500); // Logo burst ends at 2.5s
+        }, 2000); // logo zoom ends at 2s
+
+        // 10-second loading timer
+        setTimeout(() => {
+            loadingTimerFinished = true;
+            if (feedReady) {
+                // Hide loading, show tap prompt
+                stage2.style.display = 'none';
+                stage3.style.display = 'flex';
+            }
+        }, 10000); // 10 seconds loading
 
         // Share popup functions
         function showSharePopup(videoId) {
@@ -1088,34 +1100,19 @@
             // Hide splash overlay completely
             splashOverlay.classList.add('hidden');
             
-            // Unlock audio if not already
+            // Unlock audio
             if (!audioAllowed) {
                 audioAllowed = true;
                 unmuteAllVideos();
             }
             
-            // If feed is already ready, start observing
-            if (feedReady && videoPlayerManager) {
+            // Start video observer if feed is ready
+            if (feedReady && !videoPlayerManager) {
+                setupVideoObserver();
+            } else if (feedReady && videoPlayerManager) {
                 setupAllIframes();
             }
         }
-
-        // Also handle any other tap on the document to unlock audio (just in case)
-        document.addEventListener('click', function unlockOnFirstTap() {
-            if (!audioAllowed && userInteracted) {
-                audioAllowed = true;
-                unmuteAllVideos();
-            }
-            document.removeEventListener('click', unlockOnFirstTap);
-        }, { once: true });
-
-        document.addEventListener('touchstart', function unlockOnFirstTouch() {
-            if (!audioAllowed && userInteracted) {
-                audioAllowed = true;
-                unmuteAllVideos();
-            }
-            document.removeEventListener('touchstart', unlockOnFirstTouch);
-        }, { once: true });
 
         // YouTube Player Functions
         function loadVideoFromUrl() {
@@ -1149,7 +1146,7 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
+        // Fetch videos for a channel (optimized)
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -1180,14 +1177,8 @@
             }
         }
 
-        // Preload video iframe (creates hidden iframe to warm up connection)
-        function preloadVideo(videoId) {
-            const preloadDiv = document.createElement('div');
-            preloadDiv.style.display = 'none';
-            preloadDiv.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1" allow="autoplay"></iframe>`;
-            document.body.appendChild(preloadDiv);
-            setTimeout(() => preloadDiv.remove(), 5000);
-        }
+        // Preload video iframe (creates hidden iframe to warm up connection) - but we'll rely on actual feed cards
+        // No extra preload needed because feed cards will be created and start buffering muted.
 
         // Create a feed card based on type
         function createFeedCard(item) {
@@ -1195,9 +1186,6 @@
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // Preload the next few videos
-                preloadVideo(item.videoId);
-                
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1362,6 +1350,7 @@
             let videoIndex = 0;
             let postIndex = 0;
 
+            // Prioritize first two videos: we'll add them early
             for (let i = 0; i < 40; i++) {
                 if (i % 3 === 0 && postIndex < communityPosts.length) {
                     mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });
@@ -1377,8 +1366,8 @@
                 }
             }
 
+            // Build feed - first two videos will be among the first few items
             feedContainer.innerHTML = '';
-            
             mixedFeed.forEach(item => {
                 const card = createFeedCard(item);
                 feedContainer.appendChild(card);
@@ -1389,21 +1378,22 @@
             // Feed is now ready
             feedReady = true;
             
-            // Setup observer if user already interacted, otherwise it will be set on tap
+            // If loading timer already finished, show tap prompt now
+            if (loadingTimerFinished) {
+                stage2.style.display = 'none';
+                stage3.style.display = 'flex';
+            }
+            
+            // If user already tapped before feed ready, start observer now
             if (userInteracted && !videoPlayerManager) {
                 setupVideoObserver();
             }
-            
-            // Now that feed is ready, show tap prompt (stage 3) if not already shown
-            // We'll hide stage2 and show stage3
-            stage2.style.display = 'none';
-            stage3.style.display = 'flex';
         }
 
         // Load live stories immediately
         loadLiveStories();
 
-        // Start loading feed as soon as possible (right after page loads)
+        // Start loading feed as soon as possible
         loadFeed();
 
         // Handle popstate for back/forward navigation
