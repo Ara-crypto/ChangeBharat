@@ -113,12 +113,12 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Loading screen (10 seconds) */
+        /* Stage 2: Loading screen (10 seconds) - COOLER ANIMATIONS */
         .stage2 {
             opacity: 0;
-            animation: fadeIn 0.5s forwards 2s; /* appears after logo zoom ends */
-            background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s forwards 2s;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
         }
 
         @keyframes fadeIn {
@@ -128,31 +128,69 @@
         .loading-content {
             text-align: center;
             color: white;
+            position: relative;
         }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top-color: white;
+        .cool-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .cool-spinner div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            border: 4px solid transparent;
+            border-top-color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .cool-spinner div:nth-child(2) {
+            animation-delay: -0.4s;
+            border-top-color: rgba(255,255,255,0.7);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .cool-spinner div:nth-child(3) {
+            animation-delay: -0.8s;
+            border-top-color: rgba(255,255,255,0.4);
+            border-bottom-color: transparent;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .loading-message {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGlow 2s ease-in-out infinite;
         }
 
         .loading-sub {
-            font-size: 1rem;
-            opacity: 0.8;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            letter-spacing: 1px;
+            animation: pulseOpacity 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+            50% { text-shadow: 0 0 30px rgba(255,255,255,0.9); }
+        }
+
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         /* Stage 3: Tap to begin */
@@ -161,7 +199,7 @@
             animation: fadeIn 0.5s forwards;
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(5px);
-            display: none; /* will be shown after loading */
+            display: none;
         }
 
         .tap-content {
@@ -745,12 +783,16 @@
             </div>
         </div>
 
-        <!-- Stage 2: Loading screen (10s) -->
+        <!-- Stage 2: Loading screen (10s) - COOLER ANIMATIONS -->
         <div class="splash-stage stage2" id="stage2">
             <div class="loading-content">
-                <div class="loading-spinner"></div>
+                <div class="cool-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
                 <div class="loading-message">Goa Social is loading...</div>
-                <div class="loading-sub">Preparing your videos</div>
+                <div class="loading-sub">Preparing your experience</div>
             </div>
         </div>
 
@@ -968,7 +1010,16 @@
         let feedReady = false;
         let loadingTimerFinished = false;
 
-        // Function to unmute all iframes using YouTube API
+        // Function to pause all videos
+        function pauseAllVideos() {
+            document.querySelectorAll('.video-container iframe').forEach(iframe => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
+            });
+        }
+
+        // Function to unmute all videos
         function unmuteAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
                 if (iframe.contentWindow) {
@@ -1177,15 +1228,13 @@
             }
         }
 
-        // Preload video iframe (creates hidden iframe to warm up connection) - but we'll rely on actual feed cards
-        // No extra preload needed because feed cards will be created and start buffering muted.
-
         // Create a feed card based on type
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
 
             if (item.type === 'video') {
+                // Changed autoplay=1 to autoplay=0 so videos don't start playing until visible
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1197,7 +1246,7 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
+                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
@@ -1269,7 +1318,7 @@
             return card;
         }
 
-        // Setup Intersection Observer after feed is ready
+        // Setup Intersection Observer with single-video playback logic
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
@@ -1279,10 +1328,12 @@
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
+                                // Pause all other videos first
+                                pauseAllVideos();
+                                // Then play this one
                                 iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            } else {
-                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                             }
+                            // No else - we don't pause when leaving because pauseAllVideos already handles that when another becomes visible
                         });
                     }, { threshold: 0.6 });
                 }
@@ -1366,7 +1417,7 @@
                 }
             }
 
-            // Build feed - first two videos will be among the first few items
+            // Build feed
             feedContainer.innerHTML = '';
             mixedFeed.forEach(item => {
                 const card = createFeedCard(item);
