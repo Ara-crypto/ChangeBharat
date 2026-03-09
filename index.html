@@ -58,19 +58,19 @@
             50% { transform: rotate(5deg) scaleX(-1); }
         }
 
-        /* ===== SPLASH SCREEN - PROFESSIONAL ===== */
+        /* ===== SPLASH SCREEN ===== */
         .splash-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: #000000;
+            background: linear-gradient(145deg, #1877f2, #0a5cff);
             z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
         }
 
         .splash-overlay.hidden {
@@ -88,7 +88,7 @@
 
         /* Stage 1: Logo zoom */
         .stage1 {
-            animation: logoZoom 1.5s forwards;
+            animation: logoZoom 2s forwards;
         }
 
         @keyframes logoZoom {
@@ -103,8 +103,8 @@
             height: 140px;
             border-radius: 35px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid white;
         }
 
         .splash-logo img {
@@ -113,88 +113,65 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Professional Loading Animation */
+        /* Stage 2: Loading screen */
         .stage2 {
             opacity: 0;
-            animation: fadeIn 0.5s forwards 1.5s;
-            background: #000000;
+            animation: fadeIn 0.5s forwards 2s;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
 
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        .professional-loader {
+        .loading-content {
             text-align: center;
             color: white;
         }
 
-        .loader-circle {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid #1877f2;
-            border-right: 3px solid #1877f2;
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
             border-radius: 50%;
-            animation: spin 1s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(24,119,242,0.3);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .loader-progress {
-            width: 200px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            margin: 20px auto;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .loader-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #1877f2, #0a5cff);
-            animation: progress 10s linear forwards;
-            box-shadow: 0 0 20px #1877f2;
-        }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        .loader-text {
+        .loading-message {
             font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff, #aaccff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .loader-sub {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.5);
-            letter-spacing: 1px;
+        .loading-sub {
+            font-size: 1rem;
+            opacity: 0.8;
         }
 
         /* Stage 3: Tap to begin */
         .stage3 {
             opacity: 0;
             animation: fadeIn 0.5s forwards;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
             display: none;
         }
 
         .tap-content {
             text-align: center;
+            animation: gentlePulse 2s infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .tap-logo {
@@ -203,14 +180,8 @@
             border-radius: 25px;
             overflow: hidden;
             margin: 0 auto 20px;
-            border: 2px solid #1877f2;
-            box-shadow: 0 0 30px rgba(24,119,242,0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(24,119,242,0.5); }
-            50% { box-shadow: 0 0 60px rgba(24,119,242,0.8); }
+            box-shadow: 0 10px 30px rgba(24,119,242,0.3);
+            border: 3px solid #1877f2;
         }
 
         .tap-logo img {
@@ -221,14 +192,14 @@
 
         .tap-message {
             font-size: 1.5rem;
-            color: white;
+            color: #1877f2;
             margin-bottom: 10px;
-            font-weight: 300;
+            font-weight: 600;
         }
 
         .tap-hint {
-            color: rgba(255,255,255,0.7);
-            font-size: 1rem;
+            color: #65676b;
+            font-size: 1.1rem;
         }
 
         .tap-hint i {
@@ -767,26 +738,23 @@
 
     <!-- Splash Screen with three stages -->
     <div class="splash-overlay" id="splashOverlay">
-        <!-- Stage 1: Logo zoom (1.5s) -->
+        <!-- Stage 1: Logo zoom (2s) -->
         <div class="splash-stage stage1" id="stage1">
             <div class="splash-logo">
                 <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
             </div>
         </div>
 
-        <!-- Stage 2: Professional Loading Animation -->
+        <!-- Stage 2: Loading screen -->
         <div class="splash-stage stage2" id="stage2">
-            <div class="professional-loader">
-                <div class="loader-circle"></div>
-                <div class="loader-progress">
-                    <div class="loader-progress-bar"></div>
-                </div>
-                <div class="loader-text">GOA SOCIAL</div>
-                <div class="loader-sub">loading experience</div>
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-message">Goa Social is loading...</div>
+                <div class="loading-sub">Preparing your videos</div>
             </div>
         </div>
 
-        <!-- Stage 3: Tap to begin -->
+        <!-- Stage 3: Tap to begin (shown after loading and first video ready) -->
         <div class="splash-stage stage3" id="stage3">
             <div class="tap-content">
                 <div class="tap-logo">
@@ -910,9 +878,6 @@
         // Configuration
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         
-        // Force 360p quality in YouTube embed
-        const QUALITY_PARAM = '&vq=small'; // 360p equivalent
-        
         // Expanded channels list
         const channels = [
             { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },
@@ -1002,8 +967,21 @@
         let audioAllowed = false;
         let feedReady = false;
         let loadingTimerFinished = false;
+        let videoContainers = [];
+        let bufferStart = 0;
+        let bufferEnd = 0;
+        const BUFFER_SIZE = 3; // Keep 3 videos ahead
 
-        // Function to mute/unmute videos
+        // Function to pause all videos
+        function pauseAllVideos() {
+            document.querySelectorAll('.video-container iframe').forEach(iframe => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
+            });
+        }
+
+        // Function to mute all videos
         function muteAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
                 if (iframe.contentWindow) {
@@ -1012,6 +990,7 @@
             });
         }
 
+        // Function to unmute all videos
         function unmuteAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
                 if (iframe.contentWindow) {
@@ -1020,18 +999,78 @@
             });
         }
 
+        // Function to unload video (remove src)
+        function unloadVideo(container) {
+            const iframe = container.querySelector('iframe');
+            if (iframe) {
+                iframe.src = '';
+            }
+        }
+
+        // Function to load video with proper embed format
+        function loadVideo(container, videoId) {
+            const iframe = container.querySelector('iframe');
+            if (!iframe) return;
+            // Only load if not already loaded
+            if (!iframe.src || iframe.src === '') {
+                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}`;
+            }
+        }
+
+        // Update buffer window based on visible index
+        function updateBufferWindow(visibleIndex) {
+            if (!videoContainers.length) return;
+            
+            const newBufferStart = Math.max(0, visibleIndex - 1);
+            const newBufferEnd = Math.min(videoContainers.length - 1, visibleIndex + BUFFER_SIZE);
+            
+            // Load videos in new buffer window
+            for (let i = newBufferStart; i <= newBufferEnd; i++) {
+                const container = videoContainers[i];
+                if (container && container.dataset.videoId) {
+                    loadVideo(container, container.dataset.videoId);
+                }
+            }
+            
+            // Unload videos outside buffer window
+            for (let i = 0; i < videoContainers.length; i++) {
+                if (i < newBufferStart || i > newBufferEnd) {
+                    const container = videoContainers[i];
+                    if (container) {
+                        // Pause first
+                        const iframe = container.querySelector('iframe');
+                        if (iframe && iframe.contentWindow) {
+                            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                        }
+                        // Then unload
+                        unloadVideo(container);
+                    }
+                }
+            }
+            
+            bufferStart = newBufferStart;
+            bufferEnd = newBufferEnd;
+        }
+
         // Auto-progress splash stages
         setTimeout(() => {
             stage1.style.display = 'none';
             stage2.style.display = 'flex';
-        }, 1500); // logo zoom ends at 1.5s
+        }, 2000);
 
-        // 10-second loading timer
+        // 10-second loading timer (we'll override when first video is ready)
         setTimeout(() => {
             loadingTimerFinished = true;
-            if (feedReady) {
-                stage2.style.display = 'none';
-                stage3.style.display = 'flex';
+            if (feedReady && videoContainers.length > 0) {
+                // Check if first video is loaded
+                const firstContainer = videoContainers[0];
+                if (firstContainer) {
+                    const iframe = firstContainer.querySelector('iframe');
+                    if (iframe && iframe.src && iframe.src !== '') {
+                        stage2.style.display = 'none';
+                        stage3.style.display = 'flex';
+                    }
+                }
             }
         }, 10000);
 
@@ -1134,25 +1173,31 @@
             }
         });
 
-        // Initialize app after user interaction (tap anywhere on splash)
+        // Initialize app after user interaction
         function startApp() {
             if (userInteracted) return;
             userInteracted = true;
             
-            // Hide splash overlay completely
             splashOverlay.classList.add('hidden');
             
             // Unlock audio
             if (!audioAllowed) {
                 audioAllowed = true;
-                unmuteAllVideos();
+                // Only unmute the visible video
+                const visibleContainer = Array.from(videoContainers).find(container => {
+                    const rect = container.getBoundingClientRect();
+                    return rect.top < window.innerHeight && rect.bottom > 0;
+                });
+                if (visibleContainer) {
+                    const iframe = visibleContainer.querySelector('iframe');
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                    }
+                }
             }
             
-            // Start video observer if feed is ready
             if (feedReady && !videoPlayerManager) {
                 setupVideoObserver();
-            } else if (feedReady && videoPlayerManager) {
-                setupAllIframes();
             }
         }
 
@@ -1173,10 +1218,8 @@
             youtubePlayer.src = '';
         });
 
-        // Check URL on load
         loadVideoFromUrl();
 
-        // Format time ago
         function timeAgo(dateString) {
             const now = new Date();
             const published = new Date(dateString);
@@ -1188,7 +1231,6 @@
             return Math.floor(diffHr / 24) + ' days ago';
         }
 
-        // Fetch videos for a channel
         async function fetchChannelVideos(channel) {
             try {
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
@@ -1219,15 +1261,12 @@
             }
         }
 
-        // Create a feed card based on type
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
 
             if (item.type === 'video') {
-                // Add quality parameter to force 360p
-                const videoSrc = `https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}${QUALITY_PARAM}`;
-                
+                // No src initially - will be loaded by buffer window
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="channel-icon">${item.icon || '📺'}</div>
@@ -1239,7 +1278,6 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            src="${videoSrc}"
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
@@ -1257,12 +1295,17 @@
                     </div>
                 `;
                 
-                // Add share event listener
                 const shareBtn = card.querySelector('.share-btn');
                 shareBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     showSharePopup(item.videoId);
                 });
+                
+                // Store video container reference
+                const videoContainer = card.querySelector('.video-container');
+                if (videoContainer) {
+                    videoContainers.push(videoContainer);
+                }
                 
             } else if (item.type === 'post') {
                 card.innerHTML = `
@@ -1311,24 +1354,41 @@
             return card;
         }
 
-        // Setup Intersection Observer with 60% threshold
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
+                    this.currentVisibleIndex = -1;
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            const iframe = entry.target.querySelector('iframe');
+                            const container = entry.target;
+                            const iframe = container.querySelector('iframe');
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
-                                // Play when 60% visible
-                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                            } else {
-                                // Pause when less than 60% visible
-                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                                // Find index of this container
+                                const index = videoContainers.indexOf(container);
+                                if (index !== -1 && index !== this.currentVisibleIndex) {
+                                    this.currentVisibleIndex = index;
+                                    
+                                    // Update buffer window
+                                    updateBufferWindow(index);
+                                    
+                                    // Pause all videos first
+                                    pauseAllVideos();
+                                    
+                                    // Play this video
+                                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                    
+                                    // Unmute only if user has interacted
+                                    if (userInteracted) {
+                                        iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                                    } else {
+                                        iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+                                    }
+                                }
                             }
                         });
-                    }, { threshold: 0.6 }); // 60% threshold
+                    }, { threshold: 0.6 });
                 }
 
                 observe(element) {
@@ -1338,20 +1398,16 @@
 
             videoPlayerManager = new VideoPlayerManager();
             
-            // Observe all existing video containers
-            document.querySelectorAll('.video-container').forEach(container => {
+            videoContainers.forEach(container => {
                 videoPlayerManager.observe(container);
             });
+            
+            // Initial buffer for first video
+            if (videoContainers.length > 0) {
+                updateBufferWindow(0);
+            }
         }
 
-        function setupAllIframes() {
-            if (!videoPlayerManager) return;
-            document.querySelectorAll('.video-container').forEach(container => {
-                videoPlayerManager.observe(container);
-            });
-        }
-
-        // Load live stories
         function loadLiveStories() {
             const lives = [
                 { name: 'Goa News Live', icon: '📺' },
@@ -1378,18 +1434,15 @@
             });
         }
 
-        // Load and mix the feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            // Fetch all channel videos in parallel
             const videoPromises = channels.map(fetchChannelVideos);
             const videoResults = await Promise.all(videoPromises);
             const allVideos = videoResults.flat().filter(v => v && v.videoId);
 
-            // Mix content: interleave videos with community posts
             const mixedFeed = [];
             let videoIndex = 0;
             let postIndex = 0;
@@ -1418,31 +1471,39 @@
 
             loadingEl.style.display = 'none';
             
-            // Feed is now ready
-            feedReady = true;
-            
-            // If loading timer already finished, show tap prompt now
-            if (loadingTimerFinished) {
-                stage2.style.display = 'none';
-                stage3.style.display = 'flex';
+            // Preload first 3 videos immediately
+            if (videoContainers.length > 0) {
+                for (let i = 0; i < Math.min(3, videoContainers.length); i++) {
+                    const container = videoContainers[i];
+                    if (container && container.dataset.videoId) {
+                        loadVideo(container, container.dataset.videoId);
+                    }
+                }
             }
             
-            // If user already tapped before feed ready, start observer now
+            feedReady = true;
+            
+            // Check if first video is loaded and show tap prompt
+            if (videoContainers.length > 0) {
+                const firstContainer = videoContainers[0];
+                const checkInterval = setInterval(() => {
+                    const iframe = firstContainer.querySelector('iframe');
+                    if (iframe && iframe.src && iframe.src !== '') {
+                        stage2.style.display = 'none';
+                        stage3.style.display = 'flex';
+                        clearInterval(checkInterval);
+                    }
+                }, 100);
+            }
+            
             if (userInteracted && !videoPlayerManager) {
                 setupVideoObserver();
             }
-            
-            // Make sure all videos start muted
-            setTimeout(muteAllVideos, 1000);
         }
 
-        // Load live stories immediately
         loadLiveStories();
-
-        // Start loading feed as soon as possible
         loadFeed();
 
-        // Handle popstate for back/forward navigation
         window.addEventListener('popstate', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('v');
@@ -1456,7 +1517,6 @@
             }
         });
 
-        // When user taps on splash, start the app
         splashOverlay.addEventListener('click', startApp);
     </script>
 </body>
