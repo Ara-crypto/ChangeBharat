@@ -924,6 +924,16 @@
         let videoPlayerManager = null;
         let logoClickCount = 0;
         let currentShareVideoId = null;
+        let audioAllowed = false; // New flag: true after first user tap
+
+        // Function to unmute all iframes using YouTube API
+        function unmuteAllVideos() {
+            document.querySelectorAll('.video-container iframe').forEach(iframe => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                }
+            });
+        }
 
         // Auto-progress splash: burst animation then show tap prompt
         setTimeout(() => {
@@ -1051,6 +1061,12 @@
             // Hide tap prompt
             tapPrompt.classList.remove('visible');
             
+            // Unlock audio: set flag and unmute all existing videos
+            if (!audioAllowed) {
+                audioAllowed = true;
+                unmuteAllVideos();
+            }
+            
             // Initialize video player manager with optimized loading
             class VideoPlayerManager {
                 constructor() {
@@ -1060,20 +1076,11 @@
                             if (!iframe) return;
 
                             if (entry.isIntersecting) {
-                                // Play current video with audio
+                                // Play current video (will be unmuted if audioAllowed)
                                 iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                                // Unmute after a short delay
-                                setTimeout(() => {
-                                    if (iframe.src.includes('mute=1')) {
-                                        iframe.src = iframe.src.replace('mute=1', 'mute=0');
-                                    }
-                                }, 200);
                             } else {
-                                // Pause and mute background videos
+                                // Pause background videos
                                 iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                                if (!iframe.src.includes('mute=1')) {
-                                    iframe.src = iframe.src.replace('mute=0', 'mute=1');
-                                }
                             }
                         });
                     }, { threshold: 0.6 });
@@ -1093,6 +1100,23 @@
             // Load feed and setup videos
             loadFeed();
         }
+
+        // Also handle any other tap on the document to unlock audio (just in case)
+        document.addEventListener('click', function unlockOnFirstTap() {
+            if (!audioAllowed && userInteracted) {
+                audioAllowed = true;
+                unmuteAllVideos();
+            }
+            document.removeEventListener('click', unlockOnFirstTap);
+        }, { once: true });
+
+        document.addEventListener('touchstart', function unlockOnFirstTouch() {
+            if (!audioAllowed && userInteracted) {
+                audioAllowed = true;
+                unmuteAllVideos();
+            }
+            document.removeEventListener('touchstart', unlockOnFirstTouch);
+        }, { once: true });
 
         tapPrompt.addEventListener('click', startApp);
 
@@ -1189,7 +1213,7 @@
                     </div>
                     <div class="video-container" data-video-id="${item.videoId}">
                         <iframe 
-                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=0&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
+                            src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"
                             allow="autoplay; fullscreen">
                         </iframe>
                         <div class="video-info-overlay">
