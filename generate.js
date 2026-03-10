@@ -9,7 +9,7 @@ const channels = [
   { id: 'UC-i0Rvr1-JtE2A8Z5RuVatg', name: 'Channel 2', icon: '🎥' }
 ];
 
-// Helper to safely parse ISO 8601 duration (e.g., PT59S, PT1M5S)
+// Safe duration parser for ISO 8601
 function parseDuration(duration) {
   const match = duration.match(/PT(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return 0;
