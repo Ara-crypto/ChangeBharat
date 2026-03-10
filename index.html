@@ -6,7 +6,7 @@
     <title>Goa Social · Only Shorts</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Preconnect to YouTube domains for faster loading -->
+    <!-- Preconnect to YouTube domains -->
     <link rel="preconnect" href="https://www.youtube.com">
     <link rel="preconnect" href="https://i.ytimg.com">
     <link rel="preconnect" href="https://www.googlevideo.com">
@@ -28,7 +28,6 @@
             position: relative;
         }
 
-        /* Subtle coconut tree decorations */
         .coconut-left {
             position: fixed;
             bottom: 80px;
@@ -76,6 +75,11 @@
             align-items: center;
             justify-content: center;
             transition: opacity 0.8s ease;
+            pointer-events: none; /* No taps until stage3 appears */
+        }
+
+        .splash-overlay.tappable {
+            pointer-events: auto;
         }
 
         .splash-overlay.hidden {
@@ -91,7 +95,6 @@
             justify-content: center;
         }
 
-        /* Stage 1: Logo zoom */
         .stage1 {
             animation: logoZoom 2s forwards;
         }
@@ -118,7 +121,6 @@
             object-fit: cover;
         }
 
-        /* Stage 2: Loading screen */
         .stage2 {
             opacity: 0;
             animation: fadeIn 0.5s forwards 2s;
@@ -160,7 +162,6 @@
             opacity: 0.8;
         }
 
-        /* Stage 3: Tap to begin */
         .stage3 {
             opacity: 0;
             animation: fadeIn 0.5s forwards;
@@ -816,9 +817,8 @@
         // === CONFIG ===
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         const SHORTS_MAX_DURATION = 70; // seconds
-        const MAX_SHORTS_PER_CHANNEL = 10; // Max 10 shorts per channel
+        const MAX_SHORTS_PER_CHANNEL = 10;
 
-        // === CHANNELS WITH DIRECT IDs (replace UCxxxxx with actual IDs) ===
         const channels = [
             { name: 'Adventure Goa DK', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '🌊' },
             { name: 'Shanaya Roy Gaming', id: 'UCxxxxx', icon: '🎮' },
@@ -860,16 +860,15 @@
         let logoClickCount = 0;
         let currentShareVideoId = null;
         let feedReady = false;
-        let loadingTimerFinished = false;
         let videoContainers = [];
         let currentVisibleIndex = 0;
         let previousVisibleIndex = -1;
-        let firstVideoReady = false; // flag for tap prompt
-        let secondVideoReady = false; // flag for second video loaded
+        let firstVideoReady = false;
+        let secondVideoReady = false;
+        let timeoutDone = false; // 10 seconds passed
         const BUFFER_PREV = 2;
         const BUFFER_NEXT = 6;
 
-        // Helper to get visible container index
         function getVisibleIndex() {
             for (let i = 0; i < videoContainers.length; i++) {
                 const rect = videoContainers[i].getBoundingClientRect();
@@ -878,7 +877,6 @@
             return 0;
         }
 
-        // Video control functions
         function pauseVideo(container) {
             const iframe = container?.querySelector('iframe');
             if (iframe?.contentWindow) {
@@ -907,15 +905,12 @@
             }
         }
 
-        // Enhanced loadVideo with warm-up and error handling
         function loadVideo(container, videoId) {
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
             if (!iframe.src) {
-                // Use 240p (vq=small) for ultra-fast loading
                 iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&vq=small`;
                 
-                // Error handling: if iframe fails to load, remove the card
                 iframe.addEventListener('error', function onError() {
                     console.warn('Video failed to load, removing:', videoId);
                     const card = container.closest('.feed-card');
@@ -927,8 +922,8 @@
                     iframe.removeEventListener('error', onError);
                 });
                 
-                // Warm up the buffer video: play then pause after a short delay
                 iframe.addEventListener('load', function onLoad() {
+                    // Warm up: play then pause
                     setTimeout(() => {
                         playVideo(container);
                         setTimeout(() => {
@@ -940,7 +935,6 @@
             }
         }
 
-        // Retry play until successful (for first video)
         function ensurePlayVideo(container, maxAttempts = 15, interval = 200) {
             let attempts = 0;
             const timer = setInterval(() => {
@@ -952,14 +946,11 @@
             }, interval);
         }
 
-        // Buffer window update
         function updateBufferWindow(visibleIdx) {
             if (!videoContainers.length) return;
-            
             const start = Math.max(0, visibleIdx - BUFFER_PREV);
             const end = Math.min(videoContainers.length - 1, visibleIdx + BUFFER_NEXT);
             
-            // Load all videos in buffer window (loadVideo will warm them up)
             for (let i = start; i <= end; i++) {
                 const container = videoContainers[i];
                 if (container?.dataset.videoId) {
@@ -967,7 +958,6 @@
                 }
             }
             
-            // Videos outside buffer window are paused but not unloaded
             for (let i = 0; i < start; i++) {
                 pauseVideo(videoContainers[i]);
             }
@@ -978,6 +968,18 @@
 
         // Splash timing
         setTimeout(() => { stage1.style.display = 'none'; stage2.style.display = 'flex'; }, 2000);
+        setTimeout(() => {
+            timeoutDone = true;
+            maybeShowTapScreen();
+        }, 10000);
+
+        function maybeShowTapScreen() {
+            if (timeoutDone && firstVideoReady && secondVideoReady) {
+                stage2.style.display = 'none';
+                stage3.style.display = 'flex';
+                splashOverlay.classList.add('tappable'); // Enable taps
+            }
+        }
 
         // Share functions
         function showSharePopup(videoId) { currentShareVideoId = videoId; shareOverlay.classList.add('visible'); sharePopup.classList.add('visible'); }
@@ -1016,7 +1018,7 @@
                 unmuteVideo(videoContainers[currentVisibleIndex]);
             }
         }
-        splashOverlay.addEventListener('click', startApp);
+        // Listener will be added when stage3 is shown
 
         // YouTube Player (shared links)
         function loadVideoFromUrl() {
@@ -1027,10 +1029,9 @@
         closePlayerBtn.addEventListener('click', () => { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; });
         loadVideoFromUrl();
 
-        // Fetch videos and filter for shorts (< 70s) – max 10 per channel
         async function fetchChannelShorts(channel) {
             try {
-                if (!channel.id || channel.id === 'UCxxxxx') return []; // Skip placeholders
+                if (!channel.id || channel.id === 'UCxxxxx') return [];
                 
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
@@ -1038,7 +1039,6 @@
                 const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
                 if (!uploadsId) return [];
 
-                // Fetch 15 videos to have enough after filtering (max 10 shorts)
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=15&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
@@ -1049,7 +1049,6 @@
                 const videosRes = await fetch(videosUrl);
                 const videosData = await videosRes.json();
 
-                // Filter for shorts and limit to 10
                 const shorts = videosData.items
                     .filter(video => {
                         const duration = video.contentDetails.duration;
@@ -1074,7 +1073,6 @@
             }
         }
 
-        // Create feed card
         function createFeedCard(item) {
             const card = document.createElement('div');
             card.className = 'feed-card';
@@ -1105,7 +1103,6 @@
             return card;
         }
 
-        // Balanced shuffle
         function balancedShuffle(items) {
             if (!items.length) return items;
             const groups = {};
@@ -1125,7 +1122,6 @@
             return result;
         }
 
-        // Setup Intersection Observer with index check
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
@@ -1137,18 +1133,14 @@
                             if (entry.isIntersecting && idx !== -1) {
                                 currentVisibleIndex = idx;
                                 
-                                // Only act if index changed
                                 if (currentVisibleIndex !== previousVisibleIndex) {
-                                    // Pause previous
                                     if (previousVisibleIndex !== -1) {
                                         pauseVideo(videoContainers[previousVisibleIndex]);
                                     }
                                     
-                                    // Play new
                                     playVideo(container);
                                     if (userInteracted) unmuteVideo(container);
                                     
-                                    // Update buffer window
                                     updateBufferWindow(currentVisibleIndex);
                                     
                                     previousVisibleIndex = currentVisibleIndex;
@@ -1166,7 +1158,6 @@
             videoContainers.forEach(c => videoPlayerManager.observe(c));
         }
 
-        // Load live stories
         function loadLiveStories() {
             const lives = [{ name: 'Goa Shorts', icon: '📱' }, { name: 'Beach Life', icon: '🌊' }, { name: 'Foodie', icon: '🍛' }, { name: 'Travel', icon: '✈️' }];
             liveStories.innerHTML = '';
@@ -1178,7 +1169,6 @@
             });
         }
 
-        // Load feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
@@ -1195,7 +1185,6 @@
             loadingEl.style.display = 'none';
             feedReady = true;
 
-            // Preload first 8 videos
             if (videoContainers.length > 0) {
                 for (let i = 0; i < Math.min(8, videoContainers.length); i++) {
                     if (videoContainers[i]?.dataset.videoId) {
@@ -1203,41 +1192,30 @@
                     }
                 }
                 
-                // Ensure first video plays with retry
                 const firstContainer = videoContainers[0];
                 setTimeout(() => {
                     ensurePlayVideo(firstContainer, 15, 200);
                 }, 500);
                 
-                // Mark first video as ready after a short delay
-                setTimeout(() => {
-                    firstVideoReady = true;
-                    // Check if second video is also loaded (iframe src set)
-                    const secondContainer = videoContainers[1];
-                    if (secondContainer) {
-                        const secondIframe = secondContainer.querySelector('iframe');
-                        if (secondIframe && secondIframe.src) {
-                            secondVideoReady = true;
-                        } else {
-                            // Wait a bit more for second video
-                            setTimeout(() => { secondVideoReady = true; }, 1000);
-                        }
-                    } else {
-                        secondVideoReady = true; // no second video
+                // Check readiness of first two videos
+                const checkInterval = setInterval(() => {
+                    const firstIframe = videoContainers[0]?.querySelector('iframe');
+                    const secondIframe = videoContainers[1]?.querySelector('iframe');
+                    if (firstIframe && firstIframe.src) {
+                        firstVideoReady = true;
                     }
-                    
-                    // Only show tap prompt after first two are ready
-                    if (loadingTimerFinished && firstVideoReady && secondVideoReady) {
-                        stage2.style.display = 'none';
-                        stage3.style.display = 'flex';
+                    if (secondIframe && secondIframe.src) {
+                        secondVideoReady = true;
                     }
-                }, 2000);
+                    if (firstVideoReady && secondVideoReady) {
+                        clearInterval(checkInterval);
+                        maybeShowTapScreen();
+                    }
+                }, 200);
             }
 
-            // Start observer
             setupVideoObserver();
             
-            // Initial buffer window
             setTimeout(() => {
                 const visibleIdx = getVisibleIndex();
                 currentVisibleIndex = visibleIdx;
@@ -1246,7 +1224,6 @@
             }, 500);
         }
 
-        // Init
         loadLiveStories();
         loadFeed();
 
@@ -1254,6 +1231,13 @@
             const videoId = new URLSearchParams(window.location.search).get('v');
             if (videoId) { youtubePlayerContainer.classList.add('active'); youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; }
             else { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; }
+        });
+
+        // Add tap listener only when splash becomes tappable
+        splashOverlay.addEventListener('click', function onSplashTap(e) {
+            if (splashOverlay.classList.contains('tappable')) {
+                startApp();
+            }
         });
     </script>
 </body>
