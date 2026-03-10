@@ -850,7 +850,7 @@
         let videoContainers = [];
         let currentVisibleIndex = 0;
         let previousVisibleIndex = -1;
-        let firstVideoReady = false;
+        let firstVideoPlaying = false; // new flag: first video is confirmed playing
         let secondVideoReady = false;
         let timeoutDone = false; // 10 seconds passed
         const BUFFER_PREV = 2;
@@ -892,7 +892,7 @@
             }
         }
 
-        function loadVideo(container, videoId) {
+        function loadVideo(container, videoId, isFirst = false) {
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
             if (!iframe.src) {
@@ -910,13 +910,23 @@
                 });
                 
                 iframe.addEventListener('load', function onLoad() {
-                    // Warm up: play then pause to initialize player
-                    setTimeout(() => {
+                    if (isFirst) {
+                        // First video: just play and leave playing
                         playVideo(container);
+                        // Confirm it's playing after a short delay
                         setTimeout(() => {
-                            pauseVideo(container);
-                        }, 100);
-                    }, 200);
+                            firstVideoPlaying = true;
+                            maybeShowTapScreen();
+                        }, 500);
+                    } else {
+                        // Buffer videos: warm up (play then pause)
+                        setTimeout(() => {
+                            playVideo(container);
+                            setTimeout(() => {
+                                pauseVideo(container);
+                            }, 100);
+                        }, 200);
+                    }
                     iframe.removeEventListener('load', onLoad);
                 }, { once: true });
             }
@@ -941,7 +951,8 @@
             for (let i = start; i <= end; i++) {
                 const container = videoContainers[i];
                 if (container?.dataset.videoId) {
-                    loadVideo(container, container.dataset.videoId);
+                    // isFirst = false for all buffer videos
+                    loadVideo(container, container.dataset.videoId, false);
                 }
             }
             
@@ -962,10 +973,11 @@
         }, 10000);
 
         function maybeShowTapScreen() {
-            if (timeoutDone && firstVideoReady && secondVideoReady) {
+            // Wait for timeout, first video playing, and second video ready
+            if (timeoutDone && firstVideoPlaying && secondVideoReady) {
                 stage2.style.display = 'none';
                 stage3.style.display = 'flex';
-                splashOverlay.classList.add('tappable'); // Enable taps
+                splashOverlay.classList.add('tappable');
             }
         }
 
@@ -1141,8 +1153,8 @@
                             }
                         });
                     }, { 
-                        threshold: 0.3,
-                        rootMargin: "200px 0px"
+                        threshold: 0.6,          // higher threshold to avoid flickering
+                        rootMargin: "50px 0px"    // smaller margin to prevent early triggers
                     });
                 }
                 observe(el) { this.observer.observe(el); }
@@ -1179,30 +1191,27 @@
             feedReady = true;
 
             if (videoContainers.length > 0) {
-                // Preload first 8 videos
+                // Load first 8 videos
                 for (let i = 0; i < Math.min(8, videoContainers.length); i++) {
-                    if (videoContainers[i]?.dataset.videoId) {
-                        loadVideo(videoContainers[i], videoContainers[i].dataset.videoId);
+                    const container = videoContainers[i];
+                    if (container?.dataset.videoId) {
+                        // First video is special (isFirst = true)
+                        loadVideo(container, container.dataset.videoId, i === 0);
                     }
                 }
                 
+                // Extra retry for first video
                 const firstContainer = videoContainers[0];
                 setTimeout(() => {
                     ensurePlayVideo(firstContainer, 15, 200);
-                }, 500);
+                }, 1000);
                 
-                // Check readiness of first two videos
-                const checkInterval = setInterval(() => {
-                    const firstIframe = videoContainers[0]?.querySelector('iframe');
+                // Check readiness of second video (iframe src)
+                const checkSecondInterval = setInterval(() => {
                     const secondIframe = videoContainers[1]?.querySelector('iframe');
-                    if (firstIframe && firstIframe.src) {
-                        firstVideoReady = true;
-                    }
                     if (secondIframe && secondIframe.src) {
                         secondVideoReady = true;
-                    }
-                    if (firstVideoReady && secondVideoReady) {
-                        clearInterval(checkInterval);
+                        clearInterval(checkSecondInterval);
                         maybeShowTapScreen();
                     }
                 }, 200);
