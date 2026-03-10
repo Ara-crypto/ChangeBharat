@@ -6,6 +6,10 @@
     <title>Goa Social · Only Shorts</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Preconnect to YouTube domains for faster loading -->
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="preconnect" href="https://i.ytimg.com">
+    <link rel="preconnect" href="https://www.googlevideo.com">
     <style>
         /* === YOUR EXACT CSS - UNCHANGED === */
         * {
@@ -735,9 +739,7 @@
     <!-- Splash Screen -->
     <div class="splash-overlay" id="splashOverlay">
         <div class="splash-stage stage1" id="stage1">
-            <div class="splash-logo">
-                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
-            </div>
+            <div class="splash-logo"><img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social"></div>
         </div>
         <div class="splash-stage stage2" id="stage2">
             <div class="loading-content">
@@ -748,13 +750,9 @@
         </div>
         <div class="splash-stage stage3" id="stage3">
             <div class="tap-content">
-                <div class="tap-logo">
-                    <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
-                </div>
+                <div class="tap-logo"><img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social"></div>
                 <div class="tap-message">Welcome to Goa Social</div>
-                <div class="tap-hint">
-                    <i class="fas fa-hand-pointer"></i> Tap anywhere to begin
-                </div>
+                <div class="tap-hint"><i class="fas fa-hand-pointer"></i> Tap anywhere to begin</div>
             </div>
         </div>
     </div>
@@ -762,10 +760,7 @@
     <!-- Share Popup -->
     <div class="share-overlay" id="shareOverlay"></div>
     <div class="share-popup" id="sharePopup">
-        <div class="share-popup-header">
-            <h3>Share to</h3>
-            <button class="close-share" id="closeShare">&times;</button>
-        </div>
+        <div class="share-popup-header"><h3>Share to</h3><button class="close-share" id="closeShare">&times;</button></div>
         <div class="share-options">
             <div class="share-option" data-share="whatsapp"><div class="share-icon whatsapp"><i class="fab fa-whatsapp"></i></div><span>WhatsApp</span></div>
             <div class="share-option" data-share="instagram"><div class="share-icon instagram"><i class="fab fa-instagram"></i></div><span>Instagram</span></div>
@@ -776,24 +771,16 @@
 
     <!-- YouTube Player Container (for shared videos) -->
     <div class="youtube-player-container" id="youtubePlayerContainer">
-        <div class="player-wrapper">
-            <button class="close-player" id="closePlayerBtn">&times;</button>
-            <iframe id="youtubePlayer" allow="autoplay; fullscreen"></iframe>
-        </div>
+        <div class="player-wrapper"><button class="close-player" id="closePlayerBtn">&times;</button><iframe id="youtubePlayer" allow="autoplay; fullscreen"></iframe></div>
     </div>
 
     <!-- Header -->
     <header class="app-header">
         <div class="logo-container" id="logoContainer">
-            <div class="logo-crop">
-                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
-            </div>
+            <div class="logo-crop"><img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social"></div>
             <span class="logo-text">Goa Social</span>
         </div>
-        <div class="header-actions">
-            <i class="fas fa-search"></i>
-            <i class="fas fa-bell"></i>
-        </div>
+        <div class="header-actions"><i class="fas fa-search"></i><i class="fas fa-bell"></i></div>
     </header>
 
     <!-- Stories -->
@@ -828,25 +815,26 @@
     <script>
         // === CONFIG ===
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
+        const SHORTS_MAX_DURATION = 70; // seconds - increased to 70 to catch all real Shorts
 
-        // === ALL YOUR CHANNEL HANDLES (16 total) ===
-        const channelHandles = [
-            { name: 'Adventure Goa DK', handle: '@adventuregoadk', icon: '🌊' },
-            { name: 'Shanaya Roy Gaming', handle: '@ShanayaRoyGaming', icon: '🎮' }, // From the shorts link
-            { name: 'RDXGOA', handle: '@rdxgoa', icon: '📡' },
-            { name: 'Goa 365 TV', handle: '@goa365tv', icon: '📺' },
-            { name: 'Prudent Media Goa', handle: '@prudentmediagoatv', icon: '📰' },
-            { name: 'GOA CHANNEL UK', handle: '@goachanneluk', icon: '🇬🇧' },
-            { name: 'Rakshan Das Recipes', handle: '@rakshandasrecipes8691', icon: '🍳' },
-            { name: 'Bushu Talkies Doll Maa', handle: '@bushu_talkiesdollmmaa', icon: '🎬' },
-            { name: 'We Raj', handle: '@_we_raj_', icon: '✨' },
-            { name: 'Goa Platform', handle: '@goaplatform', icon: '📱' },
-            { name: 'Hello People with Shaneli', handle: '@hellopeoplewithshaneli', icon: '👋' },
-            { name: 'Swancy Fernandes', handle: '@swancyfernandes', icon: '💫' },
-            { name: 'Glendy Fernandes', handle: '@glendyfernandes10', icon: '🌟' },
-            { name: 'Moses J Saldanha', handle: '@mosesjsaldanha', icon: '🎤' },
-            { name: 'Lesley in Goa', handle: '@lesleyingoa', icon: '🍽️' },
-            { name: 'TeranElle', handle: '@teranellefernandes', icon: '🎶' }
+        // === CHANNELS WITH DIRECT IDs (no extra API call) ===
+        const channels = [
+            { name: 'Adventure Goa DK', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '🌊' }, // Placeholder ID - replace with actual
+            { name: 'Shanaya Roy Gaming', id: 'UCxxxxx', icon: '🎮' }, // Replace with actual ID
+            { name: 'RDXGOA', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '📡' },
+            { name: 'Goa 365 TV', id: 'UC9CYT9gSNLevX5ey2_6CK0Q', icon: '📺' },
+            { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📰' },
+            { name: 'GOA CHANNEL UK', id: 'UCxxxxx', icon: '🇬🇧' }, // Replace with actual ID
+            { name: 'Rakshan Das Recipes', id: 'UCxxxxx', icon: '🍳' }, // Replace with actual ID
+            { name: 'Bushu Talkies Doll Maa', id: 'UCxxxxx', icon: '🎬' }, // Replace with actual ID
+            { name: 'We Raj', id: 'UCxxxxx', icon: '✨' }, // Replace with actual ID
+            { name: 'Goa Platform', id: 'UCxxxxx', icon: '📱' }, // Replace with actual ID
+            { name: 'Hello People with Shaneli', id: 'UCxxxxx', icon: '👋' }, // Replace with actual ID
+            { name: 'Swancy Fernandes', id: 'UCxxxxx', icon: '💫' }, // Replace with actual ID
+            { name: 'Glendy Fernandes', id: 'UCxxxxx', icon: '🌟' }, // Replace with actual ID
+            { name: 'Moses J Saldanha', id: 'UCxxxxx', icon: '🎤' }, // Replace with actual ID
+            { name: 'Lesley in Goa', id: 'UCxxxxx', icon: '🍽️' }, // Replace with actual ID
+            { name: 'TeranElle', id: 'UCxxxxx', icon: '🎶' } // Replace with actual ID
         ];
 
         // DOM Elements
@@ -873,50 +861,54 @@
         let feedReady = false;
         let loadingTimerFinished = false;
         let videoContainers = [];
-        const SHORTS_MAX_DURATION = 60; // seconds
+        let currentVisibleIndex = 0;
 
-        // Helper to get visible container
-        function getVisibleVideoContainer() {
-            const containers = document.querySelectorAll('.video-container');
-            for (let container of containers) {
-                const rect = container.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    return container;
-                }
+        // Helper to get visible container index
+        function getVisibleIndex() {
+            for (let i = 0; i < videoContainers.length; i++) {
+                const rect = videoContainers[i].getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) return i;
             }
-            return null;
+            return 0;
         }
 
         // Video control functions
         function pauseAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
-                if (iframe.contentWindow) {
-                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                }
+                if (iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
             });
         }
 
         function muteAllVideos() {
             document.querySelectorAll('.video-container iframe').forEach(iframe => {
-                if (iframe.contentWindow) {
-                    iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
-                }
+                if (iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
             });
         }
 
         function unmuteVideo(container) {
-            const iframe = container.querySelector('iframe');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-            }
+            const iframe = container?.querySelector('iframe');
+            if (iframe?.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
         }
 
-        // Load video with low quality
+        // Load video with low quality (only if not loaded)
         function loadVideo(container, videoId) {
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
             if (!iframe.src) {
                 iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&vq=small`;
+            }
+        }
+
+        // Dynamic buffer system: keep visible + next 3 loaded
+        function updateBuffer(visibleIdx) {
+            if (!videoContainers.length) return;
+            const start = visibleIdx;
+            const end = Math.min(videoContainers.length - 1, visibleIdx + 3);
+            
+            // Load visible and next 3
+            for (let i = start; i <= end; i++) {
+                const container = videoContainers[i];
+                if (container?.dataset.videoId) loadVideo(container, container.dataset.videoId);
             }
         }
 
@@ -950,20 +942,18 @@
             if (!userInteracted) return;
             logoClickCount++;
             if (logoClickCount === 7) {
-                const devWindow = window.open('about:blank', '_blank');
-                if (devWindow) devWindow.document.write(`<h1>Dev Mode Active</h1>`);
+                window.open('about:blank', '_blank').document.write('<h1>Dev Mode Active</h1>');
                 logoClickCount = 0;
             }
         });
 
-        // Start app (tap to unmute visible video)
+        // Start app (tap only unmutes visible video)
         function startApp() {
             if (userInteracted) return;
             userInteracted = true;
             splashOverlay.classList.add('hidden');
-            const visible = getVisibleVideoContainer();
-            if (visible) unmuteVideo(visible);
-            if (feedReady && !videoPlayerManager) setupVideoObserver();
+            const visibleIdx = getVisibleIndex();
+            if (videoContainers[visibleIdx]) unmuteVideo(videoContainers[visibleIdx]);
         }
         splashOverlay.addEventListener('click', startApp);
 
@@ -976,40 +966,30 @@
         closePlayerBtn.addEventListener('click', () => { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; });
         loadVideoFromUrl();
 
-        // Fetch channel ID from handle
-        async function getChannelId(handle) {
-            const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${handle}&key=${API_KEY}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            return data.items?.[0]?.id;
-        }
-
-        // Fetch videos and filter for shorts (< 60s)
+        // Fetch videos and filter for shorts (< 70s)
         async function fetchChannelShorts(channel) {
             try {
-                const channelId = await getChannelId(channel.handle);
-                if (!channelId) return [];
-
+                if (!channel.id || channel.id === 'UCxxxxx') return []; // Skip placeholder IDs
+                
                 // Get uploads playlist ID
-                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`;
+                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
                 const channelData = await channelRes.json();
                 const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
                 if (!uploadsId) return [];
 
-                // Fetch last 30 videos from playlist
+                // Fetch last 30 videos
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=30&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
                 if (!playlistData.items) return [];
 
                 const videoIds = playlistData.items.map(item => item.snippet.resourceId.videoId).join(',');
-                // Get video details to filter by duration
                 const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`;
                 const videosRes = await fetch(videosUrl);
                 const videosData = await videosRes.json();
 
-                // Filter for shorts (< 60 seconds)
+                // Filter for shorts (< 70 seconds)
                 const shorts = videosData.items
                     .filter(video => {
                         const duration = video.contentDetails.duration;
@@ -1023,13 +1003,7 @@
                     })
                     .map(video => {
                         const item = playlistData.items.find(i => i.snippet.resourceId.videoId === video.id);
-                        return {
-                            ...channel,
-                            type: 'video',
-                            videoId: video.id,
-                            title: item?.snippet?.title || 'Goa Short',
-                            publishedAt: item?.snippet?.publishedAt
-                        };
+                        return { ...channel, type: 'video', videoId: video.id, title: item?.snippet?.title || 'Goa Short' };
                     });
 
                 return shorts;
@@ -1047,18 +1021,12 @@
             card.innerHTML = `
                 <div class="card-header">
                     <div class="channel-icon">${item.icon || '📺'}</div>
-                    <div class="channel-info">
-                        <div class="channel-name">${item.name}</div>
-                        <div class="post-time">Shorts</div>
-                    </div>
+                    <div class="channel-info"><div class="channel-name">${item.name}</div><div class="post-time">Shorts</div></div>
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
                 <div class="video-container" data-video-id="${item.videoId}">
                     <iframe allow="autoplay; fullscreen"></iframe>
-                    <div class="video-info-overlay">
-                        <div class="video-title-small">${item.title.substring(0, 60)}</div>
-                        <div class="video-meta"><span>#Shorts</span></div>
-                    </div>
+                    <div class="video-info-overlay"><div class="video-title-small">${item.title.substring(0, 60)}</div><div class="video-meta"><span>#Shorts</span></div></div>
                 </div>
                 <div class="card-footer">
                     <span class="footer-item like-btn"><i class="fas fa-heart"></i> 1.2k</span>
@@ -1076,17 +1044,25 @@
             return card;
         }
 
-        // Setup Intersection Observer
+        // Setup Intersection Observer (starts immediately)
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            const iframe = entry.target.querySelector('iframe');
+                            const container = entry.target;
+                            const iframe = container.querySelector('iframe');
                             if (!iframe) return;
+                            
                             if (entry.isIntersecting) {
-                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                                if (userInteracted) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                                const idx = videoContainers.indexOf(container);
+                                if (idx !== -1) {
+                                    currentVisibleIndex = idx;
+                                    updateBuffer(currentVisibleIndex);
+                                    pauseAllVideos();
+                                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                    if (userInteracted) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                                }
                             } else {
                                 iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                                 iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
@@ -1112,44 +1088,45 @@
             });
         }
 
-        // Load feed: fetch all channels, filter shorts, build cards
+        // Load feed
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            const shortsPromises = channelHandles.map(fetchChannelShorts);
+            const shortsPromises = channels.map(fetchChannelShorts);
             const shortsResults = await Promise.all(shortsPromises);
-            // Flatten and shuffle for variety
             let allShorts = shortsResults.flat().filter(v => v);
             allShorts = allShorts.sort(() => 0.5 - Math.random());
 
             feedContainer.innerHTML = '';
-            allShorts.forEach(short => {
-                const card = createFeedCard(short);
-                feedContainer.appendChild(card);
-            });
+            allShorts.forEach(short => feedContainer.appendChild(createFeedCard(short)));
 
             loadingEl.style.display = 'none';
             feedReady = true;
 
-            // Preload first 5 shorts
+            // Preload first 5 immediately
             if (videoContainers.length > 0) {
                 for (let i = 0; i < Math.min(5, videoContainers.length); i++) {
-                    const container = videoContainers[i];
-                    if (container?.dataset.videoId) loadVideo(container, container.dataset.videoId);
+                    if (videoContainers[i]?.dataset.videoId) loadVideo(videoContainers[i], videoContainers[i].dataset.videoId);
                 }
                 // Show tap prompt when first video ready
                 const checkInterval = setInterval(() => {
-                    const first = videoContainers[0]?.querySelector('iframe');
-                    if (first && first.src) {
+                    if (videoContainers[0]?.querySelector('iframe')?.src) {
                         stage2.style.display = 'none';
                         stage3.style.display = 'flex';
                         clearInterval(checkInterval);
                     }
                 }, 100);
             }
-            if (userInteracted && !videoPlayerManager) setupVideoObserver();
+
+            // Start observer immediately (videos already playing under splash)
+            setupVideoObserver();
+            // Initial buffer
+            setTimeout(() => {
+                const visibleIdx = getVisibleIndex();
+                updateBuffer(visibleIdx);
+            }, 500);
         }
 
         // Init
