@@ -817,27 +817,16 @@
         // === CONFIG ===
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         const SHORTS_MAX_DURATION = 70; // seconds
-        const MAX_SHORTS_PER_CHANNEL = 30;
+        const MAX_SHORTS_PER_CHANNEL = 30; // fetch up to 30, we'll get ~20 after filtering
 
-        // === YOUR CHANNELS (replace UCxxxxx with actual IDs) ===
+        // === ONLY THE TWO SPECIFIED CHANNELS ===
         const channels = [
-            { name: 'Adventure Goa DK', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '🌊' },
-            { name: 'Shanaya Roy Gaming', id: 'UCxxxxx', icon: '🎮' },
-            { name: 'RDXGOA', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '📡' },
-            { name: 'Goa 365 TV', id: 'UC9CYT9gSNLevX5ey2_6CK0Q', icon: '📺' },
-            { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📰' },
-            { name: 'GOA CHANNEL UK', id: 'UCxxxxx', icon: '🇬🇧' },
-            { name: 'Rakshan Das Recipes', id: 'UCxxxxx', icon: '🍳' },
-            { name: 'Bushu Talkies Doll Maa', id: 'UCxxxxx', icon: '🎬' },
-            { name: 'We Raj', id: 'UCxxxxx', icon: '✨' },
-            { name: 'Goa Platform', id: 'UCxxxxx', icon: '📱' },
-            { name: 'Hello People with Shaneli', id: 'UCxxxxx', icon: '👋' },
-            { name: 'Swancy Fernandes', id: 'UCxxxxx', icon: '💫' },
-            { name: 'Glendy Fernandes', id: 'UCxxxxx', icon: '🌟' },
-            { name: 'Moses J Saldanha', id: 'UCxxxxx', icon: '🎤' },
-            { name: 'Lesley in Goa', id: 'UCxxxxx', icon: '🍽️' },
-            { name: 'TeranElle', id: 'UCxxxxx', icon: '🎶' }
+            { name: 'Channel 1', id: 'UCZ8yT-EnZneKIlJX7SgxzLQ', icon: '🎬' },
+            { name: 'Channel 2', id: 'UC-i0Rvr1-JtE2A8Z5RuVatg', icon: '🎥' }
         ];
+
+        // Simple JSON cache
+        let shortsCache = null; // will hold array of shorts after first fetch
 
         // DOM Elements
         const feedContainer = document.getElementById('feedContainer');
@@ -1046,48 +1035,57 @@
         closePlayerBtn.addEventListener('click', () => { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; });
         loadVideoFromUrl();
 
-        async function fetchChannelShorts(channel) {
-            try {
-                if (!channel.id || channel.id === 'UCxxxxx') return [];
-                
-                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
-                const channelRes = await fetch(channelUrl);
-                const channelData = await channelRes.json();
-                const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
-                if (!uploadsId) return [];
-
-                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&key=${API_KEY}`;
-                const playlistRes = await fetch(playlistUrl);
-                const playlistData = await playlistRes.json();
-                if (!playlistData.items) return [];
-
-                const videoIds = playlistData.items.map(item => item.snippet.resourceId.videoId).join(',');
-                const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`;
-                const videosRes = await fetch(videosUrl);
-                const videosData = await videosRes.json();
-
-                const shorts = videosData.items
-                    .filter(video => {
-                        const duration = video.contentDetails.duration;
-                        const match = duration.match(/PT(\d+M)?(\d+S)?/);
-                        let seconds = 0;
-                        if (match) {
-                            if (match[1]) seconds += parseInt(match[1]) * 60;
-                            if (match[2]) seconds += parseInt(match[2]);
-                        }
-                        return seconds <= SHORTS_MAX_DURATION && seconds > 0;
-                    })
-                    .slice(0, MAX_SHORTS_PER_CHANNEL)
-                    .map(video => {
-                        const item = playlistData.items.find(i => i.snippet.resourceId.videoId === video.id);
-                        return { ...channel, type: 'video', videoId: video.id, title: item?.snippet?.title || 'Goa Short' };
-                    });
-
-                return shorts;
-            } catch (e) {
-                console.warn(`Failed for ${channel.name}`, e);
-                return [];
+        // Fetch videos and filter for shorts (< 70s) – uses cache after first load
+        async function fetchAllShorts() {
+            if (shortsCache) {
+                return shortsCache; // return cached data
             }
+
+            const allShorts = [];
+            for (const channel of channels) {
+                try {
+                    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
+                    const channelRes = await fetch(channelUrl);
+                    const channelData = await channelRes.json();
+                    const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+                    if (!uploadsId) continue;
+
+                    const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&key=${API_KEY}`;
+                    const playlistRes = await fetch(playlistUrl);
+                    const playlistData = await playlistRes.json();
+                    if (!playlistData.items) continue;
+
+                    const videoIds = playlistData.items.map(item => item.snippet.resourceId.videoId).join(',');
+                    const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`;
+                    const videosRes = await fetch(videosUrl);
+                    const videosData = await videosRes.json();
+
+                    const shorts = videosData.items
+                        .filter(video => {
+                            const duration = video.contentDetails.duration;
+                            const match = duration.match(/PT(\d+M)?(\d+S)?/);
+                            let seconds = 0;
+                            if (match) {
+                                if (match[1]) seconds += parseInt(match[1]) * 60;
+                                if (match[2]) seconds += parseInt(match[2]);
+                            }
+                            return seconds <= SHORTS_MAX_DURATION && seconds > 0;
+                        })
+                        .slice(0, MAX_SHORTS_PER_CHANNEL)
+                        .map(video => {
+                            const item = playlistData.items.find(i => i.snippet.resourceId.videoId === video.id);
+                            return { ...channel, type: 'video', videoId: video.id, title: item?.snippet?.title || 'Goa Short' };
+                        });
+
+                    allShorts.push(...shorts);
+                } catch (e) {
+                    console.warn(`Failed for ${channel.name}`, e);
+                }
+            }
+            // Shuffle to mix channels
+            const shuffled = allShorts.sort(() => Math.random() - 0.5);
+            shortsCache = shuffled; // store in cache
+            return shuffled;
         }
 
         function createFeedCard(item) {
@@ -1120,25 +1118,6 @@
             return card;
         }
 
-        function balancedShuffle(items) {
-            if (!items.length) return items;
-            const groups = {};
-            items.forEach(item => {
-                if (!groups[item.name]) groups[item.name] = [];
-                groups[item.name].push(item);
-            });
-            const result = [];
-            const channelNames = Object.keys(groups);
-            const maxLength = Math.max(...Object.values(groups).map(g => g.length));
-            for (let i = 0; i < maxLength; i++) {
-                const shuffledChannels = [...channelNames].sort(() => Math.random() - 0.5);
-                for (const name of shuffledChannels) {
-                    if (groups[name][i]) result.push(groups[name][i]);
-                }
-            }
-            return result;
-        }
-
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
@@ -1168,8 +1147,8 @@
                             }
                         });
                     }, { 
-                        threshold: 0.7,          // higher threshold to avoid flicker
-                        rootMargin: "100px 0px"   // moderate preload margin
+                        threshold: 0.7,
+                        rootMargin: "100px 0px"
                     });
                 }
                 observe(el) { this.observer.observe(el); }
@@ -1194,10 +1173,7 @@
             feedContainer.innerHTML = '';
             feedContainer.appendChild(loadingEl);
 
-            const shortsPromises = channels.map(fetchChannelShorts);
-            const shortsResults = await Promise.all(shortsPromises);
-            let allShorts = shortsResults.flat().filter(v => v);
-            allShorts = balancedShuffle(allShorts);
+            const allShorts = await fetchAllShorts(); // uses cache after first call
 
             feedContainer.innerHTML = '';
             allShorts.forEach(short => feedContainer.appendChild(createFeedCard(short)));
@@ -1258,4 +1234,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
