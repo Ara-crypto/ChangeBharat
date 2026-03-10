@@ -3,33 +3,15 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Channel ID Extractor</title>
+<title>Auto Channel ID Extractor</title>
 
 <style>
+
 body{
-font-family:Arial;
 background:#111;
 color:white;
+font-family:Arial;
 padding:40px;
-}
-
-textarea{
-width:100%;
-height:260px;
-background:#222;
-color:white;
-border:none;
-padding:10px;
-}
-
-button{
-margin-top:15px;
-padding:12px 20px;
-font-size:16px;
-background:#1877f2;
-border:none;
-color:white;
-cursor:pointer;
 }
 
 pre{
@@ -38,78 +20,83 @@ padding:20px;
 margin-top:20px;
 white-space:pre-wrap;
 }
+
 </style>
 
 </head>
 
 <body>
 
-<h2>Goa Social Channel ID Extractor</h2>
+<h2>Goa Social Channel IDs</h2>
+<p>Fetching channel IDs automatically...</p>
 
-<textarea id="links">
-
-https://youtube.com/@adventuregoadk
-https://youtube.com/@rdxgoa
-https://youtube.com/@goa365tv
-https://youtube.com/@prudentmediagoatv
-https://youtube.com/@goachanneluk
-https://youtube.com/@rakshandasrecipes8691
-https://youtube.com/@bushu_talkiesdollmmaa
-https://youtube.com/@_we_raj_
-https://youtube.com/@goaplatform
-https://youtube.com/@hellopeoplewithshaneli
-https://youtube.com/@swancyfernandes
-https://youtube.com/@glendyfernandes10
-https://youtube.com/@mosesjsaldanha
-https://youtube.com/@lesleyingoa
-https://youtube.com/@teranellefernandes
-
-</textarea>
-
-<br>
-<button onclick="extract()">Get Channel IDs</button>
-
-<pre id="output"></pre>
+<pre id="output">Loading...</pre>
 
 <script>
 
-const API_KEY = "PASTE_YOUR_API_KEY_HERE";
+const API_KEY="PASTE_YOUR_KEY_HERE";
 
-async function extract(){
+const CHANNEL_LINKS=[
 
-const links = document
-.getElementById("links")
-.value
-.split("\n")
-.filter(l => l.includes("@"));
+"https://youtube.com/@adventuregoadk",
+"https://youtube.com/@rdxgoa",
+"https://youtube.com/@goa365tv",
+"https://youtube.com/@prudentmediagoatv",
+"https://youtube.com/@goachanneluk",
+"https://youtube.com/@rakshandasrecipes8691",
+"https://youtube.com/@bushu_talkiesdollmmaa",
+"https://youtube.com/@_we_raj_",
+"https://youtube.com/@goaplatform",
+"https://youtube.com/@hellopeoplewithshaneli",
+"https://youtube.com/@swancyfernandes",
+"https://youtube.com/@glendyfernandes10",
+"https://youtube.com/@mosesjsaldanha",
+"https://youtube.com/@lesleyingoa",
+"https://youtube.com/@teranellefernandes"
 
-let ids = [];
+];
 
-for(const link of links){
+async function getChannelId(handle){
 
-const handle = link.split("@")[1].split("?")[0];
-
-const res = await fetch(
+const res=await fetch(
 `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${handle}&maxResults=1&key=${API_KEY}`
 );
 
-const data = await res.json();
+const data=await res.json();
 
-if(data.items && data.items.length > 0){
+if(data.items && data.items.length){
 
-ids.push(data.items[0].snippet.channelId);
-
-}
+return data.items[0].snippet.channelId;
 
 }
 
-document.getElementById("output").textContent =
+return null;
+
+}
+
+async function start(){
+
+let ids=[];
+
+for(const link of CHANNEL_LINKS){
+
+const handle=link.split("@")[1];
+
+const id=await getChannelId(handle);
+
+if(id) ids.push(id);
+
+}
+
+document.getElementById("output").textContent=
 
 `const CHANNELS = [
 "${ids.join('",\n"')}"
 ];`;
 
 }
+
+start();
 
 </script>
 
