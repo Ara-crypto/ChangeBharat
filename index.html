@@ -1,1415 +1,1166 @@
-
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">  
-    <title>Goa Social · Fresh Feed</title>  
-    <!-- Font Awesome 6 -->  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">  
-    <style>  
-        * {  
-            margin: 0;  
-            padding: 0;  
-            box-sizing: border-box;  
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;  
-        }  body {  
-        background: linear-gradient(145deg, #f0f2f5, #e4e6eb);  
-        color: #1c1e21;  
-        line-height: 1.4;  
-        padding-bottom: 70px;  
-        min-height: 100vh;  
-        position: relative;  
-    }  
-
-    /* Subtle coconut tree decorations */  
-    .coconut-left {  
-        position: fixed;  
-        bottom: 80px;  
-        left: 10px;  
-        font-size: 4rem;  
-        opacity: 0.15;  
-        transform: rotate(-10deg);  
-        z-index: 0;  
-        pointer-events: none;  
-        animation: swayLeft 6s ease-in-out infinite;  
-    }  
-
-    .coconut-right {  
-        position: fixed;  
-        bottom: 80px;  
-        right: 10px;  
-        font-size: 4rem;  
-        opacity: 0.15;  
-        transform: rotate(10deg) scaleX(-1);  
-        z-index: 0;  
-        pointer-events: none;  
-        animation: swayRight 6s ease-in-out infinite;  
-    }  
-
-    @keyframes swayLeft {  
-        0%, 100% { transform: rotate(-10deg); }  
-        50% { transform: rotate(-5deg); }  
-    }  
-
-    @keyframes swayRight {  
-        0%, 100% { transform: rotate(10deg) scaleX(-1); }  
-        50% { transform: rotate(5deg) scaleX(-1); }  
-    }  
-
-    /* ===== SPLASH SCREEN ===== */  
-    .splash-overlay {  
-        position: fixed;  
-        top: 0;  
-        left: 0;  
-        right: 0;  
-        bottom: 0;  
-        background: linear-gradient(145deg, #1877f2, #0a5cff);  
-        z-index: 10000;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        transition: opacity 0.8s ease;  
-    }  
-
-    .splash-overlay.hidden {  
-        opacity: 0;  
-        pointer-events: none;  
-    }  
-
-    .splash-stage {  
-        position: absolute;  
-        inset: 0;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-    }  
-
-    /* Stage 1: Logo zoom */  
-    .stage1 {  
-        animation: logoZoom 2s forwards;  
-    }  
-
-    @keyframes logoZoom {  
-        0% { transform: scale(0.5); opacity: 0; }  
-        30% { transform: scale(1.2); opacity: 1; }  
-        60% { transform: scale(1); opacity: 1; }  
-        100% { transform: scale(1.5); opacity: 0; }  
-    }  
-
-    .splash-logo {  
-        width: 140px;  
-        height: 140px;  
-        border-radius: 35px;  
-        overflow: hidden;  
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);  
-        border: 4px solid white;  
-    }  
-
-    .splash-logo img {  
-        width: 100%;  
-        height: 100%;  
-        object-fit: cover;  
-    }  
-
-    /* Stage 2: Loading screen (10 seconds) */  
-    .stage2 {  
-        opacity: 0;  
-        animation: fadeIn 0.5s forwards 2s; /* appears after logo zoom ends */  
-        background: rgba(0,0,0,0.2);  
-        backdrop-filter: blur(5px);  
-    }  
-
-    @keyframes fadeIn {  
-        to { opacity: 1; }  
-    }  
-
-    .loading-content {  
-        text-align: center;  
-        color: white;  
-    }  
-
-    .loading-spinner {  
-        width: 60px;  
-        height: 60px;  
-        border: 5px solid rgba(255,255,255,0.3);  
-        border-top-color: white;  
-        border-radius: 50%;  
-        animation: spin 1s linear infinite;  
-        margin: 0 auto 20px;  
-    }  
-
-    @keyframes spin {  
-        to { transform: rotate(360deg); }  
-    }  
-
-    .loading-message {  
-        font-size: 1.5rem;  
-        font-weight: 600;  
-        margin-bottom: 10px;  
-    }  
-
-    .loading-sub {  
-        font-size: 1rem;  
-        opacity: 0.8;  
-    }  
-
-    /* Stage 3: Tap to begin */  
-    .stage3 {  
-        opacity: 0;  
-        animation: fadeIn 0.5s forwards;  
-        background: rgba(255,255,255,0.95);  
-        backdrop-filter: blur(5px);  
-        display: none; /* will be shown after loading */  
-    }  
-
-    .tap-content {  
-        text-align: center;  
-        animation: gentlePulse 2s infinite;  
-    }  
-
-    @keyframes gentlePulse {  
-        0%, 100% { transform: scale(1); }  
-        50% { transform: scale(1.05); }  
-    }  
-
-    .tap-logo {  
-        width: 100px;  
-        height: 100px;  
-        border-radius: 25px;  
-        overflow: hidden;  
-        margin: 0 auto 20px;  
-        box-shadow: 0 10px 30px rgba(24,119,242,0.3);  
-        border: 3px solid #1877f2;  
-    }  
-
-    .tap-logo img {  
-        width: 100%;  
-        height: 100%;  
-        object-fit: cover;  
-    }  
-
-    .tap-message {  
-        font-size: 1.5rem;  
-        color: #1877f2;  
-        margin-bottom: 10px;  
-        font-weight: 600;  
-    }  
-
-    .tap-hint {  
-        color: #65676b;  
-        font-size: 1.1rem;  
-    }  
-
-    .tap-hint i {  
-        color: #1877f2;  
-        margin-right: 8px;  
-    }  
-
-    /* ===== YOUTUBE PLAYER ===== */  
-    .youtube-player-container {  
-        position: fixed;  
-        top: 60px;  
-        left: 0;  
-        right: 0;  
-        z-index: 1000;  
-        background: white;  
-        display: none;  
-        padding: 0;  
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);  
-    }  
-
-    .youtube-player-container.active {  
-        display: block;  
-    }  
-
-    .player-wrapper {  
-        position: relative;  
-        width: 100%;  
-        aspect-ratio: 16/9;  
-        max-width: 800px;  
-        margin: 0 auto;  
-    }  
-
-    .player-wrapper iframe {  
-        width: 100%;  
-        height: 100%;  
-        border: none;  
-    }  
-
-    .close-player {  
-        position: absolute;  
-        top: -40px;  
-        right: 10px;  
-        background: #1877f2;  
-        color: white;  
-        border: none;  
-        width: 40px;  
-        height: 40px;  
-        border-radius: 50%;  
-        font-size: 1.2rem;  
-        cursor: pointer;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        font-weight: bold;  
-        z-index: 1001;  
-    }  
-
-    /* ===== HEADER ===== */  
-    .app-header {  
-        background: white;  
-        backdrop-filter: blur(12px);  
-        -webkit-backdrop-filter: blur(12px);  
-        padding: 12px 18px;  
-        display: flex;  
-        align-items: center;  
-        justify-content: space-between;  
-        border-bottom: 1px solid #e4e6eb;  
-        position: sticky;  
-        top: 0;  
-        z-index: 100;  
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);  
-    }  
-
-    .logo-container {  
-        display: flex;  
-        align-items: center;  
-        gap: 12px;  
-        cursor: pointer;  
-    }  
-
-    .logo-crop {  
-        width: 48px;  
-        height: 48px;  
-        border-radius: 14px;  
-        overflow: hidden;  
-        background: #1877f2;  
-        flex-shrink: 0;  
-        border: 1px solid #e4e6eb;  
-    }  
-
-    .logo-crop img {  
-        width: 100%;  
-        height: 100%;  
-        object-fit: cover;  
-        display: block;  
-    }  
-
-    .logo-text {  
-        font-size: 1.8rem;  
-        font-weight: 700;  
-        letter-spacing: -0.5px;  
-        color: #1877f2;  
-    }  
-
-    .header-actions {  
-        display: flex;  
-        gap: 20px;  
-        color: #65676b;  
-    }  
-
-    .header-actions i {  
-        font-size: 1.3rem;  
-    }  
-
-    /* ===== STORIES ===== */  
-    .stories-section {  
-        padding: 16px 16px 12px 16px;  
-        background: white;  
-        margin: 8px 0;  
-    }  
-
-    .section-header {  
-        display: flex;  
-        justify-content: space-between;  
-        align-items: center;  
-        margin-bottom: 16px;  
-    }  
-
-    .section-header h3 {  
-        font-size: 1.1rem;  
-        font-weight: 600;  
-        color: #1c1e21;  
-    }  
-
-    .section-header a {  
-        color: #1877f2;  
-        font-size: 0.9rem;  
-        text-decoration: none;  
-        font-weight: 500;  
-    }  
-
-    .stories-scroll {  
-        display: flex;  
-        gap: 16px;  
-        overflow-x: auto;  
-        scrollbar-width: none;  
-        -webkit-overflow-scrolling: touch;  
-        padding-bottom: 4px;  
-    }  
-
-    .stories-scroll::-webkit-scrollbar {  
-        display: none;  
-    }  
-
-    .story-item {  
-        min-width: 90px;  
-        text-align: center;  
-    }  
-
-    .story-avatar {  
-        width: 80px;  
-        height: 80px;  
-        border-radius: 50%;  
-        background: linear-gradient(145deg, #e4e6eb, #d8dade);  
-        position: relative;  
-        overflow: hidden;  
-        margin: 0 auto 8px auto;  
-        border: 3px solid #1877f2;  
-    }  
-
-    .story-avatar.live::after {  
-        content: 'LIVE';  
-        position: absolute;  
-        bottom: 4px;  
-        right: 4px;  
-        background: #ff0000;  
-        color: white;  
-        font-size: 0.55rem;  
-        padding: 2px 6px;  
-        border-radius: 20px;  
-        font-weight: 600;  
-    }  
-
-    .story-avatar-inner {  
-        width: 100%;  
-        height: 100%;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        font-size: 2rem;  
-        background: white;  
-        color: #1877f2;  
-    }  
-
-    .story-label {  
-        font-size: 0.75rem;  
-        color: #65676b;  
-        white-space: nowrap;  
-        overflow: hidden;  
-        text-overflow: ellipsis;  
-    }  
-
-    /* ===== CATEGORIES ===== */  
-    .categories-section {  
-        padding: 12px 16px;  
-        background: white;  
-        margin: 8px 0;  
-    }  
-
-    .chips-scroll {  
-        display: flex;  
-        gap: 10px;  
-        overflow-x: auto;  
-        scrollbar-width: none;  
-    }  
-
-    .chips-scroll::-webkit-scrollbar {  
-        display: none;  
-    }  
-
-    .chip {  
-        background: #f0f2f5;  
-        color: #1c1e21;  
-        padding: 8px 18px;  
-        border-radius: 40px;  
-        font-size: 0.85rem;  
-        white-space: nowrap;  
-        border: 1px solid #e4e6eb;  
-        font-weight: 500;  
-    }  
-
-    .chip.active {  
-        background: #1877f2;  
-        color: white;  
-        font-weight: 600;  
-        border: none;  
-    }  
-
-    /* ===== FEED ===== */  
-    .feed-container {  
-        max-width: 600px;  
-        margin: 0 auto;  
-        padding: 8px 0 20px 0;  
-    }  
-
-    .feed-card {  
-        background: white;  
-        border-radius: 16px;  
-        margin: 0 12px 16px 12px;  
-        overflow: hidden;  
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);  
-        border: 1px solid #e4e6eb;  
-    }  
-
-    .card-header {  
-        display: flex;  
-        align-items: center;  
-        padding: 14px;  
-        gap: 12px;  
-    }  
-
-    .channel-icon {  
-        width: 44px;  
-        height: 44px;  
-        border-radius: 12px;  
-        background: #f0f2f5;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        font-size: 1.2rem;  
-        color: #1877f2;  
-        border: 1px solid #e4e6eb;  
-    }  
-
-    .channel-info {  
-        flex: 1;  
-    }  
-
-    .channel-name {  
-        font-weight: 600;  
-        font-size: 1rem;  
-        color: #1c1e21;  
-    }  
-
-    .post-time {  
-        font-size: 0.7rem;  
-        color: #65676b;  
-        margin-top: 2px;  
-    }  
-
-    .card-header i {  
-        color: #65676b;  
-        font-size: 1.2rem;  
-    }  
-
-    .card-title {  
-        padding: 0 14px 10px 14px;  
-        font-size: 1.1rem;  
-        font-weight: 600;  
-        color: #1c1e21;  
-    }  
-
-    .card-description {  
-        padding: 0 14px 14px 14px;  
-        color: #65676b;  
-        font-size: 0.9rem;  
-        line-height: 1.5;  
-    }  
-
-    /* Video container */  
-    .video-container {  
-        position: relative;  
-        width: 100%;  
-        background: #000;  
-        aspect-ratio: 9/16;  
-        max-height: 500px;  
-    }  
-
-    .video-container iframe {  
-        width: 100%;  
-        height: 100%;  
-        border: none;  
-    }  
-
-    /* Image placeholder */  
-    .image-placeholder {  
-        width: 100%;  
-        height: 200px;  
-        background: linear-gradient(145deg, #f0f2f5, #e4e6eb);  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        color: #1877f2;  
-        font-size: 3rem;  
-        border-top: 1px solid #e4e6eb;  
-        border-bottom: 1px solid #e4e6eb;  
-    }  
-
-    /* Card footer */  
-    .card-footer {  
-        padding: 14px;  
-        display: flex;  
-        gap: 24px;  
-        border-top: 1px solid #e4e6eb;  
-    }  
-
-    .footer-item {  
-        display: flex;  
-        align-items: center;  
-        gap: 6px;  
-        color: #65676b;  
-        font-size: 0.9rem;  
-        cursor: pointer;  
-    }  
-
-    .footer-item i.fa-heart { color: #f23b5c; }  
-    .footer-item i.fa-comment { color: #1877f2; }  
-    .footer-item i.fa-share { color: #42b72a; }  
-
-    /* Share popup */  
-    .share-popup {  
-        position: fixed;  
-        bottom: 0;  
-        left: 0;  
-        right: 0;  
-        background: white;  
-        border-radius: 24px 24px 0 0;  
-        padding: 20px;  
-        z-index: 10001;  
-        transform: translateY(100%);  
-        transition: transform 0.3s ease;  
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);  
-    }  
-
-    .share-popup.visible {  
-        transform: translateY(0);  
-    }  
-
-    .share-popup-header {  
-        display: flex;  
-        justify-content: space-between;  
-        align-items: center;  
-        margin-bottom: 20px;  
-    }  
-
-    .share-popup-header h3 {  
-        font-size: 1.2rem;  
-        color: #1c1e21;  
-    }  
-
-    .close-share {  
-        background: none;  
-        border: none;  
-        font-size: 1.5rem;  
-        color: #65676b;  
-        cursor: pointer;  
-    }  
-
-    .share-options {  
-        display: grid;  
-        grid-template-columns: repeat(4, 1fr);  
-        gap: 16px;  
-        text-align: center;  
-    }  
-
-    .share-option {  
-        display: flex;  
-        flex-direction: column;  
-        align-items: center;  
-        gap: 8px;  
-        cursor: pointer;  
-    }  
-
-    .share-icon {  
-        width: 60px;  
-        height: 60px;  
-        border-radius: 30px;  
-        display: flex;  
-        align-items: center;  
-        justify-content: center;  
-        font-size: 1.8rem;  
-    }  
-
-    .share-icon.whatsapp { background: #25D366; color: white; }  
-    .share-icon.instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); color: white; }  
-    .share-icon.facebook { background: #1877f2; color: white; }  
-    .share-icon.copy { background: #f0f2f5; color: #1c1e21; }  
-
-    .share-option span {  
-        font-size: 0.8rem;  
-        color: #65676b;  
-    }  
-
-    .share-overlay {  
-        position: fixed;  
-        inset: 0;  
-        background: rgba(0,0,0,0.5);  
-        z-index: 10000;  
-        display: none;  
-    }  
-
-    .share-overlay.visible {  
-        display: block;  
-    }  
-
-    .event-details {  
-        padding: 0 14px 14px 14px;  
-        display: flex;  
-        gap: 20px;  
-        color: #1877f2;  
-        font-size: 0.9rem;  
-    }  
-
-    .event-details span i {  
-        margin-right: 6px;  
-        color: #65676b;  
-    }  
-
-    .video-info-overlay {  
-        position: absolute;  
-        bottom: 0;  
-        left: 0;  
-        right: 0;  
-        padding: 30px 14px 14px;  
-        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);  
-        color: white;  
-        pointer-events: none;  
-    }  
-
-    .video-title-small {  
-        font-size: 0.9rem;  
-        font-weight: 600;  
-        margin-bottom: 4px;  
-        color: white;  
-    }  
-
-    .video-meta {  
-        font-size: 0.7rem;  
-        color: #ccc;  
-        display: flex;  
-        gap: 12px;  
-    }  
-
-    .loading-indicator {  
-        text-align: center;  
-        padding: 30px;  
-        color: #1877f2;  
-    }  
-
-    .loading-indicator i {  
-        font-size: 2rem;  
-        animation: spin 1s linear infinite;  
-    }  
-
-    .bottom-nav {  
-        position: fixed;  
-        bottom: 0;  
-        left: 0;  
-        right: 0;  
-        background: white;  
-        border-top: 1px solid #e4e6eb;  
-        display: flex;  
-        justify-content: space-around;  
-        align-items: center;  
-        padding: 8px 10px 12px 10px;  
-        z-index: 1000;  
-    }  
-
-    .nav-item {  
-        display: flex;  
-        flex-direction: column;  
-        align-items: center;  
-        color: #65676b;  
-        font-size: 0.7rem;  
-        padding: 4px 12px;  
-        border-radius: 30px;  
-        background: transparent;  
-        border: none;  
-        cursor: pointer;  
-    }  
-
-    .nav-item i {  
-        font-size: 1.5rem;  
-        margin-bottom: 2px;  
-    }  
-
-    .nav-item.active {  
-        color: #1877f2;  
-    }  
-</style>
-
-</head>  
-<body>  
-    <!-- Coconut tree decorations -->  
-    <div class="coconut-left">🌴</div>  
-    <div class="coconut-right">🌴</div>  <!-- Splash Screen with three stages -->  
-<div class="splash-overlay" id="splashOverlay">  
-    <!-- Stage 1: Logo zoom (2s) -->  
-    <div class="splash-stage stage1" id="stage1">  
-        <div class="splash-logo">  
-            <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">  
-        </div>  
-    </div>  
-
-    <!-- Stage 2: Loading screen (10s) -->  
-    <div class="splash-stage stage2" id="stage2">  
-        <div class="loading-content">  
-            <div class="loading-spinner"></div>  
-            <div class="loading-message">Goa Social is loading...</div>  
-            <div class="loading-sub">Preparing your videos</div>  
-        </div>  
-    </div>  
-
-    <!-- Stage 3: Tap to begin (shown after loading) -->  
-    <div class="splash-stage stage3" id="stage3">  
-        <div class="tap-content">  
-            <div class="tap-logo">  
-                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">  
-            </div>  
-            <div class="tap-message">Welcome to Goa Social</div>  
-            <div class="tap-hint">  
-                <i class="fas fa-hand-pointer"></i> Tap anywhere to begin  
-            </div>  
-        </div>  
-    </div>  
-</div>  
-
-<!-- Share Popup -->  
-<div class="share-overlay" id="shareOverlay"></div>  
-<div class="share-popup" id="sharePopup">  
-    <div class="share-popup-header">  
-        <h3>Share to</h3>  
-        <button class="close-share" id="closeShare">&times;</button>  
-    </div>  
-    <div class="share-options">  
-        <div class="share-option" data-share="whatsapp">  
-            <div class="share-icon whatsapp"><i class="fab fa-whatsapp"></i></div>  
-            <span>WhatsApp</span>  
-        </div>  
-        <div class="share-option" data-share="instagram">  
-            <div class="share-icon instagram"><i class="fab fa-instagram"></i></div>  
-            <span>Instagram</span>  
-        </div>  
-        <div class="share-option" data-share="facebook">  
-            <div class="share-icon facebook"><i class="fab fa-facebook-f"></i></div>  
-            <span>Facebook</span>  
-        </div>  
-        <div class="share-option" data-share="copy">  
-            <div class="share-icon copy"><i class="fas fa-link"></i></div>  
-            <span>Copy Link</span>  
-        </div>  
-    </div>  
-</div>  
-
-<!-- YouTube Player Container (for shared videos) -->  
-<div class="youtube-player-container" id="youtubePlayerContainer">  
-    <div class="player-wrapper">  
-        <button class="close-player" id="closePlayerBtn">&times;</button>  
-        <iframe id="youtubePlayer" allow="autoplay; fullscreen"></iframe>  
-    </div>  
-</div>  
-
-<!-- Header -->  
-<header class="app-header">  
-    <div class="logo-container" id="logoContainer">  
-        <div class="logo-crop">  
-            <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">  
-        </div>  
-        <span class="logo-text">Goa Social</span>  
-    </div>  
-    <div class="header-actions">  
-        <i class="fas fa-search"></i>  
-        <i class="fas fa-bell"></i>  
-    </div>  
-</header>  
-
-<!-- Stories / Live Section -->  
-<div class="stories-section">  
-    <div class="section-header">  
-        <h3>LIVE NOW</h3>  
-        <a href="#">View all <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i></a>  
-    </div>  
-    <div class="stories-scroll" id="liveStories">  
-        <!-- Populated by JS -->  
-    </div>  
-</div>  
-
-<!-- Categories -->  
-<div class="categories-section">  
-    <div class="chips-scroll">  
-        <span class="chip active">All</span>  
-        <span class="chip">Trending</span>  
-        <span class="chip">Local</span>  
-        <span class="chip">News</span>  
-        <span class="chip">Videos</span>  
-        <span class="chip">Events</span>  
-        <span class="chip">Food</span>  
-        <span class="chip">Travel</span>  
-    </div>  
-</div>  
-
-<!-- Main Feed Container -->  
-<div class="feed-container" id="feedContainer">  
-    <div class="loading-indicator" id="loading">  
-        <i class="fas fa-circle-notch"></i>  
-        <p style="margin-top: 12px;">loading goa feed...</p>  
-    </div>  
-</div>  
-
-<!-- Bottom Navigation -->  
-<nav class="bottom-nav">  
-    <button class="nav-item active" onclick="window.location.href='index.html'">  
-        <i class="fas fa-home"></i>  
-        <span>Home</span>  
-    </button>  
-    <button class="nav-item" onclick="window.location.href='dating.html'">  
-        <i class="fas fa-heart"></i>  
-        <span>Dating</span>  
-    </button>  
-    <button class="nav-item" onclick="window.location.href='business.html'">  
-        <i class="fas fa-store"></i>  
-        <span>Business</span>  
-    </button>  
-    <button class="nav-item" onclick="window.location.href='chats.html'">  
-        <i class="fas fa-comment-dots"></i>  
-        <span>Chats</span>  
-    </button>  
-    <button class="nav-item" onclick="window.location.href='profile.html'">  
-        <i class="fas fa-user"></i>  
-        <span>Profile</span>  
-    </button>  
-</nav>  
-
-<script>  
-    // Configuration  
-    const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';  
-      
-    // Expanded channels list  
-    const channels = [  
-        { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📺' },  
-        { name: 'RDX Goa', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '🎥' },  
-        { name: 'Goa365', id: 'UC9CYT9gSNLevX5ey2_6CK0Q', icon: '📰' },  
-        { name: 'VoxLily', id: 'UCvoxlilyE8Zexample', icon: '🎵' },  
-        { name: 'InGoa News', id: 'UC3pJf8n2v8YbZ7y4q7o8S2g', icon: '📡' },  
-        { name: 'Gomantak TV', id: 'UCfXhFzN9C7g0s4xkL3rT5tw', icon: '📺' },  
-        { name: 'Alert Goans', id: 'UCYtM9s4m2vQy3yC8o8wJ5dw', icon: '⚠️' }  
-    ];  
-
-    const communityPosts = [  
-        {  
-            type: 'post',  
-            author: 'Goa Foodies',  
-            icon: '🍛',  
-            time: '2 hours ago',  
-            title: 'Best Beach Shack Food',  
-            content: 'Just tried the kingfish at Britto\'s! Absolutely amazing 😋 #goafood #beachlife',  
-            likes: 234,  
-            comments: 45,  
-            image: true  
-        },  
-        {  
-            type: 'event',  
-            title: 'Goa Carnival 2024',  
-            venue: 'Panjim City Center',  
-            date: 'Starting Feb 10',  
-            price: 'Free Entry',  
-            attendees: '2.3k interested',  
-            image: true  
-        },  
-        {  
-            type: 'post',  
-            author: 'Travel Goa',  
-            icon: '✈️',  
-            time: '5 hours ago',  
-            title: 'Hidden Waterfall Discovered',  
-            content: 'Found this amazing spot near Netravali. Perfect for monsoon trek! 🏞️',  
-            likes: 567,  
-            comments: 89,  
-            image: true  
-        },  
-        {  
-            type: 'post',  
-            author: 'Goa Beats',  
-            icon: '🎧',  
-            time: '1 hour ago',  
-            title: 'Sunset Music Festival',  
-            content: 'Live trance at Vagator tonight! 🎶✨',  
-            likes: 892,  
-            comments: 134,  
-            image: true  
-        },  
-        {  
-            type: 'event',  
-            title: 'Flea Market Night',  
-            venue: 'Arpora',  
-            date: 'Every Saturday',  
-            price: 'Free',  
-            attendees: '5.1k interested',  
-            image: true  
-        }  
-    ];  
-
-    // DOM Elements  
-    const feedContainer = document.getElementById('feedContainer');  
-    const liveStories = document.getElementById('liveStories');  
-    const loadingEl = document.getElementById('loading');  
-    const splashOverlay = document.getElementById('splashOverlay');  
-    const stage1 = document.getElementById('stage1');  
-    const stage2 = document.getElementById('stage2');  
-    const stage3 = document.getElementById('stage3');  
-    const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');  
-    const youtubePlayer = document.getElementById('youtubePlayer');  
-    const closePlayerBtn = document.getElementById('closePlayerBtn');  
-    const logoContainer = document.getElementById('logoContainer');  
-    const sharePopup = document.getElementById('sharePopup');  
-    const shareOverlay = document.getElementById('shareOverlay');  
-    const closeShare = document.getElementById('closeShare');  
-      
-    // App state  
-    let userInteracted = false;  
-    let videoPlayerManager = null;  
-    let logoClickCount = 0;  
-    let currentShareVideoId = null;  
-    let audioAllowed = false;  
-    let feedReady = false;  
-    let loadingTimerFinished = false;  
-
-    // Function to unmute all iframes using YouTube API  
-    function unmuteAllVideos() {  
-        document.querySelectorAll('.video-container iframe').forEach(iframe => {  
-            if (iframe.contentWindow) {  
-                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');  
-            }  
-        });  
-    }  
-
-    // Auto-progress splash stages  
-    setTimeout(() => {  
-        stage1.style.display = 'none';  
-        stage2.style.display = 'flex';  
-    }, 2000); // logo zoom ends at 2s  
-
-    // 10-second loading timer  
-    setTimeout(() => {  
-        loadingTimerFinished = true;  
-        if (feedReady) {  
-            // Hide loading, show tap prompt  
-            stage2.style.display = 'none';  
-            stage3.style.display = 'flex';  
-        }  
-    }, 10000); // 10 seconds loading  
-
-    // Share popup functions  
-    function showSharePopup(videoId) {  
-        currentShareVideoId = videoId;  
-        shareOverlay.classList.add('visible');  
-        sharePopup.classList.add('visible');  
-    }  
-
-    function hideSharePopup() {  
-        shareOverlay.classList.remove('visible');  
-        sharePopup.classList.remove('visible');  
-        currentShareVideoId = null;  
-    }  
-
-    // Handle share option clicks  
-    document.querySelectorAll('.share-option').forEach(option => {  
-        option.addEventListener('click', (e) => {  
-            const shareType = option.dataset.share;  
-            if (!currentShareVideoId) return;  
-
-            const shareUrl = `${window.location.origin}${window.location.pathname}?v=${currentShareVideoId}`;  
-              
-            switch(shareType) {  
-                case 'whatsapp':  
-                    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');  
-                    break;  
-                case 'instagram':  
-                    navigator.clipboard.writeText(shareUrl);  
-                    alert('Link copied! Open Instagram and paste it.');  
-                    break;  
-                case 'facebook':  
-                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');  
-                    break;  
-                case 'copy':  
-                    navigator.clipboard.writeText(shareUrl);  
-                    alert('Link copied to clipboard!');  
-                    break;  
-            }  
-            hideSharePopup();  
-        });  
-    });  
-
-    closeShare.addEventListener('click', hideSharePopup);  
-    shareOverlay.addEventListener('click', hideSharePopup);  
-
-    // Secret developer mode: tap logo 7 times  
-    logoContainer.addEventListener('click', () => {  
-        if (!userInteracted) return;  
-        logoClickCount++;  
-        if (logoClickCount === 7) {  
-            const devWindow = window.open('about:blank', '_blank');  
-            if (devWindow) {  
-                devWindow.document.write(`  
-                    <!DOCTYPE html>  
-                    <html>  
-                    <head>  
-                        <title>Goa Social · Developer Mode</title>  
-                        <meta name="viewport" content="width=device-width, initial-scale=1">  
-                        <style>  
-                            body {  
-                                background: linear-gradient(145deg, #1877f2, #0a5cff);  
-                                color: white;  
-                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;  
-                                display: flex;  
-                                align-items: center;  
-                                justify-content: center;  
-                                min-height: 100vh;  
-                                margin: 0;  
-                                padding: 20px;  
-                                text-align: center;  
-                            }  
-                            .container { max-width: 600px; }  
-                            h1 { font-size: 2.5rem; margin-bottom: 20px; }  
-                            p { font-size: 1.2rem; opacity: 0.9; line-height: 1.6; }  
-                            .badge {  
-                                background: white;  
-                                color: #1877f2;  
-                                padding: 8px 20px;  
-                                border-radius: 40px;  
-                                display: inline-block;  
-                                margin-top: 30px;  
-                                font-weight: bold;  
-                            }  
-                        </style>  
-                    </head>  
-                    <body>  
-                        <div class="container">  
-                            <h1>🔧 Developer Console</h1>  
-                            <p>Goa Social Analytics Dashboard</p>  
-                            <p style="font-size: 1rem; margin-top: 40px;">This page will be connected to your analytics backend.</p>  
-                            <div class="badge">DEV MODE ACTIVE</div>  
-                        </div>  
-                    </body>  
-                    </html>  
-                `);  
-            }  
-            logoClickCount = 0;  
-        }  
-    });  
-
-    // Initialize app after user interaction (tap anywhere on splash)  
-    function startApp() {  
-        if (userInteracted) return;  
-        userInteracted = true;  
-          
-        // Hide splash overlay completely  
-        splashOverlay.classList.add('hidden');  
-          
-        // Unlock audio  
-        if (!audioAllowed) {  
-            audioAllowed = true;  
-            unmuteAllVideos();  
-        }  
-          
-        // Start video observer if feed is ready  
-        if (feedReady && !videoPlayerManager) {  
-            setupVideoObserver();  
-        } else if (feedReady && videoPlayerManager) {  
-            setupAllIframes();  
-        }  
-    }  
-
-    // YouTube Player Functions  
-    function loadVideoFromUrl() {  
-        const urlParams = new URLSearchParams(window.location.search);  
-        const videoId = urlParams.get('v');  
-          
-        if (videoId) {  
-            youtubePlayerContainer.classList.add('active');  
-            youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;  
-        }  
-    }  
-
-    // Close player  
-    closePlayerBtn.addEventListener('click', () => {  
-        youtubePlayerContainer.classList.remove('active');  
-        youtubePlayer.src = '';  
-    });  
-
-    // Check URL on load  
-    loadVideoFromUrl();  
-
-    // Format time ago  
-    function timeAgo(dateString) {  
-        const now = new Date();  
-        const published = new Date(dateString);  
-        const diffMs = now - published;  
-        const diffHr = Math.floor(diffMs / (1000 * 60 * 60));  
-          
-        if (diffHr < 24) return diffHr + ' hours ago';  
-        if (diffHr < 48) return 'yesterday';  
-        return Math.floor(diffHr / 24) + ' days ago';  
-    }  
-
-    // Fetch videos for a channel (optimized)  
-    async function fetchChannelVideos(channel) {  
-        try {  
-            const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;  
-            const channelRes = await fetch(channelUrl);  
-            const channelData = await channelRes.json();  
-              
-            if (!channelData.items || !channelData.items[0]) return [];  
-              
-            const uploadsId = channelData.items[0].contentDetails.relatedPlaylists.uploads;  
-              
-            const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=8&key=${API_KEY}`;  
-            const playlistRes = await fetch(playlistUrl);  
-            const playlistData = await playlistRes.json();  
-              
-            return playlistData.items  
-                .filter(item => item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId)  
-                .map(item => ({  
-                    ...channel,  
-                    type: 'video',  
-                    videoId: item.snippet.resourceId.videoId,  
-                    title: item.snippet.title,  
-                    publishedAt: item.snippet.publishedAt,  
-                    thumbnail: item.snippet.thumbnails.high?.url  
-                }));  
-        } catch (e) {  
-            console.warn(`Failed for ${channel.name}`, e);  
-            return [];  
-        }  
-    }  
-
-    // Preload video iframe (creates hidden iframe to warm up connection) - but we'll rely on actual feed cards  
-    // No extra preload needed because feed cards will be created and start buffering muted.  
-
-    // Create a feed card based on type  
-    function createFeedCard(item) {  
-        const card = document.createElement('div');  
-        card.className = 'feed-card';  
-
-        if (item.type === 'video') {  
-            card.innerHTML = `  
-                <div class="card-header">  
-                    <div class="channel-icon">${item.icon || '📺'}</div>  
-                    <div class="channel-info">  
-                        <div class="channel-name">${item.name}</div>  
-                        <div class="post-time">${timeAgo(item.publishedAt)}</div>  
-                    </div>  
-                    <i class="fas fa-ellipsis-h"></i>  
-                </div>  
-                <div class="video-container" data-video-id="${item.videoId}">  
-                    <iframe   
-                        src="https://www.youtube.com/embed/${item.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${item.videoId}"  
-                        allow="autoplay; fullscreen">  
-                    </iframe>  
-                    <div class="video-info-overlay">  
-                        <div class="video-title-small">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</div>  
-                        <div class="video-meta">  
-                            <span><i class="fas fa-eye"></i> Trending</span>  
-                            <span><i class="fas fa-heart"></i> 1.2k</span>  
-                        </div>  
-                    </div>  
-                </div>  
-                <div class="card-footer">  
-                    <span class="footer-item like-btn"><i class="fas fa-heart"></i> 1.2k</span>  
-                    <span class="footer-item comment-btn"><i class="fas fa-comment"></i> 89</span>  
-                    <span class="footer-item share-btn" data-video-id="${item.videoId}"><i class="fas fa-share"></i> Share</span>  
-                </div>  
-            `;  
-              
-            // Add share event listener  
-            const shareBtn = card.querySelector('.share-btn');  
-            shareBtn.addEventListener('click', (e) => {  
-                e.stopPropagation();  
-                showSharePopup(item.videoId);  
-            });  
-              
-        } else if (item.type === 'post') {  
-            card.innerHTML = `  
-                <div class="card-header">  
-                    <div class="channel-icon">${item.icon || '👤'}</div>  
-                    <div class="channel-info">  
-                        <div class="channel-name">${item.author}</div>  
-                        <div class="post-time">${item.time}</div>  
-                    </div>  
-                    <i class="fas fa-ellipsis-h"></i>  
-                </div>  
-                <div class="card-title">${item.title}</div>  
-                <div class="card-description">${item.content}</div>  
-                ${item.image ? '<div class="image-placeholder"><i class="fas fa-umbrella-beach"></i></div>' : ''}  
-                <div class="card-footer">  
-                    <span class="footer-item"><i class="fas fa-heart"></i> ${item.likes}</span>  
-                    <span class="footer-item"><i class="fas fa-comment"></i> ${item.comments}</span>  
-                    <span class="footer-item"><i class="fas fa-share"></i> Share</span>  
-                </div>  
-            `;  
-        } else if (item.type === 'event') {  
-            card.innerHTML = `  
-                <div class="card-header">  
-                    <div class="channel-icon"><i class="fas fa-calendar-alt"></i></div>  
-                    <div class="channel-info">  
-                        <div class="channel-name">Goa Events</div>  
-                        <div class="post-time">Featured</div>  
-                    </div>  
-                    <i class="fas fa-ellipsis-h"></i>  
-                </div>  
-                <div class="image-placeholder">  
-                    <i class="fas fa-music"></i>  
-                </div>  
-                <div class="card-title">${item.title}</div>  
-                <div class="event-details">  
-                    <span><i class="fas fa-map-pin"></i> ${item.venue}</span>  
-                    <span><i class="fas fa-clock"></i> ${item.date}</span>  
-                </div>  
-                <div class="card-footer">  
-                    <span class="footer-item"><i class="fas fa-user-plus"></i> ${item.attendees}</span>  
-                    <span class="footer-item"><i class="fas fa-tag"></i> ${item.price}</span>  
-                </div>  
-            `;  
-        }  
-
-        return card;  
-    }  
-
-    // Setup Intersection Observer after feed is ready  
-    function setupVideoObserver() {  
-        class VideoPlayerManager {  
-            constructor() {  
-                this.observer = new IntersectionObserver((entries) => {  
-                    entries.forEach(entry => {  
-                        const iframe = entry.target.querySelector('iframe');  
-                        if (!iframe) return;  
-
-                        if (entry.isIntersecting) {  
-                            iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');  
-                        } else {  
-                            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');  
-                        }  
-                    });  
-                }, { threshold: 0.6 });  
-            }  
-
-            observe(element) {  
-                this.observer.observe(element);  
-            }  
-        }  
-
-        videoPlayerManager = new VideoPlayerManager();  
-          
-        // Observe all existing video containers  
-        document.querySelectorAll('.video-container').forEach(container => {  
-            videoPlayerManager.observe(container);  
-        });  
-    }  
-
-    function setupAllIframes() {  
-        if (!videoPlayerManager) return;  
-        document.querySelectorAll('.video-container').forEach(container => {  
-            videoPlayerManager.observe(container);  
-        });  
-    }  
-
-    // Load live stories (doesn't need to wait)  
-    function loadLiveStories() {  
-        const lives = [  
-            { name: 'Goa News Live', icon: '📺' },  
-            { name: 'Beach Party', icon: '🎵' },  
-            { name: 'Mass at Church', icon: '⛪' },  
-            { name: 'Market Vibes', icon: '🛍️' },  
-            { name: 'Sunset Session', icon: '🌅' },  
-            { name: 'DJ Night', icon: '🎧' }  
-        ];  
-          
-        liveStories.innerHTML = '';  
-        lives.forEach(live => {  
-            const story = document.createElement('div');  
-            story.className = 'story-item';  
-            story.innerHTML = `  
-                <div class="story-avatar live">  
-                    <div class="story-avatar-inner">  
-                        ${live.icon}  
-                    </div>  
-                </div>  
-                <div class="story-label">${live.name}</div>  
-            `;  
-            liveStories.appendChild(story);  
-        });  
-    }  
-
-    // Load and mix the feed (starts immediately)  
-    async function loadFeed() {  
-        loadingEl.style.display = 'block';  
-        feedContainer.innerHTML = '';  
-        feedContainer.appendChild(loadingEl);  
-
-        // Fetch all channel videos in parallel  
-        const videoPromises = channels.map(fetchChannelVideos);  
-        const videoResults = await Promise.all(videoPromises);  
-        const allVideos = videoResults.flat().filter(v => v && v.videoId);  
-
-        // Mix content: interleave videos with community posts  
-        const mixedFeed = [];  
-        let videoIndex = 0;  
-        let postIndex = 0;  
-
-        // Prioritize first two videos: we'll add them early  
-        for (let i = 0; i < 40; i++) {  
-            if (i % 3 === 0 && postIndex < communityPosts.length) {  
-                mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });  
-                postIndex = (postIndex + 1) % communityPosts.length;  
-            } else if (videoIndex < allVideos.length) {  
-                mixedFeed.push(allVideos[videoIndex]);  
-                videoIndex++;  
-            } else {  
-                if (postIndex < communityPosts.length) {  
-                    mixedFeed.push({ ...communityPosts[postIndex], type: communityPosts[postIndex].type });  
-                    postIndex = (postIndex + 1) % communityPosts.length;  
-                }  
-            }  
-        }  
-
-        // Build feed - first two videos will be among the first few items  
-        feedContainer.innerHTML = '';  
-        mixedFeed.forEach(item => {  
-            const card = createFeedCard(item);  
-            feedContainer.appendChild(card);  
-        });  
-
-        loadingEl.style.display = 'none';  
-          
-        // Feed is now ready  
-        feedReady = true;  
-          
-        // If loading timer already finished, show tap prompt now  
-        if (loadingTimerFinished) {  
-            stage2.style.display = 'none';  
-            stage3.style.display = 'flex';  
-        }  
-          
-        // If user already tapped before feed ready, start observer now  
-        if (userInteracted && !videoPlayerManager) {  
-            setupVideoObserver();  
-        }  
-    }  
-
-    // Load live stories immediately  
-    loadLiveStories();  
-
-    // Start loading feed as soon as possible  
-    loadFeed();  
-
-    // Handle popstate for back/forward navigation  
-    window.addEventListener('popstate', () => {  
-        const urlParams = new URLSearchParams(window.location.search);  
-        const videoId = urlParams.get('v');  
-          
-        if (videoId) {  
-            youtubePlayerContainer.classList.add('active');  
-            youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;  
-        } else {  
-            youtubePlayerContainer.classList.remove('active');  
-            youtubePlayer.src = '';  
-        }  
-    });  
-
-    // When user taps on splash, start the app  
-    splashOverlay.addEventListener('click', startApp);  
-</script>
-
-</body>  
-    </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Goa Social · Only Shorts</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* === YOUR EXACT CSS - UNCHANGED === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f2f5, #e4e6eb);
+            color: #1c1e21;
+            line-height: 1.4;
+            padding-bottom: 70px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Subtle coconut tree decorations */
+        .coconut-left {
+            position: fixed;
+            bottom: 80px;
+            left: 10px;
+            font-size: 4rem;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+            z-index: 0;
+            pointer-events: none;
+            animation: swayLeft 6s ease-in-out infinite;
+        }
+
+        .coconut-right {
+            position: fixed;
+            bottom: 80px;
+            right: 10px;
+            font-size: 4rem;
+            opacity: 0.15;
+            transform: rotate(10deg) scaleX(-1);
+            z-index: 0;
+            pointer-events: none;
+            animation: swayRight 6s ease-in-out infinite;
+        }
+
+        @keyframes swayLeft {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(-5deg); }
+        }
+
+        @keyframes swayRight {
+            0%, 100% { transform: rotate(10deg) scaleX(-1); }
+            50% { transform: rotate(5deg) scaleX(-1); }
+        }
+
+        /* ===== SPLASH SCREEN ===== */
+        .splash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(145deg, #1877f2, #0a5cff);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .splash-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stage 1: Logo zoom */
+        .stage1 {
+            animation: logoZoom 2s forwards;
+        }
+
+        @keyframes logoZoom {
+            0% { transform: scale(0.5); opacity: 0; }
+            30% { transform: scale(1.2); opacity: 1; }
+            60% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .splash-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 35px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid white;
+        }
+
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Stage 2: Loading screen */
+        .stage2 {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards 2s;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .loading-sub {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Stage 3: Tap to begin */
+        .stage3 {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+
+        .tap-content {
+            text-align: center;
+            animation: gentlePulse 2s infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .tap-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(24,119,242,0.3);
+            border: 3px solid #1877f2;
+        }
+
+        .tap-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tap-message {
+            font-size: 1.5rem;
+            color: #1877f2;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tap-hint {
+            color: #65676b;
+            font-size: 1.1rem;
+        }
+
+        .tap-hint i {
+            color: #1877f2;
+            margin-right: 8px;
+        }
+
+        /* ===== YOUTUBE PLAYER ===== */
+        .youtube-player-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            display: none;
+            padding: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .youtube-player-container.active {
+            display: block;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-player {
+            position: absolute;
+            top: -40px;
+            right: 10px;
+            background: #1877f2;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 1001;
+        }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: white;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e4e6eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-crop {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #1877f2;
+            flex-shrink: 0;
+            border: 1px solid #e4e6eb;
+        }
+
+        .logo-crop img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #1877f2;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            color: #65676b;
+        }
+
+        .header-actions i {
+            font-size: 1.3rem;
+        }
+
+        /* ===== STORIES ===== */
+        .stories-section {
+            padding: 16px 16px 12px 16px;
+            background: white;
+            margin: 8px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1c1e21;
+        }
+
+        .section-header a {
+            color: #1877f2;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .stories-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+
+        .stories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-item {
+            min-width: 90px;
+            text-align: center;
+        }
+
+        .story-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #e4e6eb, #d8dade);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto 8px auto;
+            border: 3px solid #1877f2;
+        }
+
+        .story-avatar.live::after {
+            content: 'LIVE';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: #ff0000;
+            color: white;
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .story-avatar-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: white;
+            color: #1877f2;
+        }
+
+        .story-label {
+            font-size: 0.75rem;
+            color: #65676b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== CATEGORIES ===== */
+        .categories-section {
+            padding: 12px 16px;
+            background: white;
+            margin: 8px 0;
+        }
+
+        .chips-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .chips-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            background: #f0f2f5;
+            color: #1c1e21;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            border: 1px solid #e4e6eb;
+            font-weight: 500;
+        }
+
+        .chip.active {
+            background: #1877f2;
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        /* ===== FEED ===== */
+        .feed-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 8px 0 20px 0;
+        }
+
+        .feed-card {
+            background: white;
+            border-radius: 16px;
+            margin: 0 12px 16px 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e4e6eb;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            gap: 12px;
+        }
+
+        .channel-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #1877f2;
+            border: 1px solid #e4e6eb;
+        }
+
+        .channel-info {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1c1e21;
+        }
+
+        .post-time {
+            font-size: 0.7rem;
+            color: #65676b;
+            margin-top: 2px;
+        }
+
+        .card-header i {
+            color: #65676b;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            padding: 0 14px 10px 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1c1e21;
+        }
+
+        .card-description {
+            padding: 0 14px 14px 14px;
+            color: #65676b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            aspect-ratio: 9/16;
+            max-height: 500px;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(145deg, #f0f2f5, #e4e6eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1877f2;
+            font-size: 3rem;
+            border-top: 1px solid #e4e6eb;
+            border-bottom: 1px solid #e4e6eb;
+        }
+
+        .card-footer {
+            padding: 14px;
+            display: flex;
+            gap: 24px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #65676b;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .footer-item i.fa-heart { color: #f23b5c; }
+        .footer-item i.fa-comment { color: #1877f2; }
+        .footer-item i.fa-share { color: #42b72a; }
+
+        .share-popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            z-index: 10001;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        }
+
+        .share-popup.visible {
+            transform: translateY(0);
+        }
+
+        .share-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .share-popup-header h3 {
+            font-size: 1.2rem;
+            color: #1c1e21;
+        }
+
+        .close-share {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #65676b;
+            cursor: pointer;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .share-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .share-icon.whatsapp { background: #25D366; color: white; }
+        .share-icon.instagram { background: linear-gradient(45deg, #f09433, #d62976, #962fbf); color: white; }
+        .share-icon.facebook { background: #1877f2; color: white; }
+        .share-icon.copy { background: #f0f2f5; color: #1c1e21; }
+
+        .share-option span {
+            font-size: 0.8rem;
+            color: #65676b;
+        }
+
+        .share-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: none;
+        }
+
+        .share-overlay.visible {
+            display: block;
+        }
+
+        .event-details {
+            padding: 0 14px 14px 14px;
+            display: flex;
+            gap: 20px;
+            color: #1877f2;
+            font-size: 0.9rem;
+        }
+
+        .event-details span i {
+            margin-right: 6px;
+            color: #65676b;
+        }
+
+        .video-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 14px 14px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            pointer-events: none;
+        }
+
+        .video-title-small {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .video-meta {
+            font-size: 0.7rem;
+            color: #ccc;
+            display: flex;
+            gap: 12px;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            padding: 30px;
+            color: #1877f2;
+        }
+
+        .loading-indicator i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e4e6eb;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 10px 12px 10px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #65676b;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #1877f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="coconut-left">🌴</div>
+    <div class="coconut-right">🌴</div>
+
+    <!-- Splash Screen -->
+    <div class="splash-overlay" id="splashOverlay">
+        <div class="splash-stage stage1" id="stage1">
+            <div class="splash-logo">
+                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+            </div>
+        </div>
+        <div class="splash-stage stage2" id="stage2">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-message">Goa Social is loading...</div>
+                <div class="loading-sub">Fetching only Shorts</div>
+            </div>
+        </div>
+        <div class="splash-stage stage3" id="stage3">
+            <div class="tap-content">
+                <div class="tap-logo">
+                    <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+                </div>
+                <div class="tap-message">Welcome to Goa Social</div>
+                <div class="tap-hint">
+                    <i class="fas fa-hand-pointer"></i> Tap anywhere to begin
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Popup -->
+    <div class="share-overlay" id="shareOverlay"></div>
+    <div class="share-popup" id="sharePopup">
+        <div class="share-popup-header">
+            <h3>Share to</h3>
+            <button class="close-share" id="closeShare">&times;</button>
+        </div>
+        <div class="share-options">
+            <div class="share-option" data-share="whatsapp"><div class="share-icon whatsapp"><i class="fab fa-whatsapp"></i></div><span>WhatsApp</span></div>
+            <div class="share-option" data-share="instagram"><div class="share-icon instagram"><i class="fab fa-instagram"></i></div><span>Instagram</span></div>
+            <div class="share-option" data-share="facebook"><div class="share-icon facebook"><i class="fab fa-facebook-f"></i></div><span>Facebook</span></div>
+            <div class="share-option" data-share="copy"><div class="share-icon copy"><i class="fas fa-link"></i></div><span>Copy Link</span></div>
+        </div>
+    </div>
+
+    <!-- YouTube Player Container (for shared videos) -->
+    <div class="youtube-player-container" id="youtubePlayerContainer">
+        <div class="player-wrapper">
+            <button class="close-player" id="closePlayerBtn">&times;</button>
+            <iframe id="youtubePlayer" allow="autoplay; fullscreen"></iframe>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo-container" id="logoContainer">
+            <div class="logo-crop">
+                <img src="https://i.imgur.com/u5kGI2s.jpeg" alt="Goa Social">
+            </div>
+            <span class="logo-text">Goa Social</span>
+        </div>
+        <div class="header-actions">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-bell"></i>
+        </div>
+    </header>
+
+    <!-- Stories -->
+    <div class="stories-section">
+        <div class="section-header"><h3>LIVE NOW</h3><a href="#">View all <i class="fas fa-chevron-right"></i></a></div>
+        <div class="stories-scroll" id="liveStories"></div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories-section">
+        <div class="chips-scroll">
+            <span class="chip active">All</span> <span class="chip">Trending</span> <span class="chip">Local</span>
+            <span class="chip">News</span> <span class="chip">Shorts</span> <span class="chip">Events</span>
+            <span class="chip">Food</span> <span class="chip">Travel</span>
+        </div>
+    </div>
+
+    <!-- Main Feed -->
+    <div class="feed-container" id="feedContainer">
+        <div class="loading-indicator" id="loading"><i class="fas fa-circle-notch"></i><p>loading goa shorts...</p></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="window.location.href='index.html'"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-item" onclick="window.location.href='dating.html'"><i class="fas fa-heart"></i><span>Dating</span></button>
+        <button class="nav-item" onclick="window.location.href='business.html'"><i class="fas fa-store"></i><span>Business</span></button>
+        <button class="nav-item" onclick="window.location.href='chats.html'"><i class="fas fa-comment-dots"></i><span>Chats</span></button>
+        <button class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i><span>Profile</span></button>
+    </nav>
+
+    <script>
+        // === CONFIG ===
+        const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
+
+        // === ALL YOUR CHANNEL HANDLES (16 total) ===
+        const channelHandles = [
+            { name: 'Adventure Goa DK', handle: '@adventuregoadk', icon: '🌊' },
+            { name: 'Shanaya Roy Gaming', handle: '@ShanayaRoyGaming', icon: '🎮' }, // From the shorts link
+            { name: 'RDXGOA', handle: '@rdxgoa', icon: '📡' },
+            { name: 'Goa 365 TV', handle: '@goa365tv', icon: '📺' },
+            { name: 'Prudent Media Goa', handle: '@prudentmediagoatv', icon: '📰' },
+            { name: 'GOA CHANNEL UK', handle: '@goachanneluk', icon: '🇬🇧' },
+            { name: 'Rakshan Das Recipes', handle: '@rakshandasrecipes8691', icon: '🍳' },
+            { name: 'Bushu Talkies Doll Maa', handle: '@bushu_talkiesdollmmaa', icon: '🎬' },
+            { name: 'We Raj', handle: '@_we_raj_', icon: '✨' },
+            { name: 'Goa Platform', handle: '@goaplatform', icon: '📱' },
+            { name: 'Hello People with Shaneli', handle: '@hellopeoplewithshaneli', icon: '👋' },
+            { name: 'Swancy Fernandes', handle: '@swancyfernandes', icon: '💫' },
+            { name: 'Glendy Fernandes', handle: '@glendyfernandes10', icon: '🌟' },
+            { name: 'Moses J Saldanha', handle: '@mosesjsaldanha', icon: '🎤' },
+            { name: 'Lesley in Goa', handle: '@lesleyingoa', icon: '🍽️' },
+            { name: 'TeranElle', handle: '@teranellefernandes', icon: '🎶' }
+        ];
+
+        // DOM Elements
+        const feedContainer = document.getElementById('feedContainer');
+        const liveStories = document.getElementById('liveStories');
+        const loadingEl = document.getElementById('loading');
+        const splashOverlay = document.getElementById('splashOverlay');
+        const stage1 = document.getElementById('stage1');
+        const stage2 = document.getElementById('stage2');
+        const stage3 = document.getElementById('stage3');
+        const youtubePlayerContainer = document.getElementById('youtubePlayerContainer');
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        const closePlayerBtn = document.getElementById('closePlayerBtn');
+        const logoContainer = document.getElementById('logoContainer');
+        const sharePopup = document.getElementById('sharePopup');
+        const shareOverlay = document.getElementById('shareOverlay');
+        const closeShare = document.getElementById('closeShare');
+
+        // App state
+        let userInteracted = false;
+        let videoPlayerManager = null;
+        let logoClickCount = 0;
+        let currentShareVideoId = null;
+        let feedReady = false;
+        let loadingTimerFinished = false;
+        let videoContainers = [];
+        const SHORTS_MAX_DURATION = 60; // seconds
+
+        // Helper to get visible container
+        function getVisibleVideoContainer() {
+            const containers = document.querySelectorAll('.video-container');
+            for (let container of containers) {
+                const rect = container.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    return container;
+                }
+            }
+            return null;
+        }
+
+        // Video control functions
+        function pauseAllVideos() {
+            document.querySelectorAll('.video-container iframe').forEach(iframe => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
+            });
+        }
+
+        function muteAllVideos() {
+            document.querySelectorAll('.video-container iframe').forEach(iframe => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+                }
+            });
+        }
+
+        function unmuteVideo(container) {
+            const iframe = container.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+            }
+        }
+
+        // Load video with low quality
+        function loadVideo(container, videoId) {
+            const iframe = container.querySelector('iframe');
+            if (!iframe) return;
+            if (!iframe.src) {
+                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&vq=small`;
+            }
+        }
+
+        // Splash timing
+        setTimeout(() => { stage1.style.display = 'none'; stage2.style.display = 'flex'; }, 2000);
+        setTimeout(() => {
+            loadingTimerFinished = true;
+            if (feedReady) { stage2.style.display = 'none'; stage3.style.display = 'flex'; }
+        }, 10000);
+
+        // Share functions
+        function showSharePopup(videoId) { currentShareVideoId = videoId; shareOverlay.classList.add('visible'); sharePopup.classList.add('visible'); }
+        function hideSharePopup() { shareOverlay.classList.remove('visible'); sharePopup.classList.remove('visible'); currentShareVideoId = null; }
+        document.querySelectorAll('.share-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                if (!currentShareVideoId) return;
+                const shareUrl = `${window.location.origin}${window.location.pathname}?v=${currentShareVideoId}`;
+                const type = option.dataset.share;
+                if (type === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
+                else if (type === 'instagram') { navigator.clipboard.writeText(shareUrl); alert('Link copied!'); }
+                else if (type === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                else if (type === 'copy') { navigator.clipboard.writeText(shareUrl); alert('Link copied!'); }
+                hideSharePopup();
+            });
+        });
+        closeShare.addEventListener('click', hideSharePopup);
+        shareOverlay.addEventListener('click', hideSharePopup);
+
+        // Developer mode
+        logoContainer.addEventListener('click', () => {
+            if (!userInteracted) return;
+            logoClickCount++;
+            if (logoClickCount === 7) {
+                const devWindow = window.open('about:blank', '_blank');
+                if (devWindow) devWindow.document.write(`<h1>Dev Mode Active</h1>`);
+                logoClickCount = 0;
+            }
+        });
+
+        // Start app (tap to unmute visible video)
+        function startApp() {
+            if (userInteracted) return;
+            userInteracted = true;
+            splashOverlay.classList.add('hidden');
+            const visible = getVisibleVideoContainer();
+            if (visible) unmuteVideo(visible);
+            if (feedReady && !videoPlayerManager) setupVideoObserver();
+        }
+        splashOverlay.addEventListener('click', startApp);
+
+        // YouTube Player (shared links)
+        function loadVideoFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            if (videoId) { youtubePlayerContainer.classList.add('active'); youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; }
+        }
+        closePlayerBtn.addEventListener('click', () => { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; });
+        loadVideoFromUrl();
+
+        // Fetch channel ID from handle
+        async function getChannelId(handle) {
+            const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${handle}&key=${API_KEY}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            return data.items?.[0]?.id;
+        }
+
+        // Fetch videos and filter for shorts (< 60s)
+        async function fetchChannelShorts(channel) {
+            try {
+                const channelId = await getChannelId(channel.handle);
+                if (!channelId) return [];
+
+                // Get uploads playlist ID
+                const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`;
+                const channelRes = await fetch(channelUrl);
+                const channelData = await channelRes.json();
+                const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+                if (!uploadsId) return [];
+
+                // Fetch last 30 videos from playlist
+                const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=30&key=${API_KEY}`;
+                const playlistRes = await fetch(playlistUrl);
+                const playlistData = await playlistRes.json();
+                if (!playlistData.items) return [];
+
+                const videoIds = playlistData.items.map(item => item.snippet.resourceId.videoId).join(',');
+                // Get video details to filter by duration
+                const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`;
+                const videosRes = await fetch(videosUrl);
+                const videosData = await videosRes.json();
+
+                // Filter for shorts (< 60 seconds)
+                const shorts = videosData.items
+                    .filter(video => {
+                        const duration = video.contentDetails.duration;
+                        const match = duration.match(/PT(\d+M)?(\d+S)?/);
+                        let seconds = 0;
+                        if (match) {
+                            if (match[1]) seconds += parseInt(match[1]) * 60;
+                            if (match[2]) seconds += parseInt(match[2]);
+                        }
+                        return seconds <= SHORTS_MAX_DURATION && seconds > 0;
+                    })
+                    .map(video => {
+                        const item = playlistData.items.find(i => i.snippet.resourceId.videoId === video.id);
+                        return {
+                            ...channel,
+                            type: 'video',
+                            videoId: video.id,
+                            title: item?.snippet?.title || 'Goa Short',
+                            publishedAt: item?.snippet?.publishedAt
+                        };
+                    });
+
+                return shorts;
+            } catch (e) {
+                console.warn(`Failed for ${channel.name}`, e);
+                return [];
+            }
+        }
+
+        // Create feed card (iframe without src initially)
+        function createFeedCard(item) {
+            const card = document.createElement('div');
+            card.className = 'feed-card';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="channel-icon">${item.icon || '📺'}</div>
+                    <div class="channel-info">
+                        <div class="channel-name">${item.name}</div>
+                        <div class="post-time">Shorts</div>
+                    </div>
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+                <div class="video-container" data-video-id="${item.videoId}">
+                    <iframe allow="autoplay; fullscreen"></iframe>
+                    <div class="video-info-overlay">
+                        <div class="video-title-small">${item.title.substring(0, 60)}</div>
+                        <div class="video-meta"><span>#Shorts</span></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="footer-item like-btn"><i class="fas fa-heart"></i> 1.2k</span>
+                    <span class="footer-item comment-btn"><i class="fas fa-comment"></i> 89</span>
+                    <span class="footer-item share-btn" data-video-id="${item.videoId}"><i class="fas fa-share"></i> Share</span>
+                </div>
+            `;
+
+            const shareBtn = card.querySelector('.share-btn');
+            shareBtn.addEventListener('click', (e) => { e.stopPropagation(); showSharePopup(item.videoId); });
+
+            const videoContainer = card.querySelector('.video-container');
+            if (videoContainer) videoContainers.push(videoContainer);
+
+            return card;
+        }
+
+        // Setup Intersection Observer
+        function setupVideoObserver() {
+            class VideoPlayerManager {
+                constructor() {
+                    this.observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const iframe = entry.target.querySelector('iframe');
+                            if (!iframe) return;
+                            if (entry.isIntersecting) {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                                if (userInteracted) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+                            } else {
+                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                                iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+                            }
+                        });
+                    }, { threshold: 0.6 });
+                }
+                observe(el) { this.observer.observe(el); }
+            }
+            videoPlayerManager = new VideoPlayerManager();
+            videoContainers.forEach(c => videoPlayerManager.observe(c));
+        }
+
+        // Load live stories
+        function loadLiveStories() {
+            const lives = [{ name: 'Goa Shorts', icon: '📱' }, { name: 'Beach Life', icon: '🌊' }, { name: 'Foodie', icon: '🍛' }, { name: 'Travel', icon: '✈️' }];
+            liveStories.innerHTML = '';
+            lives.forEach(live => {
+                const story = document.createElement('div');
+                story.className = 'story-item';
+                story.innerHTML = `<div class="story-avatar live"><div class="story-avatar-inner">${live.icon}</div></div><div class="story-label">${live.name}</div>`;
+                liveStories.appendChild(story);
+            });
+        }
+
+        // Load feed: fetch all channels, filter shorts, build cards
+        async function loadFeed() {
+            loadingEl.style.display = 'block';
+            feedContainer.innerHTML = '';
+            feedContainer.appendChild(loadingEl);
+
+            const shortsPromises = channelHandles.map(fetchChannelShorts);
+            const shortsResults = await Promise.all(shortsPromises);
+            // Flatten and shuffle for variety
+            let allShorts = shortsResults.flat().filter(v => v);
+            allShorts = allShorts.sort(() => 0.5 - Math.random());
+
+            feedContainer.innerHTML = '';
+            allShorts.forEach(short => {
+                const card = createFeedCard(short);
+                feedContainer.appendChild(card);
+            });
+
+            loadingEl.style.display = 'none';
+            feedReady = true;
+
+            // Preload first 5 shorts
+            if (videoContainers.length > 0) {
+                for (let i = 0; i < Math.min(5, videoContainers.length); i++) {
+                    const container = videoContainers[i];
+                    if (container?.dataset.videoId) loadVideo(container, container.dataset.videoId);
+                }
+                // Show tap prompt when first video ready
+                const checkInterval = setInterval(() => {
+                    const first = videoContainers[0]?.querySelector('iframe');
+                    if (first && first.src) {
+                        stage2.style.display = 'none';
+                        stage3.style.display = 'flex';
+                        clearInterval(checkInterval);
+                    }
+                }, 100);
+            }
+            if (userInteracted && !videoPlayerManager) setupVideoObserver();
+        }
+
+        // Init
+        loadLiveStories();
+        loadFeed();
+
+        window.addEventListener('popstate', () => {
+            const videoId = new URLSearchParams(window.location.search).get('v');
+            if (videoId) { youtubePlayerContainer.classList.add('active'); youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; }
+            else { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; }
+        });
+    </script>
+</body>
+</html>
