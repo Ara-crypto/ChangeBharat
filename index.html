@@ -862,7 +862,9 @@
         let loadingTimerFinished = false;
         let videoContainers = [];
         let currentVisibleIndex = 0;
-        const BUFFER_SIZE = 5; // Keep next 5 videos loaded
+        let previousVisibleIndex = -1;
+        const BUFFER_PREV = 2; // Keep previous 2 videos loaded
+        const BUFFER_NEXT = 6; // Keep next 6 videos loaded
 
         // Helper to get visible container index
         function getVisibleIndex() {
@@ -873,22 +875,33 @@
             return 0;
         }
 
-        // Video control functions
-        function pauseAllVideos() {
-            document.querySelectorAll('.video-container iframe').forEach(iframe => {
-                if (iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            });
+        // Video control functions - only pause previous video, never all videos
+        function pauseVideo(container) {
+            const iframe = container?.querySelector('iframe');
+            if (iframe?.contentWindow) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
         }
 
-        function muteAllVideos() {
-            document.querySelectorAll('.video-container iframe').forEach(iframe => {
-                if (iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
-            });
+        function muteVideo(container) {
+            const iframe = container?.querySelector('iframe');
+            if (iframe?.contentWindow) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+            }
         }
 
         function unmuteVideo(container) {
             const iframe = container?.querySelector('iframe');
-            if (iframe?.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+            if (iframe?.contentWindow) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+            }
+        }
+
+        function playVideo(container) {
+            const iframe = container?.querySelector('iframe');
+            if (iframe?.contentWindow) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            }
         }
 
         // Load video with low quality (only if not loaded)
@@ -900,16 +913,27 @@
             }
         }
 
-        // Aggressive buffer: keep visible + next 5 loaded
-        function updateBuffer(visibleIdx) {
+        // Proper buffer window: visible + prev 2 + next 6
+        function updateBufferWindow(visibleIdx) {
             if (!videoContainers.length) return;
-            const start = visibleIdx;
-            const end = Math.min(videoContainers.length - 1, visibleIdx + BUFFER_SIZE);
             
-            // Load visible and next 5
+            const start = Math.max(0, visibleIdx - BUFFER_PREV);
+            const end = Math.min(videoContainers.length - 1, visibleIdx + BUFFER_NEXT);
+            
+            // Load all videos in buffer window
             for (let i = start; i <= end; i++) {
                 const container = videoContainers[i];
-                if (container?.dataset.videoId) loadVideo(container, container.dataset.videoId);
+                if (container?.dataset.videoId) {
+                    loadVideo(container, container.dataset.videoId);
+                }
+            }
+            
+            // Videos outside buffer window are paused but not unloaded
+            for (let i = 0; i < start; i++) {
+                pauseVideo(videoContainers[i]);
+            }
+            for (let i = end + 1; i < videoContainers.length; i++) {
+                pauseVideo(videoContainers[i]);
             }
         }
 
@@ -953,8 +977,9 @@
             if (userInteracted) return;
             userInteracted = true;
             splashOverlay.classList.add('hidden');
-            const visibleIdx = getVisibleIndex();
-            if (videoContainers[visibleIdx]) unmuteVideo(videoContainers[visibleIdx]);
+            if (videoContainers[currentVisibleIndex]) {
+                unmuteVideo(videoContainers[currentVisibleIndex]);
+            }
         }
         splashOverlay.addEventListener('click', startApp);
 
@@ -1043,49 +1068,75 @@
             return card;
         }
 
-        // Setup Intersection Observer
+        // Balanced shuffle that ensures channel distribution
+        function balancedShuffle(items) {
+            if (!items.length) return items;
+            
+            // Group by channel name
+            const groups = {};
+            items.forEach(item => {
+                if (!groups[item.name]) groups[item.name] = [];
+                groups[item.name].push(item);
+            });
+            
+            const result = [];
+            const channelNames = Object.keys(groups);
+            let maxLength = Math.max(...Object.values(groups).map(g => g.length));
+            
+            // Interleave from each channel round-robin
+            for (let i = 0; i < maxLength; i++) {
+                // Shuffle channel order each round to add randomness
+                const shuffledChannels = [...channelNames].sort(() => Math.random() - 0.5);
+                for (const name of shuffledChannels) {
+                    if (groups[name][i]) {
+                        result.push(groups[name][i]);
+                    }
+                }
+            }
+            
+            return result;
+        }
+
+        // Setup Intersection Observer with gentler settings
         function setupVideoObserver() {
             class VideoPlayerManager {
                 constructor() {
                     this.observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
                             const container = entry.target;
-                            const iframe = container.querySelector('iframe');
-                            if (!iframe) return;
+                            const idx = videoContainers.indexOf(container);
                             
-                            if (entry.isIntersecting) {
-                                const idx = videoContainers.indexOf(container);
-                                if (idx !== -1 && idx !== currentVisibleIndex) {
-                                    currentVisibleIndex = idx;
-                                    updateBuffer(currentVisibleIndex);
-                                    pauseAllVideos();
-                                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                                    if (userInteracted) iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-                                } else if (idx !== -1 && idx === currentVisibleIndex) {
-                                    // Already visible, ensure it's playing
-                                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                            if (entry.isIntersecting && idx !== -1) {
+                                // Update visible index
+                                currentVisibleIndex = idx;
+                                
+                                // Only act if index actually changed
+                                if (currentVisibleIndex !== previousVisibleIndex) {
+                                    // Pause the previous video
+                                    if (previousVisibleIndex !== -1) {
+                                        pauseVideo(videoContainers[previousVisibleIndex]);
+                                    }
+                                    
+                                    // Play the new visible video
+                                    playVideo(container);
+                                    if (userInteracted) unmuteVideo(container);
+                                    
+                                    // Update buffer window
+                                    updateBufferWindow(currentVisibleIndex);
+                                    
+                                    previousVisibleIndex = currentVisibleIndex;
                                 }
-                            } else {
-                                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                                iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
                             }
                         });
-                    }, { threshold: 0.6 });
+                    }, { 
+                        threshold: 0.3,
+                        rootMargin: "200px 0px" // Keep videos active longer
+                    });
                 }
                 observe(el) { this.observer.observe(el); }
             }
             videoPlayerManager = new VideoPlayerManager();
             videoContainers.forEach(c => videoPlayerManager.observe(c));
-            
-            // Force first video to play immediately
-            setTimeout(() => {
-                if (videoContainers[0]) {
-                    const iframe = videoContainers[0].querySelector('iframe');
-                    if (iframe?.contentWindow) {
-                        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                    }
-                }
-            }, 500);
         }
 
         // Load live stories
@@ -1109,7 +1160,9 @@
             const shortsPromises = channels.map(fetchChannelShorts);
             const shortsResults = await Promise.all(shortsPromises);
             let allShorts = shortsResults.flat().filter(v => v);
-            allShorts = allShorts.sort(() => 0.5 - Math.random());
+            
+            // Use balanced shuffle for even channel distribution
+            allShorts = balancedShuffle(allShorts);
 
             feedContainer.innerHTML = '';
             allShorts.forEach(short => feedContainer.appendChild(createFeedCard(short)));
@@ -1117,24 +1170,34 @@
             loadingEl.style.display = 'none';
             feedReady = true;
 
-            // PRELOAD FIRST 6 VIDEOS IMMEDIATELY
+            // PRELOAD FIRST 8 VIDEOS IMMEDIATELY
             if (videoContainers.length > 0) {
-                for (let i = 0; i < Math.min(6, videoContainers.length); i++) {
+                for (let i = 0; i < Math.min(8, videoContainers.length); i++) {
                     if (videoContainers[i]?.dataset.videoId) {
                         loadVideo(videoContainers[i], videoContainers[i].dataset.videoId);
                     }
                 }
-                // Force first video to play right away
-                setTimeout(() => {
-                    const firstIframe = videoContainers[0]?.querySelector('iframe');
-                    if (firstIframe?.contentWindow) {
-                        firstIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                    }
-                }, 300);
+                
+                // Wait for first iframe to load, then play it
+                const firstContainer = videoContainers[0];
+                const firstIframe = firstContainer.querySelector('iframe');
+                
+                if (firstIframe) {
+                    // Use load event to ensure video is ready
+                    firstIframe.addEventListener('load', function onLoad() {
+                        playVideo(firstContainer);
+                        firstIframe.removeEventListener('load', onLoad);
+                    });
+                    
+                    // Fallback in case load event doesn't fire
+                    setTimeout(() => {
+                        playVideo(firstContainer);
+                    }, 2000);
+                }
                 
                 // Show tap prompt when first video is ready
                 const checkInterval = setInterval(() => {
-                    if (videoContainers[0]?.querySelector('iframe')?.src) {
+                    if (firstIframe?.src) {
                         stage2.style.display = 'none';
                         stage3.style.display = 'flex';
                         clearInterval(checkInterval);
@@ -1145,10 +1208,12 @@
             // Start observer immediately
             setupVideoObserver();
             
-            // Initial aggressive buffer
+            // Initial buffer window
             setTimeout(() => {
                 const visibleIdx = getVisibleIndex();
-                updateBuffer(visibleIdx);
+                currentVisibleIndex = visibleIdx;
+                previousVisibleIndex = visibleIdx;
+                updateBufferWindow(visibleIdx);
             }, 500);
         }
 
