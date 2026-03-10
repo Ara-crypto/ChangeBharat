@@ -6,7 +6,7 @@
     <title>Goa Social · Only Shorts</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Preconnect to YouTube domains -->
+    <!-- Preconnect to YouTube domains for faster loading -->
     <link rel="preconnect" href="https://www.youtube.com">
     <link rel="preconnect" href="https://i.ytimg.com">
     <link rel="preconnect" href="https://www.googlevideo.com">
@@ -817,12 +817,26 @@
         // === CONFIG ===
         const API_KEY = 'AIzaSyDGHXHuPiHAfJGin_c2-LF4FZ5IBMYLNK4';
         const SHORTS_MAX_DURATION = 70; // seconds
-        const MAX_SHORTS_PER_CHANNEL = 30; // up to 30 per channel
+        const MAX_SHORTS_PER_CHANNEL = 30;
 
-        // === ONLY THE TWO SPECIFIED CHANNELS ===
+        // === YOUR CHANNELS (replace UCxxxxx with actual IDs) ===
         const channels = [
-            { name: 'Channel 1', id: 'UCZ8yT-EnZneKIlJX7SgxzLQ', icon: '🎬' },
-            { name: 'Channel 2', id: 'UC-i0Rvr1-JtE2A8Z5RuVatg', icon: '🎥' }
+            { name: 'Adventure Goa DK', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '🌊' },
+            { name: 'Shanaya Roy Gaming', id: 'UCxxxxx', icon: '🎮' },
+            { name: 'RDXGOA', id: 'UCAX1AR_JYH8T6uFJ-D44PlA', icon: '📡' },
+            { name: 'Goa 365 TV', id: 'UC9CYT9gSNLevX5ey2_6CK0Q', icon: '📺' },
+            { name: 'Prudent Media Goa', id: 'UCn2pEPYpDGeK7CvO3dH0WkA', icon: '📰' },
+            { name: 'GOA CHANNEL UK', id: 'UCxxxxx', icon: '🇬🇧' },
+            { name: 'Rakshan Das Recipes', id: 'UCxxxxx', icon: '🍳' },
+            { name: 'Bushu Talkies Doll Maa', id: 'UCxxxxx', icon: '🎬' },
+            { name: 'We Raj', id: 'UCxxxxx', icon: '✨' },
+            { name: 'Goa Platform', id: 'UCxxxxx', icon: '📱' },
+            { name: 'Hello People with Shaneli', id: 'UCxxxxx', icon: '👋' },
+            { name: 'Swancy Fernandes', id: 'UCxxxxx', icon: '💫' },
+            { name: 'Glendy Fernandes', id: 'UCxxxxx', icon: '🌟' },
+            { name: 'Moses J Saldanha', id: 'UCxxxxx', icon: '🎤' },
+            { name: 'Lesley in Goa', id: 'UCxxxxx', icon: '🍽️' },
+            { name: 'TeranElle', id: 'UCxxxxx', icon: '🎶' }
         ];
 
         // DOM Elements
@@ -850,12 +864,13 @@
         let videoContainers = [];
         let currentVisibleIndex = 0;
         let previousVisibleIndex = -1;
-        let firstVideoPlaying = false; // new flag: first video is confirmed playing
+        let firstVideoConfirmedPlaying = false; // true when we are confident first video is playing
         let secondVideoReady = false;
         let timeoutDone = false; // 10 seconds passed
         const BUFFER_PREV = 2;
         const BUFFER_NEXT = 6;
 
+        // Helper to get visible container index
         function getVisibleIndex() {
             for (let i = 0; i < videoContainers.length; i++) {
                 const rect = videoContainers[i].getBoundingClientRect();
@@ -864,6 +879,7 @@
             return 0;
         }
 
+        // Video control functions
         function pauseVideo(container) {
             const iframe = container?.querySelector('iframe');
             if (iframe?.contentWindow) {
@@ -892,6 +908,7 @@
             }
         }
 
+        // Load video with ultra-fast 240p quality and warm-up for buffer videos
         function loadVideo(container, videoId, isFirst = false) {
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
@@ -913,18 +930,18 @@
                     if (isFirst) {
                         // First video: just play and leave playing
                         playVideo(container);
-                        // Confirm it's playing after a short delay
+                        // After a short delay, assume it's playing
                         setTimeout(() => {
-                            firstVideoPlaying = true;
+                            firstVideoConfirmedPlaying = true;
                             maybeShowTapScreen();
                         }, 500);
                     } else {
-                        // Buffer videos: warm up (play then pause)
+                        // Buffer videos: warm up (play briefly then pause)
                         setTimeout(() => {
                             playVideo(container);
                             setTimeout(() => {
                                 pauseVideo(container);
-                            }, 100);
+                            }, 150);
                         }, 200);
                     }
                     iframe.removeEventListener('load', onLoad);
@@ -932,7 +949,8 @@
             }
         }
 
-        function ensurePlayVideo(container, maxAttempts = 15, interval = 200) {
+        // Retry play for first video to guarantee it starts
+        function ensureFirstVideoPlays(container, maxAttempts = 15, interval = 200) {
             let attempts = 0;
             const timer = setInterval(() => {
                 attempts++;
@@ -943,6 +961,7 @@
             }, interval);
         }
 
+        // Update buffer window: keep visible + prev 2 + next 6 loaded
         function updateBufferWindow(visibleIdx) {
             if (!videoContainers.length) return;
             const start = Math.max(0, visibleIdx - BUFFER_PREV);
@@ -973,8 +992,7 @@
         }, 10000);
 
         function maybeShowTapScreen() {
-            // Wait for timeout, first video playing, and second video ready
-            if (timeoutDone && firstVideoPlaying && secondVideoReady) {
+            if (timeoutDone && firstVideoConfirmedPlaying && secondVideoReady) {
                 stage2.style.display = 'none';
                 stage3.style.display = 'flex';
                 splashOverlay.classList.add('tappable');
@@ -1030,16 +1048,14 @@
 
         async function fetchChannelShorts(channel) {
             try {
-                if (!channel.id) return [];
+                if (!channel.id || channel.id === 'UCxxxxx') return [];
                 
-                // Get uploads playlist ID
                 const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channel.id}&key=${API_KEY}`;
                 const channelRes = await fetch(channelUrl);
                 const channelData = await channelRes.json();
                 const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
                 if (!uploadsId) return [];
 
-                // Fetch up to 50 items to get enough shorts after filtering
                 const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=50&key=${API_KEY}`;
                 const playlistRes = await fetch(playlistUrl);
                 const playlistData = await playlistRes.json();
@@ -1050,7 +1066,6 @@
                 const videosRes = await fetch(videosUrl);
                 const videosData = await videosRes.json();
 
-                // Filter for shorts and limit to 30
                 const shorts = videosData.items
                     .filter(video => {
                         const duration = video.contentDetails.duration;
@@ -1133,10 +1148,9 @@
                             const idx = videoContainers.indexOf(container);
                             
                             if (entry.isIntersecting && idx !== -1) {
-                                currentVisibleIndex = idx;
-                                
-                                if (currentVisibleIndex !== previousVisibleIndex) {
-                                    // Pause previous video
+                                // New visible index
+                                if (idx !== previousVisibleIndex) {
+                                    // Pause the previous video
                                     if (previousVisibleIndex !== -1) {
                                         pauseVideo(videoContainers[previousVisibleIndex]);
                                     }
@@ -1146,15 +1160,16 @@
                                     if (userInteracted) unmuteVideo(container);
                                     
                                     // Update buffer window
-                                    updateBufferWindow(currentVisibleIndex);
+                                    updateBufferWindow(idx);
                                     
-                                    previousVisibleIndex = currentVisibleIndex;
+                                    previousVisibleIndex = idx;
+                                    currentVisibleIndex = idx;
                                 }
                             }
                         });
                     }, { 
-                        threshold: 0.6,          // higher threshold to avoid flickering
-                        rootMargin: "50px 0px"    // smaller margin to prevent early triggers
+                        threshold: 0.7,          // higher threshold to avoid flicker
+                        rootMargin: "100px 0px"   // moderate preload margin
                     });
                 }
                 observe(el) { this.observer.observe(el); }
@@ -1191,11 +1206,10 @@
             feedReady = true;
 
             if (videoContainers.length > 0) {
-                // Load first 8 videos
+                // Preload first 8 videos (first one as "first", others as buffer)
                 for (let i = 0; i < Math.min(8, videoContainers.length); i++) {
                     const container = videoContainers[i];
                     if (container?.dataset.videoId) {
-                        // First video is special (isFirst = true)
                         loadVideo(container, container.dataset.videoId, i === 0);
                     }
                 }
@@ -1203,10 +1217,10 @@
                 // Extra retry for first video
                 const firstContainer = videoContainers[0];
                 setTimeout(() => {
-                    ensurePlayVideo(firstContainer, 15, 200);
+                    ensureFirstVideoPlays(firstContainer, 15, 200);
                 }, 1000);
                 
-                // Check readiness of second video (iframe src)
+                // Check readiness of second video
                 const checkSecondInterval = setInterval(() => {
                     const secondIframe = videoContainers[1]?.querySelector('iframe');
                     if (secondIframe && secondIframe.src) {
