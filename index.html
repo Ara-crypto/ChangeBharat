@@ -729,6 +729,17 @@
         .nav-item.active {
             color: #1877f2;
         }
+
+        /* Hide YouTube loading spinner */
+        .video-container iframe {
+            pointer-events: none;
+        }
+        .video-container::after {
+            display: none !important;
+        }
+        .video-container iframe[src*="youtube"] {
+            background: #000;
+        }
     </style>
 </head>
 <body>
@@ -883,10 +894,9 @@
             const iframe = container.querySelector('iframe');
             if (!iframe) return;
             if (!iframe.src) {
-                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&vq=small`;
+                iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&vq=small&showinfo=0&autohide=1`;
 
                 iframe.addEventListener('error', function onError() {
-                    console.warn('Video failed to load, removing:', videoId);
                     const card = container.closest('.feed-card');
                     if (card && card.parentNode) {
                         const idx = videoContainers.indexOf(container);
@@ -897,19 +907,21 @@
                 });
 
                 iframe.addEventListener('load', function onLoad() {
-                    if (isFirst) {
-                        playVideo(container);
+                    // Hide any potential loading overlay
+                    container.style.background = '#000';
+                    
+                    playVideo(container);
+                    
+                    if (!isFirst) {
+                        // Warm up buffer videos for 500ms
+                        setTimeout(() => {
+                            pauseVideo(container);
+                        }, 500);
+                    } else {
                         setTimeout(() => {
                             firstVideoConfirmedPlaying = true;
                             maybeShowTapScreen();
                         }, 500);
-                    } else {
-                        setTimeout(() => {
-                            playVideo(container);
-                            setTimeout(() => {
-                                pauseVideo(container);
-                            }, 150);
-                        }, 200);
                     }
                     iframe.removeEventListener('load', onLoad);
                 }, { once: true });
@@ -963,20 +975,39 @@
         }
 
         // Share functions
-        function showSharePopup(videoId) { currentShareVideoId = videoId; shareOverlay.classList.add('visible'); sharePopup.classList.add('visible'); }
-        function hideSharePopup() { shareOverlay.classList.remove('visible'); sharePopup.classList.remove('visible'); currentShareVideoId = null; }
+        function showSharePopup(videoId) { 
+            currentShareVideoId = videoId; 
+            shareOverlay.classList.add('visible'); 
+            sharePopup.classList.add('visible'); 
+        }
+        
+        function hideSharePopup() { 
+            shareOverlay.classList.remove('visible'); 
+            sharePopup.classList.remove('visible'); 
+            currentShareVideoId = null; 
+        }
+        
         document.querySelectorAll('.share-option').forEach(option => {
             option.addEventListener('click', (e) => {
                 if (!currentShareVideoId) return;
+                // Generate share link that points to your site
                 const shareUrl = `${window.location.origin}${window.location.pathname}?v=${currentShareVideoId}`;
                 const type = option.dataset.share;
-                if (type === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
-                else if (type === 'instagram') { navigator.clipboard.writeText(shareUrl); alert('Link copied!'); }
-                else if (type === 'facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-                else if (type === 'copy') { navigator.clipboard.writeText(shareUrl); alert('Link copied!'); }
+                if (type === 'whatsapp') {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareUrl)}`, '_blank');
+                } else if (type === 'instagram') { 
+                    navigator.clipboard.writeText(shareUrl); 
+                    alert('Link copied! Share on Instagram'); 
+                } else if (type === 'facebook') {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                } else if (type === 'copy') { 
+                    navigator.clipboard.writeText(shareUrl); 
+                    alert('Link copied to clipboard!'); 
+                }
                 hideSharePopup();
             });
         });
+        
         closeShare.addEventListener('click', hideSharePopup);
         shareOverlay.addEventListener('click', hideSharePopup);
 
@@ -1002,12 +1033,20 @@
         function loadVideoFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('v');
-            if (videoId) { youtubePlayerContainer.classList.add('active'); youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; }
+            if (videoId) { 
+                youtubePlayerContainer.classList.add('active'); 
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; 
+            }
         }
-        closePlayerBtn.addEventListener('click', () => { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; });
+        
+        closePlayerBtn.addEventListener('click', () => { 
+            youtubePlayerContainer.classList.remove('active'); 
+            youtubePlayer.src = ''; 
+        });
+        
         loadVideoFromUrl();
 
-        // ===== LOAD FEED FROM JSON (with empty array fallback) =====
+        // ===== LOAD FEED FROM JSON =====
         async function loadFeed() {
             loadingEl.style.display = 'block';
             feedContainer.innerHTML = '';
@@ -1021,7 +1060,6 @@
                 feedContainer.innerHTML = '';
 
                 if (!videoData || videoData.length === 0) {
-                    // Show a friendly message if no videos
                     feedContainer.innerHTML = '<div style="text-align:center; padding:50px; color:#666;">No shorts available right now. Please check back later.</div>';
                     loadingEl.style.display = 'none';
                     return;
@@ -1032,8 +1070,8 @@
                     card.className = 'feed-card';
                     card.innerHTML = `
                         <div class="card-header">
-                            <div class="channel-icon">${item.channelIcon || '📺'}</div>
-                            <div class="channel-info"><div class="channel-name">${item.channelName}</div><div class="post-time">Shorts</div></div>
+                            <div class="channel-icon">📺</div>
+                            <div class="channel-info"><div class="channel-name">Goa Shorts</div><div class="post-time">Shorts</div></div>
                             <i class="fas fa-ellipsis-h"></i>
                         </div>
                         <div class="video-container" data-video-id="${item.videoId}">
@@ -1122,7 +1160,7 @@
                         });
                     }, {
                         threshold: 0.7,
-                        rootMargin: "100px 0px"
+                        rootMargin: "300px 0px" // Load even earlier
                     });
                 }
                 observe(el) { this.observer.observe(el); }
@@ -1147,8 +1185,13 @@
 
         window.addEventListener('popstate', () => {
             const videoId = new URLSearchParams(window.location.search).get('v');
-            if (videoId) { youtubePlayerContainer.classList.add('active'); youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; }
-            else { youtubePlayerContainer.classList.remove('active'); youtubePlayer.src = ''; }
+            if (videoId) { 
+                youtubePlayerContainer.classList.add('active'); 
+                youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`; 
+            } else { 
+                youtubePlayerContainer.classList.remove('active'); 
+                youtubePlayer.src = ''; 
+            }
         });
 
         splashOverlay.addEventListener('click', function onSplashTap(e) {
